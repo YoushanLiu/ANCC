@@ -1,5 +1,5 @@
 # ANT_Preprocessing
-Some scripts for ambient noise tomography (support parallel computing)
+Some scripts for ambient noise tomography, such as computing cross-correlation (support parallel computing), extracting dispersion curves.
 
 1. convert reftek file format (or other file formats) to SAC file format
 
