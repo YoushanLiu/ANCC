@@ -19,4 +19,4 @@ Some scripts for ambient noise tomography (support parallel computing)
 
 3. cross-correlation and frequency-time analysis
 
-  It utilizes the AFTAN.
+   It utilizes the AFTAN.
