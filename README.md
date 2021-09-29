@@ -3,7 +3,7 @@ Some scripts for ambient noise tomography (support parallel computing)
 
 1. convert reftek file format (or other file formats) to SAC file format
 
-reftek2sac.py    -> file converter with the folder structure, such as /root/period_and_station_name/day/
+reftek2sac.py    -> file convertor with the folder structure, such as /root/period_and_station_name/day/
 reftek2sac_p.py  -> a parallel processing of reftek2sac.py
 reftek2sac2.py   -> file converter with the folder structure, such as /root/period/station_name/day/
 reftek2sac2_p.py -> a parallel processing of reftek2sac2.py
