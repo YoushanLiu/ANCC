@@ -360,7 +360,7 @@ if __name__ == '__main__':
 
 	print('\n')
 	print('cutdata: ')
-	print('This program cuts daily data into segments uing the ObsPy (serial version)')
+	print('This program cuts daily data into segments using the ObsPy (serial version)')
 	print('Youshan Liu at Institute of Geology and Geophysics, Chinese Academy of Sciences')
 	print('Welcome to send any bugs and suggestions to ysliu@mail.iggcas.ac.cn')
 	print('\n\n')
