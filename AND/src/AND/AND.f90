@@ -14,11 +14,15 @@
 ! along with this program.  If not, see <https://www.gnu.org/licenses/>.
 !
 !
+! Author: Youshan Liu & Xingli Fan
+! This program is based on the original version v2.0 developed by Xingli Fan at
+! Institute of Geology and Geophysics, Chinese Academy of Sciences.
+!
 program AND
 
 use mpi
-use xcc_m         ! xcc_m: imported module which contains all the functions, subroutines
-                  ! and also other imported modules (e.g. my_definition_m, string_m, math_m, date_time_m).
+use xcc_m
+
 use db_m, only: myrank, nprocs
 
 
@@ -175,9 +179,10 @@ if (myrank == myroot) then
    write(*,"(A)")
    write(*,"(A)") 'This program computes cross-correlation and/or does AFTAN' // trim(version)
    write(*,"(A)") 'Its efficiency has been improved significantly by removing any unneccessary '
-   write(*,"(A)") 'MPI_SEND & MPI_RECV and paralleling all parts by Youshan-Liu'
+   write(*,"(A)") 'MPI_SEND & MPI_RECV and parallelizing all parts by Youshan-Liu'
    write(*,"(A)") 'All processors are used to compute instead of the master processor only for '
-   write(*,"(A)") 'message passing just as those original version done'
+   write(*,"(A)") 'message passing just as those original version v2.0 done'
+   write(*,"(A)") 'After v2.0, many errors have been corrected'
    write(*,"(A)")
    write(*,"(A)") '***********************************************************************'
    write(*,"(A)") '                         SECTION 1 BEGINS'
