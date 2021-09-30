@@ -35,7 +35,7 @@ Some scripts for ambient noise tomography, such as computing cross-correlation (
     corresponding PZ files automatically.
 
 
-Requirements:
+# Requirements:
     The SAC software is required by the AND.
     The obspy is required by the scripts.
 
