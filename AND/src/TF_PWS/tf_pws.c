@@ -1,3 +1,20 @@
+/*
+This file is part of ANCC.
+
+TF_PWS is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+TF_PWS is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
@@ -48,7 +65,8 @@
  *	                 In this case, the interested band is 10~100s but not 0-Nyquist. By this mean, you can reduce the
  *	                 calcaulation time, and filter the data in band 10~100s.
  *
- * 	Written by Guoliang Li, guoleonlee@gmail.com
+ * 	Written by Guoliang Li, guoleonlee@gmail.com, Modified by Youshan Liu, at Institute of Geology and Geophysics,
+ *           Chinese Academy of Sciences.
  * 	Finish data: 2016.01.10
  * 	 recitified 2016.08.09  Adding parallel computing part, and the number of parallel CPU is 4.
  * 	 recitified 2016.09.09  Fix the bug of storage overflowing.
