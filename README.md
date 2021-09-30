@@ -1,7 +1,7 @@
 # ANCC
 Some scripts for ambient noise tomography, such as computing cross-correlation (with parallel computing), extracting dispersion curves.
 
-1. convert reftek file format (or other file formats) to SAC file format (scripts)
+1. convert the reftek file format (or other file formats) to the SAC file format (scripts)
 
     reftek2sac.py    -> file convertor with the folder structure, such as /root/period_and_station_name/day/
     reftek2sac_p.py  -> a parallel processing of reftek2sac.py
