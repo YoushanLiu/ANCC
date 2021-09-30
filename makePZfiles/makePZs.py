@@ -33,7 +33,7 @@ from obspy.core import UTCDateTime
 RESP_pool_path = './Sensor_RESP_pool'
 
 # the used PZ files list
-RESP_listname = 'PZs_used.lst'
+RESP_listname = 'sensor_used.lst'
 
 # path of the generated PZ files
 output_path = '../PZs_all'
