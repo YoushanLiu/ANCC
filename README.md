@@ -17,7 +17,7 @@ Some scripts for ambient noise tomography, such as computing cross-correlation (
     cutdata2.py      -> cut daily data into predefined-segment data with the folder structure, such as /root/period/station_name/day/
     cutdata2_p.py    -> a parallel processing of cutdata2.py
 
-3. cross-correlation and frequency-time analysis (AND)
+3. cross-correlation and frequency-time analysis (Ambient Noise Denoise)
 
     It utilizes the AFTAN.
 
@@ -27,3 +27,17 @@ Some scripts for ambient noise tomography, such as computing cross-correlation (
     once fill a excel sheet based on your project log. The former can take responses of sensor and DAS into consideration, 
     it will merge them into one PZ file. While, the latter only take the response of sensor into consideration, then genertes
     corresponding PZ files automatically.
+
+
+ANCC is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+ANCC is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
