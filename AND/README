@@ -1,3 +1,6 @@
+In default, the intel compiler (such as ifort and mpiifort) is recommened. If you use a gnu compiler, you can comment flags for interl compiler 
+and uncomments those for gnu compiler.
+
 This program includes three parts, i.e. AFTAN (original author, Colorado School of Mines), AND (original author [v2.0], Xingli Fan), TF_PWS (original author, Guoliang Li).
 The first part implement time-frequency analysis to extract dispersion curves for ambient noise tomography.
 The second part compute the cross-correlation function with MPI parallel computing.
