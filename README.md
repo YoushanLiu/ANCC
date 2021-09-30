@@ -21,7 +21,7 @@ Some scripts for ambient noise tomography, such as computing cross-correlation (
 
     It utilizes the AFTAN.
 
-4. generating instrument response automatically
+4. generating instrument response automatically (makePZfiles)
 
     In makePZfiles folder, you can generate automatically instrument response polezero files using resp2pz.py or makePZs.py 
     once fill a excel sheet based on your project log. The former can take responses of sensor and DAS into consideration, 
