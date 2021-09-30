@@ -1,0 +1,28 @@
+This program includes three parts, i.e. AFTAN (original author, Colorado School of Mines), AND (original author [v2.0], Xingli Fan), TF_PWS (original author, Guoliang Li).
+The first part implement time-frequency analysis to extract dispersion curves for ambient noise tomography.
+The second part compute the cross-correlation function with MPI parallel computing.
+The third part implement a phase-weighted stack of cross-correlation.
+
+The original version is a double precision version, it significantly low the efficiency.
+After v3.0, all parts are change to single precision, it leads to a significant performance improvement.
+In this version, a lot of errors had been corrected.
+
+In the original version, all fft operations are directly applied to time-domain signals. Because fft requires a periodic signal, 
+thus it will leads to some suprious oscillations at zero-lag. A cosine taper is applied before fft in time-domain, which can suppresses 
+unpysical zero-arrival suprious oscillations. Many unneccessary file copy and movement operations existed. 
+In addition, the length of cross-correlation of two signals with length of M and N is M+N-1. However, the original version allocate the same length arrays 
+for cross-correlation and signal itself, it will leads to potential aliasing in truncated frequency points.
+After v4.0, different length of arrays for cross-correlation and signal are adopted.
+All unneccessary files copy and movement are avoided, a slight permance improvement is obtained.
+
+In the original version, a master proccess send and receive task information, while other slave processors do the real computation.
+However, this is completely unneccessary. After redesigning the framework, mater/slave mode is remove. All processors can do the real computaiton.
+Thus, any message passing are avoided. It leads to a significant efficiency improvement.
+After v5.0, master/slave mode is removed. Some constants are moved to module and initialized. Many subroutines are optimized.
+And some related operations are merged, thus many unneccessary file I/O are avoided.
+
+Although master/slave mode has been removed in v5.0, however, database-constructing part is still serial. It usually takes tens hours. It significantly low the efficiency.
+After 6.0, the database-constructing part is also parallelized. The database struct is redesigned. As a result, the access order of array is same as the storage order 
+in computer memory. A further perormance is obtained.
+
+In version 7.0, data overlap is allowed.
