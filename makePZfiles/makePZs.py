@@ -677,7 +677,7 @@ if __name__ == '__main__':
 
 	print('\n')
 	print('makePZs: ')
-	print('This program automatically generate PZ files based on the RESP files.')
+	print('This program automatically generates PZ files based on the RESP files.')
 	print('Youshan Liu at Institute of Geology and Geophysics, Chinese Academy of Sciences')
 	print('Wecome to send any bugs and suggestions to ysliu@mail.iggcas.ac.cn')
 	print('Please downloaded the unavailable RESP files in RESP_pool from the following website.')
