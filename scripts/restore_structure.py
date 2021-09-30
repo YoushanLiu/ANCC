@@ -4,7 +4,7 @@
 '''
 reftek2sac
 
-This program convert the files from reftek to sac format using the ObsPy
+This program converts the files from reftek to sac format using the ObsPy
 
 Date: 22/10/2020
 Author: Youshan Liu
