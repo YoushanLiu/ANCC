@@ -21,6 +21,7 @@
 !
 !
 ! Autor: M.Barmine, CIEI, CU. Date: Jun 15,2006. Version: 2.00
+! Modified by Youshan Liu at Institute of Geology and Geophysics, Chinese Academy of Sciences.
 !
 module aftanpg_m
 
