@@ -1,0 +1,207 @@
+!
+!* The sample of test driver for FTAN with phase match filter for
+!* subroutines aftanpg and aftanipg
+!
+program AFTAN
+
+use dispio_m
+use aftanpg_m
+use aftanipg_m
+
+implicit none
+
+integer(4) i, k, sac, nargc, iargc
+integer(4) n, npoints, nfin, nfout1, nfout2
+integer(4) nrow, ncol, npred, nprpv, ier, ioer
+
+real(4) t0, dt, tresh, ffact1, ffact2
+real(4) perc, taperl, fmatch, delta, tamp
+real(4) vmin, vmax, tmin, tmax, snr, lambda
+
+real(8) PIover4
+
+real(4) x(1), y(1)
+
+real(4), dimension(:), allocatable :: seis
+
+real(4), dimension(:), allocatable :: prpvper, prpvvel
+real(4), dimension(:,:), allocatable :: ampo, arr1, arr2, pred
+
+character(1) isPerCut, isOutput, isVerbose
+
+character(256) filename, parfile
+
+
+
+sac = 1
+
+!---  input command line arguments treatment
+nargc = iargc()
+if (1 /= nargc) then
+   write(*,*) "Usage: AFTAN parameter_file \n"
+   stop
+endif
+
+
+! read input.dat
+open(unit=99, file='input.dat', status='old')
+
+   do k = 1, 25, 1
+      read(99,"(A)")
+   end do
+   read(99,*) PIover4
+   read(99,*) vmin, vmax
+   read(99,*) tmin, tmax
+   read(99,*) isPerCut, lambda
+   read(99,*) isOutput
+   if (tmin < 1) then
+      isOutput = 'Y'
+   end if
+   read(99,*) tresh
+   read(99,*) ffact1, ffact2
+   read(99,*) taperl
+   read(99,*) snr
+   read(99,*) fmatch
+   do k = 1, 6, 1
+      read(99,"(A)")
+   end do
+   read(99,*) isVerbose
+
+close(unit=99)
+
+
+
+! read ref1Dmod.dat
+open(11, file='ref1Dmod.dat', status='old', iostat=ier)
+
+   if (0 /= ier) then
+      write(*,*)'Error: No phase velocity reference file!'
+      stop
+   end if
+
+   nprpv = 0
+   do
+      read(11, *, iostat=ioer) x(1), y(1)
+      if (0 /= ioer) exit
+      nprpv = nprpv + 1
+   end do
+
+   rewind(11)
+
+   allocate(prpvper(1:nprpv), prpvvel(1:nprpv), stat=ier)
+   do k = 1, nprpv, 1
+      read(11, *) prpvper(k), prpvvel(k)
+   end do
+
+close(11)
+
+
+
+call getarg(1, parfile)
+open(10, file=trim(adjustl(parfile)), status='old')
+
+
+   do
+
+      read(10, '(A)', iostat=ioer) filename
+      if (0 /= ioer) exit
+
+
+      if ((isVerbose == 'Y') .or. (isVerbose == 'y')) then
+         write(*,'(A, A)') 'AFTAN: ', trim(adjustl(filename))
+      end if
+
+      !
+      ! read SAC or ascii data
+      !
+
+      call readhead(sac, filename, n, ier)
+      n = 2*n-1
+      allocate(seis(1:n), stat=ier)
+      call readdata(sac, filename, dt, delta, t0, seis, ier)
+
+      if ((isPerCut == 'Y') .or. (isPerCut == 'y')) then
+
+         do k = 1, 100, 1
+
+            x(1) = k
+            call linear_interpo(prpvper(1:nprpv), prpvvel(1:nprpv), x, y, ier)
+
+            if ((lambda*x(1)*y(1) > delta) .and. ((k+3) < tmax)) then
+               tmax = k + 3
+               exit
+            end if
+
+         end do
+
+      end if
+
+
+      nfin    = 64
+      npoints = 5
+      perc    = 50.0
+
+
+      !---  FTAN with phase match filter. First Iteration.
+      call aftanpg(PIover4, n, seis, t0, dt, delta, vmin, vmax, tmin, tmax, &
+                tresh, ffact1, perc, npoints, taperl, nfin, nprpv, prpvper, &
+                prpvvel, nfout1, arr1, nfout2, arr2, tamp, nrow, ncol, ampo, ier)
+
+      if ((isOutput == 'Y') .or. (isOutput == 'y')) then
+         call printres(dt, delta, nfout1, arr1, nfout2, arr2, &
+                   tamp, nrow, ncol, ampo, ier, filename, "_1")
+      end if
+
+      if (tmin >= 1) then
+         call write_data(arr1, nfout1, arr2, nfout2, trim(adjustl(filename))//'_1')
+      endif
+
+      deallocate(ampo, arr1)
+
+      if (0 == nfout2) then
+         exit
+      end if
+
+
+      !--- Make prediction based on the first iteration
+      npred = nfout2
+      tmin = arr2(2,1)
+      tmax = arr2(2,nfout2)
+      allocate(pred(1:nfout2,1:2))
+      do i = 1, nfout2, 1
+         pred(i,1) = arr2(2,i)
+         pred(i,2) = arr2(3,i)
+      enddo
+      deallocate(arr2)
+
+
+
+      !--- FTAN with phase matching filter. Second Iteration.
+      call aftanipg(PIover4, n, seis, t0, dt, delta, vmin, vmax, tmin, tmax, tresh, &
+              ffact2, perc, npoints, taperl, nfin, snr, fmatch, npred, pred, nprpv, &
+              prpvper, prpvvel, nfout1, arr1, nfout2, arr2, tamp, nrow, ncol, ampo, ier)
+
+      if ((isOutput == 'Y') .or. (isOutput == 'y')) then
+         call printres(dt, delta, nfout1, arr1, nfout2, arr2, &
+                   tamp, nrow, ncol, ampo, ier, filename, "_2")
+      end if
+
+
+      if (tmin >= 1) then
+         call write_data(arr1, nfout1, arr2, nfout2, trim(adjustl(filename))//'_2')
+      end if
+
+
+      deallocate(arr1, arr2)
+      deallocate(seis, ampo, pred)
+
+   end do
+
+
+close(10)
+
+
+deallocate(prpvper, prpvvel)
+
+
+end program AFTAN
