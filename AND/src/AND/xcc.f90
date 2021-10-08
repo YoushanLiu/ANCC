@@ -678,7 +678,7 @@ else
       deallocate(abs_data, wgt_data)
 
       if (is_verbose) then
-         write(*,"(A)") trim(adjustl(str_tmp))//' time-domain running average is done ... '
+         write(*,"(A)") trim(adjustl(str_tmp))//' time-domain running absolute average is done ... '
          call flush(6)
       end if
 
@@ -813,7 +813,7 @@ if (is_specwhitenning) then
 
 
    if (is_verbose) then
-      write(*,"(A)") trim(adjustl(str_tmp))//' spectral whitening is done ... '
+      write(*,"(A)") trim(adjustl(str_tmp))//' spectral whitenning is done ... '
       call flush(6)
    end if
 
