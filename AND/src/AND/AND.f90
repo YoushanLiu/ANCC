@@ -1,28 +1,8 @@
-! This file is part of ANCC.
-!
-! AND is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! AND is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <https://www.gnu.org/licenses/>.
-!
-!
-! Author: Youshan Liu & Xingli Fan
-! This program is based on the original version v2.0 developed by Xingli Fan at
-! Institute of Geology and Geophysics, Chinese Academy of Sciences.
-!
 program AND
 
 use mpi
-use xcc_m
-
+use xcc_m         ! xcc_m: imported module which contains all the functions, subroutines
+                  ! and also other imported modules (e.g. my_definition_m, string_m, math_m, date_time_m).
 use db_m, only: myrank, nprocs
 
 
@@ -55,7 +35,7 @@ real(DBL) dt, t0, tlen
 
 
 character(len=3) str_sbs, str_pws, str_save_record, str_verbose, bs_type
-character(len=3) str_onlycc, str_overwrite_data, str_stack_cc, str_specwhitenning
+character(len=3) str_onlycc, str_overwrite_data, str_stack_cc, str_specwhitenning, str_ac
 character(len=3) str_onebit, str_running_time_average, str_bandpass_earthquake, str_suppress_notch
 
 character(len=8) netname, staname, channel
@@ -179,10 +159,9 @@ if (myrank == myroot) then
    write(*,"(A)")
    write(*,"(A)") 'This program computes cross-correlation and/or does AFTAN' // trim(version)
    write(*,"(A)") 'Its efficiency has been improved significantly by removing any unneccessary '
-   write(*,"(A)") 'MPI_SEND & MPI_RECV and parallelizing all parts by Youshan-Liu'
+   write(*,"(A)") 'MPI_SEND & MPI_RECV and paralleling all parts by Youshan-Liu'
    write(*,"(A)") 'All processors are used to compute instead of the master processor only for '
-   write(*,"(A)") 'message passing just as those original version v2.0 done'
-   write(*,"(A)") 'After v2.0, many errors have been corrected'
+   write(*,"(A)") 'message passing just as those original version done'
    write(*,"(A)")
    write(*,"(A)") '***********************************************************************'
    write(*,"(A)") '                         SECTION 1 BEGINS'
@@ -273,6 +252,7 @@ is_onlycc = .false.
 is_overwrite_data = .false.
 is_stack = .false.
 is_specwhitenning = .false.
+is_ac = .false.
 if ((str_running_time_average == 'Y') .or. (str_running_time_average == 'y')) is_running_time_average = .true.
 if ((str_bandpass_earthquake == 'Y') .or. (str_bandpass_earthquake == 'y')) is_bandpass_earthquake = .true.
 if ((str_onebit == 'Y') .or. (str_onebit == 'y')) is_onebit = .true.
@@ -285,9 +265,21 @@ if ((str_onlycc == 'Y') .or. (str_onlycc == 'y')) is_onlycc = .true.
 if ((str_overwrite_data == 'Y') .or. (str_overwrite_data == 'y')) is_overwrite_data = .true.
 if ((str_stack_cc == 'Y') .or. (str_stack_cc == 'y')) is_stack = .true.
 if ((str_specwhitenning == 'Y') .or. (str_specwhitenning == 'y')) is_specwhitenning = .true.
+if ((str_ac == 'Y') .or. (str_ac == 'y')) is_ac = .true.
 if (myrank == myroot) then
    write(*,"(A,/)") 'Reading input parameters is done ... '
    call flush(6)
+end if
+
+
+
+! Check parameter validation
+if (is_bandpass_earthquake .and. (fr1 >= fr2)) then
+   write(*,"(A)") 'Error: fr1 < fr2 should be satisfied !'
+   call flush(6)
+   call MPI_ABORT(MPI_COMM_WORLD, -1, ier)
+   call MPI_FINALIZE(ier)
+   stop
 end if
 
 
@@ -580,6 +572,7 @@ end if
 
 
 
+
 ! compute the displ in GatherV
 allocate(recvcounts(nprocs), displs(nprocs), stat=ier)
 !call MPI_GATHER(iev, 1, MPI_INTEGER, recvcounts, 1, &
@@ -673,6 +666,26 @@ if (dt < 0.0) then
    call MPI_FINALIZE(ier)
    stop
 end if
+
+
+! Check parameter validation
+if (.not.( (f1 < f2) .and. (f2 < f3) .and. (f3 < f4))) then
+   write(*,"(A)") 'Error: f1 > f2 > f3 > f4 [sec.] should be satisfied !'
+   call flush(6)
+   call MPI_ABORT(MPI_COMM_WORLD, -1, ier)
+   call MPI_FINALIZE(ier)
+   stop
+end if
+
+
+if (f4 > 0.5/dt) then
+   write(*,"(A)") 'Error: 1/f4 < 0.5/dt should be satisfied !'
+   call flush(6)
+   call MPI_ABORT(MPI_COMM_WORLD, -1, ier)
+   call MPI_FINALIZE(ier)
+   stop
+end if
+
 
 
 ! Determine corresponding half-window length for time domain normalization
@@ -791,10 +804,14 @@ if (myrank == myroot) then
    write(*,"(A)") '***********************************************************************'
    write(*,"(A)") '                         SECTION 4 BEGINS'
    write(*,"(A)") '***********************************************************************'
-   if (is_onlycc) then
-      write(*,"(A)") 'Doing cross-correlation ...'
+   if (is_ac) then
+      write(*,"(A)") 'Doing auto-correlation ...'
    else
-      write(*,"(A)") 'Doing cross-correlation and AFTAN ...'
+      if (is_onlycc) then
+         write(*,"(A)") 'Doing cross-correlation ...'
+      else
+         write(*,"(A)") 'Doing cross-correlation and AFTAN ...'
+      end if
    end if
    write(*,"(A)") '****************************************'
    call flush(6)
@@ -822,29 +839,57 @@ write(str_per4,'(F8.2)') 1.0/f4
 write(str_weight,'(I6)') nweight
 
 
-ndim1 = nst
-ndim2 = nst
-ndim = nst*nst - 1
-
-do iproc = myrank, ndim, nprocs
-
-   idim1 = int(int8(iproc/ndim2))
-   ist1 = idim1 + 1
-   ist2 = iproc - int8(idim1*ndim2) + 1
-
-   if ((ist1 < 1) .or. (ist2 < 1) .or. (ist1 > ndim1) .or. (ist2 > ndim2)) cycle
+if (is_ac) then
 
 
-   ! NOTE: You can comment here for some specific targets,
-   !       such as Z-N or Z-E cross-correlation
-   if (ist2 <= ist1) cycle
+   ndim1 = nst
+   ndim2 = nst
+   ndim = nst - 1
+
+   do iproc = myrank, ndim, nprocs
+
+      ist1 = iproc + 1
+      ist2 = ist1
+
+      if ((ist1 < 1) .or. (ist2 < 1) .or. (ist1 > ndim1) .or. (ist2 > ndim2)) cycle
 
 
-   call cc_and_aftan(sdb, ist1, ist2, nlag, N_bs, is_pws, str_pws, &
-                 str_weight, str_per1, str_per4, bs_type, tarfolder)
+      ! NOTE: You can comment here for some specific targets,
+      !       such as Z-N or Z-E cross-correlation
+      if (ist2 <= ist1) cycle
 
-end do
 
+      call cc_and_aftan(sdb, ist1, ist2, nlag, N_bs, is_pws, str_pws, &
+                  str_weight, str_per1, str_per4, bs_type, tarfolder)
+
+   end do
+
+else
+
+   ndim1 = nst
+   ndim2 = nst
+   ndim = nst*nst - 1
+
+   do iproc = myrank, ndim, nprocs
+
+      idim1 = int(int8(iproc/ndim2))
+      ist1 = idim1 + 1
+      ist2 = iproc - int8(idim1*ndim2) + 1
+
+      if ((ist1 < 1) .or. (ist2 < 1) .or. (ist1 > ndim1) .or. (ist2 > ndim2)) cycle
+
+
+      ! NOTE: You can comment here for some specific targets,
+      !       such as Z-N or Z-E cross-correlation
+      if (ist2 <= ist1) cycle
+
+
+      call cc_and_aftan(sdb, ist1, ist2, nlag, N_bs, is_pws, str_pws, &
+                  str_weight, str_per1, str_per4, bs_type, tarfolder)
+
+   end do
+
+end if
 
 call MPI_BARRIER(MPI_COMM_WORLD, ier)
 
@@ -879,10 +924,14 @@ if (myrank == myroot) then
    call system("find "//trim(adjustl(tarfolder))//' -name "*" -type f -size 0c | xargs -n 1 rm -f')
 
    write(*,"(A)")
-   if (is_onlycc) then
-      write(*,"(A)") 'Cross-correlation is done ... '
+   if (is_ac) then
+      write(*,"(A)") 'Auto-correlation is done ... '
    else
-      write(*,"(A)") 'Cross-correlation and AFTAN is done ... '
+      if (is_onlycc) then
+         write(*,"(A)") 'Cross-correlation is done ... '
+      else
+         write(*,"(A)") 'Cross-correlation and AFTAN is done ... '
+      end if
    end if
    write(*,"(A)")
    call flush(6)

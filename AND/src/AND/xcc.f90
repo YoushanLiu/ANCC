@@ -1,19 +1,3 @@
-! This file is part of ANCC.
-!
-! AND is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! AND is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <https://www.gnu.org/licenses/>.
-!
-!
 module xcc_m
 
 use, intrinsic :: iso_c_binding     ! Allow to define the equivalents of C data types (e.g. c_ptr, C_INT)
@@ -735,6 +719,12 @@ seis_data(Nlen+1:n) = 0.0
 if (is_verbose) then
    write(*,"(A)") trim(adjustl(str_tmp))//' cutting data is done ... '
    call flush(6)
+end if
+
+
+if (maxval(abs(seis_data)) < tinyval) then
+   call system('rm -rf '//trim(adjustl(sdb%rec(ist,iev)%name)))
+   return
 end if
 
 
