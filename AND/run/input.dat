@@ -43,4 +43,4 @@ Y                                # whether verbose all the processing details
 Y                                # whether only compute cross-correlation
 N                                # whether overwrite the sac files
 Y                                # whether stack cross-correlation
-
+N                                # whether compute auto-correlation

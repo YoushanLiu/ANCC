@@ -102,21 +102,21 @@ os.system('rm -rf stations.junk events.lst')
 #        return
 #    os.system("saclst knetwk kstnm stlo stla delta f %s | awk '{print $2,$3,$4,$5,$6}' >> stations.junk"%(sacfiles))
 #    os.system("ls %s -d >> events.lst"%(day_folder))
-#
-#
+
+
 #print("\n")
 #for year in os.listdir(SACfolder):
 #    year_folder = SACfolder + '/' + year
 #    for month in os.listdir(year_folder):
 #        month_folder = year_folder + '/' + month
-#
+
 #        day_folders_list = os.listdir(month_folder)
-#
+
 #        pool = ThreadPool()
 #        pool.map(scan_daily, day_folders_list)
 #        pool.close()
 #        pool.join()
-#
+
 #os.system("sort stations.junk | uniq > stations.lst")
 #os.system("rm -rf stations.junk")
 
@@ -131,9 +131,9 @@ for year in os.listdir(SACfolder):
             day_folder = month_folder + '/' + day
             sacfiles = day_folder + '/*.SAC'
             file_list = glob.glob(sacfiles)
-            if (len(file_list) <= 1):
-                print("skip %s because of single station folder\n"%(day_folder))
-                continue
+            #if (len(file_list) <= 1):
+            #    print("skip %s because of single station folder\n"%(day_folder))
+            #    continue
             os.system("saclst knetwk kstnm stlo stla delta f %s | awk '{print $2,$3,$4,$5,$6}' >> stations.junk"%(sacfiles))
             os.system("ls %s -d >> events.lst"%(day_folder))
 os.system("sort stations.junk | uniq > stations.lst")
