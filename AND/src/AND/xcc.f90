@@ -357,10 +357,19 @@ type(sac_db), intent(in) :: sdb
 
 
 
+logical is_existed
+
 character(len=128) str_myrank
 
 character(len=512) pzfile
 
+
+
+write(pzfile,"(A)") trim(adjustl(pzfolder))//'/'//trim(adjustl(sdb%st(ist)%n_name))// &
+                                   '..'//trim(adjustl(sdb%rec(ist,iev)%channel))//'.PZ'
+
+inquire(file=trim(adjustl(pzfile)), exist=is_existed)
+if (.not.(is_existed)) return
 
 
 ! ***************************************************************
