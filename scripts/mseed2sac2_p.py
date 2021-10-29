@@ -108,7 +108,7 @@ fhigh = 5.0
 
 # whether downsampling seismograms
 is_decimate = True
-# the downsampling_rate, downsampling frequency
+# the downsampling frequency
 downsampling_rate = 20.0
 
 seconds_daily = 24*3600
