@@ -11,7 +11,7 @@ Author: Youshan Liu
 Affiliation: Institute of Geology and Geophysics, Chinese Academy of Sciences
 
 
-folders staructure:
+folders structure:
 ./your_data_folder/period folder/station folder/Reftek UnitID number/day folder/stream/reftek files
 
 for example:
