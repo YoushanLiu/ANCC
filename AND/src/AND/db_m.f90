@@ -46,6 +46,7 @@ integer :: Nlen = 0, ntaper = 0
 
 
 ! some logical variables
+logical :: is_ac
 logical :: is_onebit, is_running_time_average
 logical :: is_suppress_notch, is_bandpass_earthquake
 logical :: is_sbs, is_pws, is_save_record, is_overwrite_data
