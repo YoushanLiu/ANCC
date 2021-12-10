@@ -25,7 +25,7 @@ integer nst, nev, nev_tmp, nev_gathered, npts, count
 logical flag
 
 integer(8) ndim, ndim1, ndim2, idim1, iproc
-integer(8) nstxnev, nstxnev_tmp, nstxnev_gathered
+integer(4) nstxnev, nstxnev_tmp, nstxnev_gathered
 
 
 real(SGL) lon, lat, freqmin, tlag
