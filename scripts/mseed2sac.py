@@ -352,8 +352,10 @@ def convert_hourly(hour_files_path):
 			for iday in range(iday1,iday2+1):
 
 				#print('\niday = %d' % iday)
-				midtime = starttime + 0.5*seconds_daily
-				endtime = UTCDateTime(midtime.year, midtime.month, midtime.day, 23, 59, 59, 999999)
+				#midtime = starttime + 0.5*seconds_daily
+				#endtime = UTCDateTime(midtime.year, midtime.month, midtime.day, 23, 59, 59, 999999)
+				endtime = UTCDateTime(year=starttime.year, julday=starttime.julday, hour=23, \
+				                                     minute=59, second=59, microsecond=999999)
 				elapsed_time = endtime - starttime
 				#print(starttime)
 				#print(endtime)
