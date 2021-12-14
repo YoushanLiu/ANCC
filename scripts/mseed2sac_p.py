@@ -366,7 +366,8 @@ def convert_hourly(hour_files_path):
 				tr_out.stats.starttime = starttime
 
 
-				sac_filename, day_path = create_sac_filename(tr_out.stats, network_name, channel_name[i], sac_suffix)
+				sac_filename, day_path = create_sac_filename(tr_out.stats, network_name, st.stats.channel, sac_suffix)
+				#sac_filename, day_path = create_sac_filename(tr_out.stats, network_name, channel_name[i], sac_suffix)
 
 
 				sac_path = output_path + '/' + sta.name[ipos] + '/' + day_path + '/'
@@ -384,7 +385,7 @@ def convert_hourly(hour_files_path):
 
 
 					# set channel name
-					tr_out.stats.channel = channel_name[i]
+					#tr_out.stats.channel = channel_name[i]
 
 
 					sac = SACTrace.from_obspy_trace(tr_out)
