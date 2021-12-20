@@ -296,6 +296,8 @@ def cutdata_daily(day_folder):
 			else:
 				sac = SACTrace.from_obspy_trace(tr_out)
 
+				sac.reftime += sac.b
+
 				sac.write(outfile)
 
 				del sac
