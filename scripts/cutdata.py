@@ -301,6 +301,8 @@ def cutdata_daily(station_period_path):
 				else:
 					sac = SACTrace.from_obspy_trace(tr_out)
 
+					sac.reftime += sac.b
+
 					sac.write(outfile)
 
 					del sac
