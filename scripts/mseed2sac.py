@@ -167,7 +167,7 @@ def create_sac_filename(stats, network_name, channel_name, sac_suffix):
 	hh   = '%2.2d' % time.hour
 	mm   = '%2.2d' % time.minute
 	ss   = '%2.2d' % time.second
-	fff  = '%3.3d' % (time.microsecond/1000)
+	fff  = '%3.3d' % (0.001*time.microsecond)
 
 	sac_filename = yyyy + '.' + ddd + '.' + hh + '.' + \
 		           mm + '.' + ss + '.' + fff + '.' + \
