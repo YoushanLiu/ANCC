@@ -291,7 +291,7 @@ def convert_hourly(hour_files_path):
 				if (abs(df - (decimate_factor*downsampling_rate)) > 0.0):
 					print("Error: decimate factor can only be integer !")
 				# Nyquist frequency of the downsampling rate
-				freq_lowpass = 0.5 * tr.stats.sampling_rate / decimate_factor
+				freq_lowpass = 0.499 * tr.stats.sampling_rate / decimate_factor
 				if (not(is_bandpass and (fhigh <= freq_lowpass))):
 					tr.filter('lowpass', freq=freq_lowpass, corners=2, zerophase=True)
 				tr.decimate(factor=decimate_factor, strict_length=False, no_filter=True)
@@ -358,12 +358,12 @@ def convert_hourly(hour_files_path):
 				#endtime = UTCDateTime(midtime.year, midtime.month, midtime.day, 23, 59, 59, 999999)
 				#endtime = UTCDateTime(year=starttime.year, julday=starttime.julday, hour=23, \
 				#                                     minute=59, second=59, microsecond=999999)
-				elapsed_time = endtime - starttime
+				time_duration = endtime - starttime
 				#print(starttime)
 				#print(endtime)
 				#print(starttime.day)
 
-				iend = min(ibeg + int(elapsed_time*df), npts_org)
+				iend = min(ibeg + int(time_duration*df), npts_org)
 
 				tr_out = tr.copy()
 				tr_out.data = tr.data[ibeg:iend+1]
