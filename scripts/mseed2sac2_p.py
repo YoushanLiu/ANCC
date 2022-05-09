@@ -415,7 +415,7 @@ def convert_hourly(hour_files_path):
 
 				npts = len(tr_out.data)
 				starttime = starttime + npts*dt
-				endtime = starttime + seconds_daily
+				endtime = starttime + seconds_daily - dt
 				ibeg = iend + 1
 
 				del tr_out
