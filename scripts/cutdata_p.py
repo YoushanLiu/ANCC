@@ -61,14 +61,14 @@ save_input_data = True
 segment_length = 3*3600
 
 # component list to be cut
+# three-components
+component_list = ['Z', 'N', 'E']
 # only Z-component
 #component_list = ['Z']
 # only N-component
 #component_list = ['N']
 # only E-component
 #component_list = ['E']
-# three-components
-component_list = ['Z']
 
 
 seconds_daily = 24*3600
@@ -174,12 +174,14 @@ def merge_data(hour_files_list):
 	#npts_daily = int(seconds_daily/dt)
 	npts_daily = int(seconds_daily*df)
 
+
 	starttime = tr.stats.starttime
 	endtime = tr.stats.endtime
-	midtime = starttime + 0.50*npts_daily*dt
+	midtime = starttime + 0.50*seconds_daily
 	starttime_daily = UTCDateTime(midtime.year, midtime.month, midtime.day, 0, 0, 0, 000000)
 	starttime_daily.microsecond = 0
 	endtime_daily = starttime_daily + seconds_daily - dt
+
 
 	# indexes of the starttime and endtime in local temporal axis
 	#jbeg = ceil((max(starttime, starttime_daily) - starttime_daily)/dt)
