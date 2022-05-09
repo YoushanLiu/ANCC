@@ -346,7 +346,7 @@ def convert_hourly(hour_files_path):
 			endtime_org = tr.stats.endtime
 			
 
-			ibeg = 1
+			ibeg = 0
 			starttime = starttime_org
 
 			iday1 = starttime_org.julday
