@@ -172,7 +172,7 @@ def create_sac_filename(stats, network_name, channel_name, sac_suffix):
 	hh   = '%2.2d' % time.hour
 	mm   = '%2.2d' % time.minute
 	ss   = '%2.2d' % time.second
-	fff  = '%3.3d' % (time.microsecond/1000)
+	fff  = '%3.3d' % (0.001*time.microsecond)
 
 	sac_filename = yyyy + '.' + ddd + '.' + hh + '.' + \
 		           mm + '.' + ss + '.' + fff + '.' + \
@@ -295,7 +295,7 @@ def convert_hourly(hour_files_path):
 				if (abs(df - (decimate_factor*downsampling_rate)) > 0.0):
 					print("Error: decimate factor can only be integer !")
 				# Nyquist frequency of the downsampling rate
-				freq_lowpass = 0.5 * tr.stats.sampling_rate / decimate_factor
+				freq_lowpass = 0.499 * tr.stats.sampling_rate / decimate_factor
 				if (not(is_bandpass and (fhigh <= freq_lowpass))):
 					tr.filter('lowpass', freq=freq_lowpass, corners=2, zerophase=True)
 				tr.decimate(factor=decimate_factor, strict_length=False, no_filter=True)
@@ -360,10 +360,10 @@ def convert_hourly(hour_files_path):
 				#endtime = UTCDateTime(midtime.year, midtime.month, midtime.day, 23, 59, 59, 999999)
 				#endtime = UTCDateTime(year=starttime.year, julday=starttime.julday, hour=23, \
 				#                                     minute=59, second=59, microsecond=999999)
-				elapsed_time = endtime - starttime
+				time_duration = endtime - starttime
 
-				iend = min(ibeg + int(elapsed_time*df), npts_org)
-				#iend = min(ibeg + round(elapsed_time*df) + 1, npts_org)
+				iend = min(ibeg + int(time_duration*df), npts_org)
+				#iend = min(ibeg + round(time_duration*df) + 1, npts_org)
 
 				tr_out = tr.copy()
 				tr_out.data = tr.data[ibeg:iend+1]
