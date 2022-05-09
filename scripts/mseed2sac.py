@@ -344,6 +344,8 @@ def convert_hourly(hour_files_path):
 
 			ibeg = 0
 			starttime = starttime_org
+			endtime = UTCDateTime(starttime.year, starttime.month, starttime.day, 23, 59, 59, 999999)
+
 
 			iday1 = starttime_org.julday
 			iday2 = endtime_org.julday
@@ -354,8 +356,8 @@ def convert_hourly(hour_files_path):
 				#print('\niday = %d' % iday)
 				#midtime = starttime + 0.5*seconds_daily
 				#endtime = UTCDateTime(midtime.year, midtime.month, midtime.day, 23, 59, 59, 999999)
-				endtime = UTCDateTime(year=starttime.year, julday=starttime.julday, hour=23, \
-				                                     minute=59, second=59, microsecond=999999)
+				#endtime = UTCDateTime(year=starttime.year, julday=starttime.julday, hour=23, \
+				#                                     minute=59, second=59, microsecond=999999)
 				elapsed_time = endtime - starttime
 				#print(starttime)
 				#print(endtime)
@@ -418,6 +420,7 @@ def convert_hourly(hour_files_path):
 
 				npts = len(tr_out.data)
 				starttime = starttime + npts*dt
+				endtime = starttime + seconds_daily
 				ibeg = iend + 1
 				#print(tr_out.stats.npts)
 				#print(tr_out.stats.starttime)
