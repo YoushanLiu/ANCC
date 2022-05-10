@@ -169,34 +169,29 @@ def merge_data(hour_files_list):
 
 	dt = tr.stats.delta
 	df = tr.stats.sampling_rate
-	#npts_daily = int(seconds_daily/dt)
 	npts_daily = int(seconds_daily*df)
 
 
 	starttime = tr.stats.starttime
 	endtime = tr.stats.endtime
 	midtime = starttime + 0.50*seconds_daily
-	starttime_daily = UTCDateTime(midtime.year, midtime.month, midtime.day, 00, 00, 00, 000000)
-	starttime_daily.microsecond = 0
+	starttime_daily = UTCDateTime(midtime.year, midtime.month, midtime.day, 0, 0, 0, 0)
 	endtime_daily = starttime_daily + seconds_daily - dt
 
 
 	# indexes of the starttime and endtime in local temporal axis
-	#jbeg = ceil((max(starttime, starttime_daily) - starttime_daily)/dt)
-	#jend = int((min(endtime, endtime_daily) - starttime_daily)/dt)
-	jbeg = ceil((max(starttime, starttime_daily) - starttime_daily)*df)
-	jend = int((min(endtime, endtime_daily) - starttime_daily)*df)
-	npts = jend - jbeg + 1
+	ibeg = ceil((max(starttime, starttime_daily) - starttime_daily)*df)
+	iend = int((min(endtime, endtime_daily) - starttime_daily)*df)
 
 
 	# interpolate to local temporal axis
-	#tr.interpolate(df, 'cubic', starttime_daily+jbeg*dt, npts, 0.0)
-	tr.interpolate(df, 'lanczos', starttime_daily+jbeg*dt, npts, 0.0, a=21)
+	#tr.interpolate(df, 'cubic', starttime_daily+ibeg*dt, iend-ibeg+1, 0.0)
+	tr.interpolate(df, 'lanczos', starttime_daily+ibeg*dt, iend-ibeg+1, 0.0, a=21)
 
 
 	# pad array
 	data = np.zeros(npts_daily)
-	data[jbeg:jend+1] = tr.data
+	data[ibeg:iend+1] = tr.data
 
 	# replace data
 	tr.stats.npts = npts_daily
@@ -257,27 +252,25 @@ def cutdata_daily(station_path):
 			#nsegments = int(seconds_daily / segment_length)
 
 
-			starttime = 0.0
+			ibeg = 0
+			tbeg = 0.0
 			for i in range(0,nsegments):
 
-				endtime = min(starttime + segment_length, seconds_daily)
-				#it_start = int(starttime / dt)
-				#it_end = int(endtime / dt) - 1
-				it_start = int(starttime * df)
-				it_end = int(endtime * df) - 1
-				npts = it_end - it_start + 1
+				tend = min(tbeg + segment_length - dt, seconds_daily)
+				iend = int(tend * df)
 
 
 				tr_out = tr.copy()
-				tr_out.stats.npts = npts
-				tr_out.data = tr.data[it_start:it_end+1]
-				tr_out.stats.starttime = starttime_daily + starttime
+				tr_out.stats.npts = iend-ibeg+1
+				tr_out.data = tr.data[ibeg:iend+1]
+				tr_out.stats.starttime = starttime_daily + tbeg
 
 
 				# remove invalid data
 				if ((max(tr_out.data) - min(tr_out.data)) < 1.e-12):
-					starttime = endtime
 					del tr_out
+					ibeg = iend + 1
+					tbeg = tend + dt
 					continue
 
 
@@ -307,8 +300,11 @@ def cutdata_daily(station_path):
 
 					del sac
 
+
 				del tr_out
-				starttime = endtime
+				ibeg = iend + 1
+				tbeg = tend + dt
+
 
 			del tr, hour_files_list
 			print('%s is done ... \n' % date2str(starttime_daily))
