@@ -277,11 +277,13 @@ def convert_hourly(hour_files_path):
 			#	#tr.detrend('polynomial', order=50)
 			#	tr.detrend('spline', order=3, dspline=5)
 
+
 			# bandpass
 			if (is_bandpass):
 				#df = tr.stats.sampling_rate
 				#tr.filter(freqmin=flow, freqmax=fhigh, df=df, corners=2, zerophase=is_zerophase)
 				tr.filter(freqmin=flow, freqmax=fhigh, corners=2, zerophase=is_zerophase)
+
 
 			# downsampling
 			if (is_decimate):
@@ -335,6 +337,8 @@ def convert_hourly(hour_files_path):
 
 			network_name = sta.netwk[ipos]
 			tr.stats.station = sta.name[ipos]
+			# set channel name
+			#tr_out.stats.channel = channel_name[i]
 
 
 			npts_org = tr.stats.npts
@@ -358,10 +362,11 @@ def convert_hourly(hour_files_path):
 				##endtime = UTCDateTime(starttime.year, starttime.month, starttime.day, 23, 59, 59, 999999)
 				#endtime = UTCDateTime(year=starttime.year, julday=starttime.julday, hour=23, \
 				#                                     minute=59, second=59, microsecond=999999)
-				time_duration = endtime - starttime
+				#time_duration = endtime - starttime
 
-				iend = min(ibeg + int(time_duration*df), npts_org)
-				#iend = min(ibeg + round(elapsed_time*df) + 1, npts_org)
+				iend = min(ibeg + int((endtime-starttime)*df), npts_org)
+				#iend = min(ibeg + round((endtime-starttime)*df) + 1, npts_org)
+
 
 				tr_out = tr.copy()
 				tr_out.data = tr.data[ibeg:iend+1]
@@ -369,7 +374,6 @@ def convert_hourly(hour_files_path):
 
 
 				sac_filename, day_path = create_sac_filename(tr_out.stats, network_name, st.stats.channel, sac_suffix)
-				#sac_filename, day_path = create_sac_filename(tr_out.stats, network_name, channel_name[i], sac_suffix)
 
 
 				sac_path = output_path + '/' + sta.name[ipos] + '/' + day_path + '/'
@@ -384,11 +388,6 @@ def convert_hourly(hour_files_path):
 					if (os.path.exists(outfile) and os.path.isfile(outfile)):
 						os.remove(outfile)
 				else:
-
-
-					# set channel name
-					#tr_out.stats.channel = channel_name[i]
-
 
 					sac = SACTrace.from_obspy_trace(tr_out)
 
@@ -411,12 +410,13 @@ def convert_hourly(hour_files_path):
 
 					del sac
 
-				npts = len(tr_out.data)
-				starttime = starttime + npts*dt
+
+				del tr_out
+				#npts = len(tr_out.data)
+				starttime = starttime + (iend-ibeg+1)*dt
 				endtime = starttime + seconds_daily - dt
 				ibeg = iend + 1
 
-				del tr_out
 
 				if (ibeg > npts_org):
 					break
