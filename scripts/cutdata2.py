@@ -193,10 +193,10 @@ def merge_data(hour_files_list):
 	data = np.zeros(npts_daily)
 	data[ibeg:iend+1] = tr.data
 
+
 	# replace data
-	tr.stats.npts = npts_daily
-	tr.stats.starttime = starttime_daily
 	tr.data = data
+	tr.stats.starttime = starttime_daily
 
 
 	del data, st, st_tmp
@@ -261,7 +261,6 @@ def cutdata_daily(station_path):
 
 
 				tr_out = tr.copy()
-				tr_out.stats.npts = iend-ibeg+1
 				tr_out.data = tr.data[ibeg:iend+1]
 				tr_out.stats.starttime = starttime_daily + tbeg
 
