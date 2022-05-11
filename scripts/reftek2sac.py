@@ -268,10 +268,11 @@ def convert_hourly(hour_files_path, day_path):
 			#	#tr.detrend('polynomial', order=50)
 			#	tr.detrend('spline', order=3, dspline=5)
 
+
 			# bandpass
 			if (is_bandpass):
-				df = tr.stats.sampling_rate
-				tr.filter(freqmin=flow, freqmax=fhigh, df=df, corners=2, zerophase=is_zerophase)
+				tr.filter('bandpass', freqmin=flow, freqmax=fhigh, corners=2, zerophase=is_zerophase)
+
 
 			# downsampling
 			if (is_decimate):
