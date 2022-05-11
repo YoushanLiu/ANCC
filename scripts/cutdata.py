@@ -232,7 +232,7 @@ def cutdata_daily(station_period_path):
 				if ([] == tr):
 					continue
 				# remove round error
-				tr.stats.delta = int(tr.stats.delta*1e6)*1.e-6
+				tr.stats.delta = round(tr.stats.delta*1e6)*1.e-6
 				dt = tr.stats.delta
 				df = tr.stats.sampling_rate
 				starttime_daily = tr.stats.starttime
