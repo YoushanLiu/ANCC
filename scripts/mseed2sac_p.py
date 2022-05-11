@@ -280,9 +280,7 @@ def convert_hourly(hour_files_path):
 
 			# bandpass
 			if (is_bandpass):
-				#df = tr.stats.sampling_rate
-				#tr.filter(freqmin=flow, freqmax=fhigh, df=df, corners=2, zerophase=is_zerophase)
-				tr.filter(freqmin=flow, freqmax=fhigh, corners=2, zerophase=is_zerophase)
+				tr.filter('bandpass', freqmin=flow, freqmax=fhigh, corners=2, zerophase=is_zerophase)
 
 
 			# downsampling
