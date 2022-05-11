@@ -263,7 +263,7 @@ def convert_hourly(hour_files_path):
 			try:
 				tr = st[i]
 				# remove round error
-				tr.stats.delta = int(tr.stats.delta*1e6)*1.e-6
+				tr.stats.delta = round(tr.stats.delta*1e6)*1.e-6
 			except:
 				continue
 
