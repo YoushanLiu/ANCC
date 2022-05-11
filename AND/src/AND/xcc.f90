@@ -176,7 +176,7 @@ end if
 ! npts and dt
 npts = shd%npts
 ! remove round error
-dt = int(shd%delta*1e6)*1.d-6
+dt = nint(shd%delta*1e6)*1.d-6
 
 
 ! Get the initial beginning time of the first data point.
@@ -514,7 +514,7 @@ str_tmp = trim(adjustl(strArray(nstrArray-1)))//'/'//trim(adjustl(strArray(nstrA
 
 n = shd%npts
 ! remove round error
-dt = int(shd%delta*1e6)*1.d-6
+dt = nint(shd%delta*1e6)*1.d-6
 
 
 ! Determine the power for FFT
