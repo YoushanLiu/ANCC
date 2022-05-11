@@ -285,7 +285,7 @@ def convert_hourly(hour_files_path, day_path):
 				if (abs(df - (decimate_factor*downsampling_rate)) > 0.0):
 					print("Error: decimate factor can only be integer !")
 				# Nyquist frequency of downsampling rate
-				freq_lowpass = 0.5 * tr.stats.sampling_rate / decimate_factor
+				freq_lowpass = 0.499 * tr.stats.sampling_rate / decimate_factor
 				if (not(is_bandpass and (fhigh <= freq_lowpass))):
 					tr.filter('lowpass', freq=freq_lowpass, corners=2, zerophase=True)
 				tr.decimate(factor=decimate_factor, strict_length=False, no_filter=True)
