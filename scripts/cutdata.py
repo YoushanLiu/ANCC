@@ -308,7 +308,7 @@ def cutdata_daily(station_period_path):
 
 
 				if ((segment_length - tend) < 0.1*segment_length)
-                	break
+					break
 
 
 			del tr, hour_files_list
