@@ -301,7 +301,7 @@ def cutdata_daily(day_folder):
 			tbeg = tend + dt
 
 
-			if ((segment_length - tend) < 0.1*segment_length)
+			if ((seconds_daily - tend) < 0.1*segment_length):
 				break
 
 
