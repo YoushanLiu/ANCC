@@ -302,7 +302,7 @@ def cutdata_daily(day_folder):
 
 
 			if ((segment_length - tend) < 0.1*segment_length)
-                break
+				break
 
 
 		del tr, hour_files_list
