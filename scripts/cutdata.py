@@ -307,7 +307,7 @@ def cutdata_daily(station_period_path):
 				tbeg = tend + dt
 
 
-				if ((segment_length - tend) < 0.1*segment_length)
+				if ((seconds_daily - tend) < 0.1*segment_length):
 					break
 
 
