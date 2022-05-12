@@ -141,7 +141,7 @@ def merge_data(hour_files_list):
 		data_len += (st_tmp[0].stats.npts-1)*st_tmp[0].stats.delta
 
 
-	if (data_len < 0.50*seconds_daily):
+	if (data_len < 0.50*segment_length):
 		return []
 
 
@@ -174,7 +174,7 @@ def merge_data(hour_files_list):
 
 	starttime = tr.stats.starttime
 	endtime = tr.stats.endtime
-	midtime = starttime + 0.50*seconds_daily
+	midtime = starttime + 0.50*tr.stats.npts*dt
 	starttime_daily = UTCDateTime(midtime.year, midtime.month, midtime.day, 0, 0, 0, 0)
 	endtime_daily = starttime_daily + seconds_daily - dt
 
@@ -303,6 +303,10 @@ def cutdata_daily(station_path):
 				del tr_out
 				ibeg = iend + 1
 				tbeg = tend + dt
+
+
+				if ((segment_length - tend) < 0.1*segment_length)
+                	break
 
 
 			del tr, hour_files_list
