@@ -313,6 +313,7 @@ def convert_hourly(hour_files_path, day_path):
 			#		print("Error: station %s is not in the station list or filed 'staion' in reftek header is NULL" % station_name)
 			#		return
 
+
 			ipos = -1
 			for j in range(len(sta.name)):
 				res = findstr(hour_files_path[nrootdir:-1], sta.name[j])
