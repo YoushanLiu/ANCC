@@ -312,6 +312,7 @@ def convert_hourly(hour_files_path, day_path):
 			#		print("Error: station %s is not in the station list or filed 'staion' in reftek header is NULL" % station_name)
 			#		return
 
+
 			ipos = -1
 			for j in range(len(sta.name)):
 				res = findstr(hour_files_path[nrootdir:-1], sta.name[j])
@@ -352,7 +353,8 @@ def convert_hourly(hour_files_path, day_path):
 				# write network name
 				sac.knetwk = network_name
 
-				sac.reftime += sac.b
+				#sac.reftime += sac.b
+				sac.reftime = tr.stats.starttime
 
 
 				# write sac
