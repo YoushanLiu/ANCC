@@ -405,7 +405,8 @@ def convert_hourly(hour_files_path):
 					# write network name
 					sac.knetwk = network_name
 
-					sac.reftime += sac.b
+					#sac.reftime += sac.b
+					sac.reftime = tr_out.stats.starttime
 
 
 					# write sac
