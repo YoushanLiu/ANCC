@@ -296,14 +296,15 @@ def cutdata_daily(station_period_path):
 					sac = SACTrace.from_obspy_trace(tr_out)
 
 
-					sac.nzyear = tr_out.stats.starttime.year
-					sac.nzjday = tr_out.stats.starttime.julday
-					sac.nzhour = tr_out.stats.starttime.hour
-					sac.nzmin = tr_out.stats.starttime.minute
-					sac.nzsec = tr_out.stats.starttime.second
-					sac.nzmsec = int(tr_out.stats.starttime.microsecond*1.e-3)
-					sac.b = 0
+					#sac.nzyear = tr_out.stats.starttime.year
+					#sac.nzjday = tr_out.stats.starttime.julday
+					#sac.nzhour = tr_out.stats.starttime.hour
+					#sac.nzmin = tr_out.stats.starttime.minute
+					#sac.nzsec = tr_out.stats.starttime.second
+					#sac.nzmsec = int(tr_out.stats.starttime.microsecond*1.e-3)
+					#sac.b = 0
 					#sac.reftime += sac.b
+					sac.reftime = tr_out.stats.starttime
 
 
 					sac.write(outfile)
