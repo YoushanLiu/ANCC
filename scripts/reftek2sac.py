@@ -354,12 +354,12 @@ def convert_hourly(hour_files_path, day_path):
 				sac.knetwk = network_name
 
 
-				sac.nzyear = tr_out.stats.starttime.year
-				sac.nzjday = tr_out.stats.starttime.julday
-				sac.nzhour = tr_out.stats.starttime.hour
-				sac.nzmin = tr_out.stats.starttime.minute
-				sac.nzsec = tr_out.stats.starttime.second
-				sac.nzmsec = int(tr_out.stats.starttime.microsecond*1.e-3)
+				sac.nzyear = tr.stats.starttime.year
+				sac.nzjday = tr.stats.starttime.julday
+				sac.nzhour = tr.stats.starttime.hour
+				sac.nzmin = tr.stats.starttime.minute
+				sac.nzsec = tr.stats.starttime.second
+				sac.nzmsec = int(tr.stats.starttime.microsecond*1.e-3)
 				sac.b = 0
 				#sac.reftime += sac.b
 				#sac.reftime = tr.stats.starttime
