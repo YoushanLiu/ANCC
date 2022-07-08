@@ -57,8 +57,10 @@ ome = PI/ntape
 ncorr = ne + ntape
 
 
+
+ns = 2**ceiling(dlog(dble(ncorr))/dlog(2.d0))
 ! make copy seis to s
-allocate(s(n), stat=ier)
+allocate(s(ns), stat=ier)
 s(1:ncorr) = seis(1:ncorr)
 if ((nb-ntapb-1) > 0) then
    s(1:nb-ntapb-1) = 0.0
@@ -100,7 +102,7 @@ s(nb+1:ne-1) = s(nb+1:ne-1) + c
 
 ! determine the power of FFT
 !ns = 2**(min(max(int(dlog(dble(ncorr))/dlog(2.d0)) + 1, 12), 16))
-ns = 2**ceiling(dlog(dble(ncorr))/dlog(2.d0))
+!ns = 2**ceiling(dlog(dble(ncorr))/dlog(2.d0))
 if (ns > ncorr) then
    s(ncorr+1:ns) = 0.0
 endif
