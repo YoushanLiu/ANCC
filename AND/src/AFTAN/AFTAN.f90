@@ -174,8 +174,13 @@ open(10, file=trim(adjustl(parfile)), status='old')
       if (tmin >= 1) then
          call write_data(arr1, nfout1, arr2, nfout2, trim(adjustl(filename))//'_1')
       endif
+      if (allocated(ampo)) then
+         deallocate(ampo)
+      end if
+      if (allocated(arr1)) then
+         deallocate(arr1)
+      end if
 
-      deallocate(ampo, arr1)
 
       if (0 == nfout2) then
          exit
@@ -191,7 +196,9 @@ open(10, file=trim(adjustl(parfile)), status='old')
          pred(i,1) = arr2(2,i)
          pred(i,2) = arr2(3,i)
       enddo
-      deallocate(arr2)
+      if (allocated(arr2)) then
+         deallocate(arr2)
+      end if
 
 
 
@@ -211,8 +218,19 @@ open(10, file=trim(adjustl(parfile)), status='old')
       end if
 
 
-      deallocate(arr1, arr2)
-      deallocate(seis, ampo, pred)
+      deallocate(seis)
+      if (allocated(arr1)) then
+         deallocate(arr1)
+      end if
+      if (allocated(arr2)) then
+         deallocate(arr2)
+      end if
+      if (allocated(pred)) then
+         deallocate(pred)
+      end if
+      if (allocated(ampo)) then
+         deallocate(ampo)
+      end if
 
    end do
 
