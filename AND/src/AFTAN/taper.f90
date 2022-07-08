@@ -58,9 +58,8 @@ ncorr = ne + ntape
 
 
 
-ns = 2**ceiling(dlog(dble(ncorr))/dlog(2.d0))
 ! make copy seis to s
-allocate(s(ns), stat=ier)
+allocate(s(ncorr), stat=ier)
 s(1:ncorr) = seis(1:ncorr)
 if ((nb-ntapb-1) > 0) then
    s(1:nb-ntapb-1) = 0.0
@@ -103,17 +102,20 @@ s(nb+1:ne-1) = s(nb+1:ne-1) + c
 ! determine the power of FFT
 !ns = 2**(min(max(int(dlog(dble(ncorr))/dlog(2.d0)) + 1, 12), 16))
 !ns = 2**ceiling(dlog(dble(ncorr))/dlog(2.d0))
-if (ns > ncorr) then
-   s(ncorr+1:ns) = 0.0
-endif
-ncorr = ns
+!if (ns > ncorr) then
+!   s(ncorr+1:ns) = 0.0
+!endif
 
 
 ! convert to complex
 allocate(ss(1:ns), stat=ier)
-do k = 1, ns, 1
+ss = cmplx(0.0,0.0)
+do k = 1, ncorr, 1
    ss(k) = cmplx(s(k), 0.0)
 enddo
+
+
+ncorr = ns
 
 
 deallocate(s)
