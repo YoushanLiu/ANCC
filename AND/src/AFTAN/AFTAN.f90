@@ -33,6 +33,7 @@ integer(4) nrow, ncol, npred, nprpv, ier, ioer
 real(4) t0, dt, tresh, ffact1, ffact2
 real(4) perc, taperl, fmatch, delta, tamp
 real(4) vmin, vmax, tmin, tmax, snr, lambda
+real(4) tmin_read, tmax_read
 
 real(8) PIover4
 
@@ -67,10 +68,10 @@ open(unit=99, file='input.dat', status='old')
    end do
    read(99,*) PIover4
    read(99,*) vmin, vmax
-   read(99,*) tmin, tmax
+   read(99,*) tmin_read, tmax_read
    read(99,*) isPerCut, lambda
    read(99,*) isOutput
-   if (tmin < 1) then
+   if (tmin_read < 1) then
       isOutput = 'Y'
    end if
    read(99,*) tresh
@@ -123,6 +124,8 @@ open(10, file=trim(adjustl(parfile)), status='old')
       if (0 /= ioer) exit
 
 
+      tmin = tmin_read
+      tmax = tmax_read
       if ((isVerbose == 'Y') .or. (isVerbose == 'y')) then
          write(*,'(A, A)') 'AFTAN: ', trim(adjustl(filename))
       end if
