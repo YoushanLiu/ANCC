@@ -390,7 +390,7 @@ do k = 1, nf, 1
    phgr(k)  = ipar(6,ia)
 
 enddo
-deallocate(ind, pha, ampo, tim)
+deallocate(pha, ampo, tim)
 nfout1 = nf
 
 
@@ -465,7 +465,7 @@ if (0 /= ierr) then
 
             dmaxt = huge(dmaxt)
 
-            do j = 1,ici
+            do j = 1, ici, 1
 
                if (k == ind(1,j)) then
 
@@ -601,7 +601,7 @@ else
    enddo
 
 endif
-deallocate(ii, ijmp, indx)
+deallocate(ind, ii, ijmp, indx)
 deallocate(om, om1, trig1, ipar)
 deallocate(grvelt, tvist, snrt, wdtht, phgrt)
 ! ==========================================
