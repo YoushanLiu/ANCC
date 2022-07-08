@@ -476,7 +476,7 @@ do k = 1, nf, 1
    phgr(k)  = ipar(6,ia)
 
 enddo
-deallocate(ind, pha, ampo, tim)
+deallocate(pha, ampo, tim)
 nfout1 = nf
 
 
@@ -692,7 +692,7 @@ else
    enddo
 
 endif
-deallocate(ii, ijmp, indx)
+deallocate(ind, ii, ijmp, indx)
 deallocate(om, om1, trig1, ipar)
 deallocate(grvelt, tvist, snrt, wdtht, phgrt)
 ! ===========================================================
