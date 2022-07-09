@@ -59,9 +59,9 @@ ncorr = ne + ntape
 
 
 ! make copy seis to s
-allocate(s(ncorr), stat=ier)
+allocate(s(max(n,ncorr)), stat=ier)
 s = 0.0
-s(1:min(n,ncorr)) = seis(1:min(ncorr,n))
+s(1:n) = seis(1:n)
 if ((nb-ntapb-1) > 0) then
    s(1:nb-ntapb-1) = 0.0
 endif
