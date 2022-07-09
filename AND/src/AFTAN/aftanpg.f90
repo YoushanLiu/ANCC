@@ -231,6 +231,9 @@ call sfftw_plan_dft_1d(planb, ns, fils, tmp, FFTW_BACKWARD, FFTW_ESTIMATE)
 ! main loop by frequency
 ntall = ntime + 2
 allocate(pha(1:ntall,1:nf), amp(1:ntall,1:nf), ampo(1:ntall,1:nf), stat=ier)
+pha = 0
+amp = 0
+ampo = 0
 nq = ns/2 + 1
 do k = 1, nf, 1
 
@@ -277,6 +280,8 @@ allocate(grvel(1:nf), snr(1:nf), wdth(1:nf), phgr(1:nf), stat=ier)
 ! tmp arrays
 allocate(ind(1:2,1:ntall*nf), stat=ier)
 allocate(ipar(1:6,1:ntall*nf), stat=ier)
+ind = 0
+ipar = 0
 ici = 0
 do k = 1, nf, 1
 
