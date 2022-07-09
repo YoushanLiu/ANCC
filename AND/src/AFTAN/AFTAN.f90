@@ -158,7 +158,7 @@ open(10, file=trim(adjustl(parfile)), status='old')
 
       nfin    = 64
       npoints = 5
-      perc    = 50.0
+      perc    = 40.0
 
 
       !---  FTAN with phase match filter. First Iteration.
