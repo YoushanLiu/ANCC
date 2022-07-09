@@ -60,7 +60,8 @@ ncorr = ne + ntape
 
 ! make copy seis to s
 allocate(s(ncorr), stat=ier)
-s(1:ncorr) = seis(1:ncorr)
+s = 0.0
+s(1:min(n,ncorr)) = seis(1:min(ncorr,n))
 if ((nb-ntapb-1) > 0) then
    s(1:nb-ntapb-1) = 0.0
 endif
