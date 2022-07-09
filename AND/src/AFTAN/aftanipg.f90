@@ -272,6 +272,7 @@ omstart = real(nint(omstart/dom))*dom
 
 inde = min(inde, nq+1)
 allocate(pha_cor(1:ns), stat=ier)
+pha_cor = 0
 do i = 1, ns, 1
 
    if (i < inds) then
@@ -320,6 +321,9 @@ deallocate(pha_cor)
 !==================================================================
 ntall = ntime + 2
 allocate(pha(1:ntall,1:nf), amp(1:ntall,1:nf), ampo(1:ntall,1:nf), stat=ier)
+pha = 0
+amp = 0
+ampo = 0
 ! main loop by frequency
 do k = 1, nf, 1
 
@@ -365,6 +369,8 @@ allocate(grvel(1:nf), snr(1:nf), wdth(1:nf), phgr(1:nf), stat=ier)
 ! tmp arrays
 allocate(ind(1:2,1:ntall*nf), stat=ier)
 allocate(ipar(1:6,1:ntall*nf), stat=ier)
+ind = 0
+ipar = 0
 ici = 0
 do k = 1, nf, 1
 
