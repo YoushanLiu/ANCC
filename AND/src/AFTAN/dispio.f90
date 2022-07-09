@@ -75,6 +75,7 @@ close(unit=33)
 
 deallocate(x, y, z, snr)
 
+if (0 == nfout2) return
 ! ==============================================================
 lowPeriod = nint(minval(array2(2,1:nfout2)))
 highPeriod = nint(maxval(array2(2,1:nfout2)))
