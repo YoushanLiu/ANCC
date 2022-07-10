@@ -333,7 +333,7 @@ enddo
 call sfftw_destroy_plan(plan2)
 deallocate(s, sf, fils, tmp)
 
-! normalization amp diagram to 100 Db with three decade cutting
+! normalization amp diagram to 100 dB with three decade cutting
 amax = maxval(amp(1:ntall,1:nf))
 amp(1:ntall,1:nf) = max(amp(1:ntall,1:nf) + 100.0 - amax, 40.0)
 
