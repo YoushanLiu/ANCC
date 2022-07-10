@@ -1,20 +1,3 @@
-! This file is part of ANCC.
-!
-! AFTAN is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! AFTAN is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <https://www.gnu.org/licenses/>.
-!
-!
-!
 !======================================================================
 ! aftanipg function. Provides ftan analysis with phase match filter,
 ! jumps correction, phase velocity computation and amplitude map
@@ -22,7 +5,6 @@
 !
 !
 ! Autor: M. Barmine, CIEI, CU. Date: Jun 15, 2006. Version: 2.00
-! Modified by Youshan Liu, at Institute of Geology and Geophysics, Chinese Academy of Sciences.
 !
 module aftanipg_m
 
@@ -272,7 +254,6 @@ omstart = real(nint(omstart/dom))*dom
 
 inde = min(inde, nq+1)
 allocate(pha_cor(1:ns), stat=ier)
-pha_cor = 0
 do i = 1, ns, 1
 
    if (i < inds) then
@@ -280,7 +261,7 @@ do i = 1, ns, 1
    elseif (i > inde) then
       pha_cor(i) = czero
    else
-      call msplint(ip+1, npred, om0, omdom(i), pha_corr, ierr)
+      call msplint(ip+1, om0, omdom(i), pha_corr, ierr)
       pha_cor(i) = cmplx(pha_corr, 0.0)
    endif
 
@@ -321,9 +302,6 @@ deallocate(pha_cor)
 !==================================================================
 ntall = ntime + 2
 allocate(pha(1:ntall,1:nf), amp(1:ntall,1:nf), ampo(1:ntall,1:nf), stat=ier)
-pha = 0
-amp = 0
-ampo = 0
 ! main loop by frequency
 do k = 1, nf, 1
 
@@ -369,20 +347,20 @@ allocate(grvel(1:nf), snr(1:nf), wdth(1:nf), phgr(1:nf), stat=ier)
 ! tmp arrays
 allocate(ind(1:2,1:ntall*nf), stat=ier)
 allocate(ipar(1:6,1:ntall*nf), stat=ier)
-ind = 0
-ipar = 0
 ici = 0
 do k = 1, nf, 1
 
    ! find local maxima on the FTAN amplitude diagram map
    iciflag = 0
    do j = 2, ntall-1, 1
+
       if ((amp(j,k) > amp(j-1,k)) .and. (amp(j,k) > amp(j+1,k))) then
          iciflag = iciflag + 1
          ici = ici + 1
          ind(1,ici) = k
          ind(2,ici) = j
       endif
+
    enddo
 
    if (0 == iciflag) then
@@ -425,6 +403,7 @@ do k = 1, nf, 1
       mm = mm + 1
 
       m = ind(2,j)
+
       ! find boundaries around local maximum
       if (1 == mm) then
          iml = 1
@@ -511,6 +490,7 @@ if (0 /= ierr) then
       ampgrt(k) = ampgr(k)
       ampgrt(k) = ampgr(k)
       phgrt(k)  = phgr(k)
+      snrt(k)   = snr(k)
       wdtht(k)  = wdth(k)
    enddo
 
@@ -668,7 +648,7 @@ if (0 /= ierr) then
       enddo
 
       call trigger(grvel1, om1, nfout2, tresh, trig1, ftrig1, ier)
-      if(nfout2 < 0.010*nf*perc) then
+      if(nfout2 < 0.010*perc*nf) then
          ier = 1
          nfout2 = 0
       endif
@@ -676,12 +656,12 @@ if (0 /= ierr) then
    else
 
       nfout2 = nf
+      per1(1:nf) = per(1:nf)
       !do i = 1, nf, 1
       !   per1(i) = per(i)
       !enddo
-      per1(1:nf) = per(1:nf)
 
-   endif
+   endif ! if (0 /= ier) then
 
 else
 
@@ -727,6 +707,7 @@ deallocate(per, tvis, grvel, phgr)
 deallocate(ampgr, ftrig, snr, wdth)
 
 
+
 if (0 /= nfout2) then
 
    if (0 /= nphpr) then
@@ -748,14 +729,14 @@ if (0 /= nfout2) then
       arr2(6,i) = snr1(i)
       arr2(7,i) = wdth1(i)
    enddo
-   deallocate(per1, tvis1, grvel1, phgr1)
-   deallocate(ampgr1, ftrig1, snr1, wdth1)
 
 else
 
    ierr = 2
 
 endif
+deallocate(per1, tvis1, grvel1, phgr1)
+deallocate(ampgr1, ftrig1, snr1, wdth1)
 
 
 return

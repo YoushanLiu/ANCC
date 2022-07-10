@@ -1,19 +1,3 @@
-! This file is part of ANCC.
-!
-! AFTAN is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! AFTAN is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <https://www.gnu.org/licenses/>.
-!
-!
 !
 !* The sample of test driver for FTAN with phase match filter for
 !* subroutines aftanpg and aftanipg
@@ -125,7 +109,7 @@ open(10, file=trim(adjustl(parfile)), status='old')
 
 
       tmin = tmin_read
-      tmax = tmax_read
+	   tmax = tmax_read
       if ((isVerbose == 'Y') .or. (isVerbose == 'y')) then
          write(*,'(A, A)') 'AFTAN: ', trim(adjustl(filename))
       end if
@@ -158,7 +142,7 @@ open(10, file=trim(adjustl(parfile)), status='old')
 
       nfin    = 64
       npoints = 5
-      perc    = 40.0
+      perc    = 50.0
 
 
       !---  FTAN with phase match filter. First Iteration.
@@ -174,16 +158,16 @@ open(10, file=trim(adjustl(parfile)), status='old')
       if (tmin >= 1) then
          call write_data(arr1, nfout1, arr2, nfout2, trim(adjustl(filename))//'_1')
       endif
-      if (allocated(ampo)) then
-         deallocate(ampo)
-      end if
-      if (allocated(arr1)) then
-         deallocate(arr1)
-      end if
+	   if (allocated(ampo)) then
+		   deallocate(ampo)
+	   end if
+	   if (allocated(arr1)) then
+		   deallocate(arr1)
+	   end if
 
 
       if (0 == nfout2) then
-         cycle
+         exit
       end if
 
 
@@ -196,9 +180,9 @@ open(10, file=trim(adjustl(parfile)), status='old')
          pred(i,1) = arr2(2,i)
          pred(i,2) = arr2(3,i)
       enddo
-      if (allocated(arr2)) then
-         deallocate(arr2)
-      end if
+	  if (allocated(arr2)) then
+		 deallocate(arr2)
+	  end if
 
 
 
@@ -219,18 +203,18 @@ open(10, file=trim(adjustl(parfile)), status='old')
 
 
       deallocate(seis)
-      if (allocated(arr1)) then
-         deallocate(arr1)
-      end if
-      if (allocated(arr2)) then
-         deallocate(arr2)
-      end if
-      if (allocated(pred)) then
-         deallocate(pred)
-      end if
-      if (allocated(ampo)) then
-         deallocate(ampo)
-      end if
+	  if (allocated(arr1)) then
+		 deallocate(arr1)
+	  end if
+	  if (allocated(arr2)) then
+		 deallocate(arr2)
+	  end if
+	  if (allocated(ampo)) then
+		 deallocate(ampo)
+	  end if
+	  if (allocated(pred)) then
+		 deallocate(pred)
+	  end if
 
    end do
 

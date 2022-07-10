@@ -1,27 +1,9 @@
-! This file is part of ANCC.
-!
-! AFTAN is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! AFTAN is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <https://www.gnu.org/licenses/>.
-!
-!
-!
 !======================================================================
 ! aftanpg function. Provides regular ftan analysis, jumps correction,
 ! and amplitude map output for input periods.
 !
 !
 ! Autor: M.Barmine, CIEI, CU. Date: Jun 15,2006. Version: 2.00
-! Modified by Youshan Liu at Institute of Geology and Geophysics, Chinese Academy of Sciences.
 !
 module aftanpg_m
 
@@ -231,9 +213,6 @@ call sfftw_plan_dft_1d(planb, ns, fils, tmp, FFTW_BACKWARD, FFTW_ESTIMATE)
 ! main loop by frequency
 ntall = ntime + 2
 allocate(pha(1:ntall,1:nf), amp(1:ntall,1:nf), ampo(1:ntall,1:nf), stat=ier)
-pha = 0
-amp = 0
-ampo = 0
 nq = ns/2 + 1
 do k = 1, nf, 1
 
@@ -241,7 +220,7 @@ do k = 1, nf, 1
    call ftfilt(alpha, om(k), dom, ns, sf, fils)
 
    ! fill with zeros half spectra for Hilbert transformation and
-   ! spectra ends ajastment
+   ! spectra ends ajustment
    fils(nq+1:ns) = czero
 
    fils(1) = 0.50*fils(1)
@@ -280,8 +259,6 @@ allocate(grvel(1:nf), snr(1:nf), wdth(1:nf), phgr(1:nf), stat=ier)
 ! tmp arrays
 allocate(ind(1:2,1:ntall*nf), stat=ier)
 allocate(ipar(1:6,1:ntall*nf), stat=ier)
-ind = 0
-ipar = 0
 ici = 0
 do k = 1, nf, 1
 
@@ -309,8 +286,8 @@ do k = 1, nf, 1
    endif
 
    ! compute parameters for each maximum
-   icj = ici-iciflag+1
    ia = 1
+   icj = ici-iciflag+1
    amax = -huge(amax)
    do j = icj, ici, 1
 
@@ -358,8 +335,8 @@ do k = 1, nf, 1
       endif
 
       ! compute left minimum -------
-      lm = ampo(m,k)
       indl = 1
+      lm = ampo(m,k)
       do mi = iml, m, 1
          if (ampo(mi,k) <= lm) then
             lm = ampo(mi,k)
@@ -368,8 +345,8 @@ do k = 1, nf, 1
       enddo
 
       ! compute right minimum -------
-      rm = ampo(m,k)
       indr = 1
+      rm = ampo(m,k)
       do mi = m, imr, 1
          if (ampo(mi,k) <= rm) then
             rm = ampo(mi,k)
@@ -379,7 +356,7 @@ do k = 1, nf, 1
 
       ipar(4,j) = 20.0*log10(ampo(m,k)/sqrt(lm*rm))
       if ((1 == indl) .and. (indr == ntall)) then
-         ipar(4,j) = ipar(4,j) + 100.d0
+         ipar(4,j) = ipar(4,j) + 100.0
       end if
       ipar(5,j) = 0.50*dt*(abs(dble(m-indl)) + abs(dble(m-indr)))
 
@@ -427,8 +404,8 @@ if (0 /= ierr) then
       wdtht(k)  = wdth(k)
    enddo
 
-   njump = 0
    ! find all jumps
+   njump = 0
    nijmp = 0
    do i = 1, nf-1, 1
       if (abs(trig1(i+1)-trig1(i)) > 1.50) then
@@ -462,7 +439,7 @@ if (0 /= ierr) then
          enddo
 
          istrt = ijmp(kk)
-         ibeg = istrt + 1
+         ibeg = istrt+1
          iend = ijmp(kk+1)
 
          ima = 0
@@ -536,16 +513,19 @@ if (0 /= ierr) then
    ! segment with max length
    ! ===============================================================
    call trigger(grvel1, om, nf, tresh, trig1, ftrig1, ier)
+
    if (0 /= ier) then
 
       nindx = 1
       indx(1) = 1
 
       do i = 1, nf, 1
+
          if (abs(trig1(i)) >= 0.50) then
             nindx = nindx + 1
             indx(nindx) = i
          endif
+
       enddo
 
       nindx = nindx + 1
@@ -554,11 +534,13 @@ if (0 /= ierr) then
       imax = 0
       ipos = 0
       do i =1, nindx-1, 1
+
          iimax = indx(i+1)-indx(i)
          if (iimax > imax) then
             ipos = i
             imax = iimax
          endif
+
       enddo
 
       ist = max(indx(ipos), 1)
@@ -577,7 +559,7 @@ if (0 /= ierr) then
       enddo
 
       call trigger(grvel1, om1, nfout2, tresh, trig1, ftrig1, ier)
-      if (nfout2 < 0.01*nf*perc) then
+      if (nfout2 < 0.01*perc*nf) then
          ier = 1
          nfout2 = 0
       endif
@@ -585,9 +567,10 @@ if (0 /= ierr) then
    else
 
       nfout2 = nf
-      do i = 1, nf, 1
-         per1(i) = per(i)
-      enddo
+      per1(1:nf) = per(1:nf)
+      !do i = 1, nf, 1
+      !   per1(i) = per(i)
+      !enddo
 
    endif ! if (0 /= ier) then
 
@@ -657,14 +640,14 @@ if (0 /= nfout2) then
       arr2(6,i) = snr1(i)
       arr2(7,i) = wdth1(i)
    enddo
-   deallocate(per1, tvis1, grvel1, phgr1)
-   deallocate(ampgr1, ftrig1, snr1, wdth1)
 
 else
 
    ierr = 2
 
 endif
+deallocate(per1, tvis1, grvel1, phgr1)
+deallocate(ampgr1, ftrig1, snr1, wdth1)
 
 
 return

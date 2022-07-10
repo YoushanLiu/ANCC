@@ -1,20 +1,3 @@
-! This file is part of ANCC.
-!
-! AFTAN is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! AFTAN is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <https://www.gnu.org/licenses/>.
-!
-!
-!
 !----------------------------------------------------------
 ! tapering both end of input seismogram
 !----------------------------------------------------------
@@ -57,11 +40,10 @@ ome = PI/ntape
 ncorr = ne + ntape
 
 
-
 ! make copy seis to s
-allocate(s(max(n,ncorr)), stat=ier)
+allocate(s(1:ncorr), stat=ier)
 s = 0.0
-s(1:n) = seis(1:n)
+s(1:ncorr) = seis(1:ncorr)
 if ((nb-ntapb-1) > 0) then
    s(1:nb-ntapb-1) = 0.0
 endif
@@ -78,7 +60,7 @@ do k = ne, ne+ntape, 1
    s(k) = 0.50*(1.0 + cos(ome*(ne - k)))*s(k)
 enddo
 sums = sums + ne - nb - 1
-c = 0.d0
+c = 0.0
 do k = 1, ncorr, 1
    c = c + s(k)
 enddo
@@ -114,7 +96,6 @@ ss = cmplx(0.0,0.0)
 do k = 1, ncorr, 1
    ss(k) = cmplx(s(k), 0.0)
 enddo
-
 
 ncorr = ns
 

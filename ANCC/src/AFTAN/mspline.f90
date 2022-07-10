@@ -1,20 +1,3 @@
-! This file is part of ANCC.
-!
-! AFTAN is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! AFTAN is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <https://www.gnu.org/licenses/>.
-!
-!
-!
 ! =======================================================================
 ! estimate peacewise cubic spline coefficients
 ! =======================================================================
@@ -95,6 +78,7 @@ enddo
 
 ! create integral coefficients
 s = 0.0
+cc = 0.0
 do i = 1, n-1, 1
    do j = 1, 4, 1
       cc(j+1,i) = c(j,i)/dble(j)
@@ -107,7 +91,7 @@ enddo
 nn(ip) = n
 do i = 1, n, 1
    xx(i,ip) = x(i)
-   do j = 1, 4
+   do j = 1, 4, 1
       sc(j,i,ip) = c(j,i)
       scc(j,i,ip) = cc(j,i)
    enddo
@@ -127,11 +111,11 @@ end subroutine mspline
 ! =======================================================================
 ! integral for spline
 ! =======================================================================
-subroutine msplint(ip, np, sa, sb, sint, ier)
+subroutine msplint(ip, sa, sb, sint, ier)
 
 implicit none
 
-integer(4), intent(in) :: ip, np
+integer(4), intent(in) :: ip
 
 real(4), intent(in) :: sa, sb
 
@@ -149,12 +133,11 @@ real(4), dimension(:), allocatable :: x
 real(4), dimension(:,:), allocatable :: cc
 
 
-allocate(x(1:np), cc(1:5,1:np), stat=ier)
 
-
-! restore polinomial coefficients
 ier = 0
+! restore polinomial coefficients
 n = nn(ip)
+allocate(x(1:n), cc(1:5,1:n), stat=ier)
 do i = 1, n, 1
    x(i) = xx(i,ip)
    do j = 1, 5, 1
@@ -210,11 +193,11 @@ end subroutine msplint
 ! =======================================================================
 ! spline interpolation of funcion and its 1st and 2nd derivatives
 ! =======================================================================
-subroutine msplder(ip, np, xt, s, sd, sdd, ier)
+subroutine msplder(ip, xt, s, sd, sdd, ier)
 
 implicit none
 
-integer(4), intent(in) :: ip, np
+integer(4), intent(in) :: ip
 
 real(4), intent(in) :: xt
 
@@ -233,12 +216,11 @@ real(4), dimension(:,:), allocatable :: c
 
 
 
-allocate(x(1:np), c(1:4,1:np), stat=ier)
 
-
-! restore polinomial coefficients
 ier = 0
+! restore polinomial coefficients
 n = nn(ip)
+allocate(x(1:n), c(1:4,1:n), stat=ier)
 do i = 1, n, 1
    x(i) = xx(i,ip)
    do j = 1, 4, 1
@@ -259,7 +241,7 @@ if (0 == ii) then
    if (xt <= x(1)) then
       ii = 1
    end if
-   if (xt >= x(n - 1)) then
+   if (xt >= x(n-1)) then
       ii = n - 1
    end if
 endif
@@ -349,9 +331,7 @@ if (1 == ibcbeg) then
 
    if (2 == n) then
 
-      if (1 == ibcend) then
-
-      else if (ibcend > 1) then
+      if (ibcend > 1) then
 
          c(2,n) = 3.0*c(4,n) + 0.50*c(3,n)*c(2,n)
          c(4,n) = 2.0
@@ -368,6 +348,7 @@ if (1 == ibcbeg) then
             c(4,n) = g*c(3,n-1) + c(4,n)
             c(2,n) = (g*c(2,n-1) + c(2,n))/c(4,n)
          else
+            ! cannot arrive
             c(2,n) = c(4,n)
          end if
 
@@ -386,10 +367,17 @@ if (1 == ibcbeg) then
          c(4,n) = 2.0
          g = -1.0/c(4,n-1)
       else if (ibcend < 1) then
-         g = c(3,n-1) + c(3,n)
-         c(2,n) = ((c(3,n) + 2.d0*g)*c(4,n)*c(3,n-1) + c(3,n)*c(3,n)*(c(1,n-1) - c(1,n-2))/c(3,n-1))/g
-         g = -g/c(4,n-1)
-         c(4,n) = c(3,n-1)
+         if ((3 == n) .and. (0 == ibcbeg)) then
+            ! cannot arrive
+            c(2,n) = 2.0*c(4,n)
+            c(4,n) = 1.0
+            g = -1.0/c(4,n-1)
+         else
+            g = c(3,n-1) + c(3,n)
+            c(2,n) = ((c(3,n) + 2.0*g)*c(4,n)*c(3,n-1) + c(3,n)*c(3,n)*(c(1,n-1) - c(1,n-2))/c(3,n-1))/g
+            g = -g/c(4,n-1)
+            c(4,n) = c(3,n-1)
+         end if
       end if
       c(4,n) = g*c(3,n-1) + c(4,n)
       c(2,n) = (g*c(2,n-1) + c(2,n))/c(4,n)
@@ -407,13 +395,21 @@ elseif (ibcbeg > 1) then
       if (ibcend > 1) then
          c(2,n) = 3.0*c(4,n) + 0.50*c(3,n)*c(2,n)
          c(4,n) = 2.0
+         g = -1.0/c(4,n-1)
+         c(4,n) = g*c(3,n-1) + c(4,n)
+         c(2,n) = (g*c(2,n-1) + c(2,n))/c(4,n)
       else if (ibcend < 1) then
-         c(2,n) = 2.0*c(4,n)
-         c(4,n) = 1.0
+         if (ibcbeg > 0) then
+            c(2,n) = 2.0*c(4,n)
+            c(4,n) = 1.0
+            g = -1.0/c(4,n-1)
+            c(4,n) = g*c(3,n-1) + c(4,n)
+            c(2,n) = (g*c(2,n-1) + c(2,n))/c(4,n)
+         else
+            ! cannot arrive
+            c(2,n) = c(4,n)
+         end if
       end if
-      g = -1.0/c(4,n-1)
-      c(4,n) = g*c(3,n-1) + c(4,n)
-      c(2,n) = (g*c(2,n-1) + c(2,n))/c(4,n)
 
    else if (2 /= n) then
 
@@ -428,10 +424,17 @@ elseif (ibcbeg > 1) then
          c(4,n) = 2.0
          g = -1.0/c(4,n-1)
       else if (ibcend < 1) then
-         g = c(3,n-1) + c(3,n)
-         c(2,n) = ((c(3,n) + 2.0*g)*c(4,n)*c(3,n-1) + c(3,n)*c(3,n)*(c(1,n-1)-c(1,n-2))/c(3,n-1))/g
-         g = -g/c(4,n-1)
-         c(4,n) = c(3,n-1)
+         if ((3 == n) .and. (0 == ibcbeg)) then
+            ! cannot arrive
+            c(2,n) = 2.0*c(4,n)
+            c(4,n) = 2.0
+            g = -1.0/c(4,n-1)
+         else
+            g = c(3,n-1) + c(3,n)
+            c(2,n) = ((c(3,n) + 2.0*g)*c(4,n)*c(3,n-1) + c(3,n)*c(3,n)*(c(1,n-1)-c(1,n-2))/c(3,n-1))/g
+            g = -g/c(4,n-1)
+            c(4,n) = c(3,n-1)
+         end if
       end if
       c(4,n) = g*c(3,n-1) + c(4,n)
       c(2,n) = (g*c(2,n-1) + c(2,n))/c(4,n)
@@ -457,6 +460,7 @@ else if (ibcbeg < 1) then
          g = -1.0/c(4,n-1)
       else if (ibcend < 1) then
          if ((3 == n) .and. (0 == ibcbeg)) then
+            ! cannot arrive
             c(2,n) = 2.0*c(4,n)
             c(4,n) = 1.0
             g = -1.0/c(4,n-1)
@@ -485,6 +489,7 @@ else if (ibcbeg < 1) then
          c(2,n) = (g*c(2,n-1) + c(2,n))/c(4,n)
       else if (ibcend < 1) then
          if (ibcbeg > 0) then
+            ! cannot arrive
             c(2,n) = 2.0*c(4,n)
             c(4,n) = 1.0
             g = -1.d0/c(4,n-1)
@@ -503,7 +508,7 @@ end if
 j = l
 do while(j > 0)
    c(2,j) = (c(2,j) - c(3,j)*c(2,j+1))/c(4,j)
-   j = j - 1
+   j = j-1
 end do
 do i = 2, n, 1
    dtau = c(3,i)

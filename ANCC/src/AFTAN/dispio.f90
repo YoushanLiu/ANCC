@@ -1,20 +1,3 @@
-! This file is part of ANCC.
-!
-! AFTAN is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! AFTAN is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <https://www.gnu.org/licenses/>.
-!
-!
-!
 module dispio_m
 
 implicit none
@@ -69,11 +52,13 @@ call linear_interpo(array1(2,1:nfout1), array1(7,1:nfout1), x, snr, ier)
 
 open(unit=33, file=trim(adjustl(filename))//'_1', status='replace', action='write')
    do i = 1, n, 1
-      write(33, "(I5,2F10.4,F12.4)") int(x(i)), y(i), z(i), snr(i)
+      !write(33, "(I5,2F10.4,F12.4)") int(x(i)), y(i), z(i), snr(i)
+      write(33, *) x(i), y(i), z(i), snr(i)
    end do
 close(unit=33)
 
 deallocate(x, y, z, snr)
+
 
 if (0 == nfout2) return
 ! ==============================================================
@@ -93,7 +78,8 @@ call linear_interpo(array2(2,1:nfout2), array2(6,1:nfout2), x, snr, ier)
 
 open(unit=33, file=trim(adjustl(filename))//'_2', status='replace', action='write')
    do i = 1, n, 1
-      write(33, "(I5,2F10.4,F12.4)") int(x(i)), y(i), z(i), snr(i)
+      !write(33, "(I5,2F10.4,F12.4)") int(x(i)), y(i), z(i), snr(i)
+      write(33, *) x(i), y(i), z(i), snr(i)
    end do
 close(unit=33)
 

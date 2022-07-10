@@ -1,20 +1,3 @@
-! This file is part of ANCC.
-!
-! AFTAN is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! AFTAN is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <https://www.gnu.org/licenses/>.
-!
-!
-!
 !--------------------------------------------------------------
 ! create phase prediction curve by group velocity
 !--------------------------------------------------------------
@@ -54,7 +37,7 @@ enddo
 
 ! get velocity for low integral boundary
 call mspline(ip, npred, x, y, 0, 0.0, 0, 0.0)
-call msplder(ip, npred, om0, Gt0, s, ss, ier)
+call msplder(ip, om0, Gt0, s, ss, ier)
 
 call free_mspline()
 
@@ -64,7 +47,7 @@ do i = 1, npred, 1
    y(i) = y(i) - Gt0
 enddo
 
-call mspline(ip+1, npred, x, y, 0, 0.0, 0, 0.0)
+call mspline(ip+1, x, y, 0, 0.0, 0, 0.0)
 
 
 om1 = om0
