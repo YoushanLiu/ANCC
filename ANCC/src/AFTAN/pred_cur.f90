@@ -47,7 +47,7 @@ do i = 1, npred, 1
    y(i) = y(i) - Gt0
 enddo
 
-call mspline(ip+1, x, y, 0, 0.0, 0, 0.0)
+call mspline(ip+1, npred, x, y, 0, 0.0, 0, 0.0)
 
 
 om1 = om0
