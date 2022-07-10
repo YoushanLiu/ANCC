@@ -346,7 +346,7 @@ do k = 1, nf, 1
          if (iciflag > 1) then
             imr = ind(2,j+1)
          end if
-      elseif (iciflag == m) then
+      elseif (iciflag == mm) then
          iml = 1
          imr = ntall
          if (iciflag > 1) then
