@@ -325,7 +325,7 @@ do k = 1, nf, 1
       pha(j,k) = atan2(imag(tmp(m)), real(tmp(m)))
       wor = abs(tmp(m))
       ampo(j,k) = wor
-      amp(j,k) = 20.d0*log10(wor)
+      amp(j,k) = 20.0*log10(wor)
       j = j + 1
    enddo
 
