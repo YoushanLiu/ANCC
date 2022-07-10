@@ -183,7 +183,7 @@ open(10, file=trim(adjustl(parfile)), status='old')
 
 
       if (0 == nfout2) then
-         exit
+         cycle
       end if
 
 
