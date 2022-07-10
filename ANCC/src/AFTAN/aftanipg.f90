@@ -312,7 +312,7 @@ do k = 1, nf, 1
    fils(nq+1:ns) = czero
 
    fils(1) = cmplx(0.50*real(fils(1)), 0.0)
-   fils(nq) = dcmplx(real(fils(nq)), 0.0)
+   fils(nq) = cmplx(real(fils(nq)), 0.0)
 
    ! forward FFT: fils ==> tmp
    call sfftw_execute(plan2)
@@ -634,7 +634,7 @@ if (0 /= ierr) then
 
       ist = max(indx(ipos), 1)
       ibe = min(indx(ipos+1), nf)
-      nfout2 = ibe -ist+1
+      nfout2 = ibe-ist+1
 
       do i = ist, ibe, 1
          per1(i-ist+1)   = per(i)
@@ -648,7 +648,7 @@ if (0 /= ierr) then
       enddo
 
       call trigger(grvel1, om1, nfout2, tresh, trig1, ftrig1, ier)
-      if(nfout2 < 0.010*perc*nf) then
+      if(nfout2 < 0.01*perc*nf) then
          ier = 1
          nfout2 = 0
       endif

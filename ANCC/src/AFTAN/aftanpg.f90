@@ -223,7 +223,7 @@ do k = 1, nf, 1
    ! spectra ends ajustment
    fils(nq+1:ns) = czero
 
-   fils(1) = 0.50*fils(1)
+   fils(1) = cmplx(0.50*fils(1), 0.0)
    fils(nq) = cmplx(real(fils(nq)), 0.0)
    ! forward FFT: fils ==> tmp
    call sfftw_execute(planb)
@@ -545,7 +545,7 @@ if (0 /= ierr) then
 
       ist = max(indx(ipos), 1)
       ibe = min(indx(ipos+1), nf)
-      nfout2 = ibe - ist + 1
+      nfout2 = ibe-ist+1
 
       do i = ist, ibe, 1
          per1(i-ist+1)   = per(i)
