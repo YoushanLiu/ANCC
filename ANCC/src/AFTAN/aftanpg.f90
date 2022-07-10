@@ -252,7 +252,7 @@ amp(1:ntall,1:nf) = max(amp(1:ntall,1:nf) + 100.0 - amax, 40.0)
 
 ! construction reference indices table ind. It points to local maxima.
 ! table ipar contains three parameter for each local maximum:
-! tim - group time tvis - observed period ampgr - amplitude values in Db
+! tim - group time tvis - observed period ampgr - amplitude values in dB
 nfout1 = 0
 allocate(tim(1:nf), tvis(1:nf), ampgr(1:nf), stat=ier)
 allocate(grvel(1:nf), snr(1:nf), wdth(1:nf), phgr(1:nf), stat=ier)
