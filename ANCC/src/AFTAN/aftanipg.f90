@@ -146,7 +146,7 @@ integer(4) ntapb, ntape, ne, nb, ns, ntime, ntall
 
 integer(8) plan1, plan2, plan3, plan4
 
-real(8) alpha, omb, ome, dom, step
+real(8) alpha, dom, omb, ome, step
 real(8) lm, rm, om0, tg0, omstart, dw
 real(8) pha_corr, ome1, omb1, minTpr, maxTpr
 real(8) t, tim, dmaxt, wor, amax, dph, tm, ph
