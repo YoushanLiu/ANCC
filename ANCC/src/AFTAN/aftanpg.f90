@@ -132,7 +132,7 @@ integer(4) njump, nijmp, nii, ntapb, ntape, ntime
 
 integer(8) planf, planb
 
-real(8) t, omb, ome, dom, step, dph, tm, ph
+real(8) t, dom, omb, ome, step, dph, tm, ph
 real(8) time, tim, dmaxt, wor, lm, rm, alpha, amax
 
 real(8), parameter :: PI = 4.d0*datan(1.d0)
