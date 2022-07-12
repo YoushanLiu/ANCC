@@ -6,7 +6,6 @@ The first part implement time-frequency analysis to extract dispersion curves fo
 The second part compute the cross-correlation function with MPI parallel computing.
 The third part implement a phase-weighted stack of cross-correlation.
 
-The original version is a double precision version, it significantly low the efficiency.
 After v3.0, all parts are change to single precision, it leads to a significant performance improvement.
 Any goto syntax are removed. All arrays are dynamically allocated based on the length of data istead of 32768 in the original version.
 In this version, a lot of errors had been corrected.
