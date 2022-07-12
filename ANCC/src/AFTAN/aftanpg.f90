@@ -1,9 +1,26 @@
+! This file is part of ANCC.
+!
+! AFTAN is free software: you can redistribute it and/or modify
+! it under the terms of the GNU General Public License as published by
+! the Free Software Foundation, either version 3 of the License, or
+! (at your option) any later version.
+!
+! AFTAN is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU General Public License for more details.
+!
+! You should have received a copy of the GNU General Public License
+! along with this program.  If not, see <https://www.gnu.org/licenses/>.
+!
+!
+!
 !======================================================================
 ! aftanpg function. Provides regular ftan analysis, jumps correction,
 ! and amplitude map output for input periods.
 !
 !
-! Autor: M.Barmine, CIEI, CU. Date: Jun 15,2006. Version: 2.00
+! Autor: M.Barmine, CIEI, CU. Date: Jun 15,2006. Version: 2.0
 !
 module aftanpg_m
 
@@ -23,20 +40,20 @@ subroutine aftanpg(PIover4, n, seis, t0, dt, delta, vmin, vmax, tmin, tmax, &
 ! PIover4   - phase shift = PI/4*PIover4, for cross-correlation
 !             PIover4 should be -1.0 (real(8))
 ! n         - number of input samples, (integer(4))
-! seis      - input waveform length of n, (real(4))
-! t0        - time shift of SAC file in seconds, (real(4))
-! dt        - sampling step, in seconds, (real(4))
-! delta     - distance, km (real(4))
-! vmin      - minimal group velocity, km/s (real(4))
-! vmax      - maximal value of the group velocity, km/s (real(4))
-! tmin      - minimal period, s (real(4))
-! tmax      - maximal period, s (real(4))
-! tresh     - treshold, usualy = 10, (real(4))
-! ffact     - factor to automatic filter parameter, usualy =1, (real(4))
-! perc      - minimal length of of output segment vs freq. range, % (real(4))
+! seis      - input waveform length of n, (real(8))
+! t0        - time shift of SAC file in seconds, (real(8))
+! dt        - sampling step, in seconds, (real(8))
+! delta     - distance, km (real(8))
+! vmin      - minimal group velocity, km/s (real(8))
+! vmax      - maximal value of the group velocity, km/s (real(8))
+! tmin      - minimal period, s (real(8))
+! tmax      - maximal period, s (real(8))
+! tresh     - treshold, usualy = 10, (real(8))
+! ffact     - factor to automatic filter parameter, usualy =1, (real(8))
+! perc      - minimal length of of output segment vs freq. range, % (real(8))
 ! npoints   - max number points in jump, (integer(4))
 ! taperl    - factor for the left end seismogram tapering,
-!             taper = taperl*tmax,    (real(4))
+!             taper = taperl*tmax,    (real(8))
 ! nfin      - starting number of frequencies, nfin <= 100,(integer(4))
 ! nphpr     - length of phprper and phprvel arrays
 ! phprper   - predicted phase velocity periods, s
@@ -49,7 +66,7 @@ subroutine aftanpg(PIover4, n, seis, t0, dt, delta, vmin, vmax, tmin, tmax, &
 ! ==========================================================
 ! nfout1    - output number of frequencies for arr1, (integer(4))
 ! arr1      - preliminary results.
-!             Description: real(4) arr1(8,n), n >= nfin)
+!             Description: real(8) arr1(8,n), n >= nfin)
 ! arr1(1,:) - central periods, s
 ! arr1(2,:) - observed periods, s
 ! arr1(3,:) - group velocities, km/s or phase if nphpr=0, rad
@@ -60,7 +77,7 @@ subroutine aftanpg(PIover4, n, seis, t0, dt, delta, vmin, vmax, tmin, tmax, &
 ! arr1(8,:) - maximum half width, s
 ! arr2      - final results
 ! nfout2    - output number of frequencies for arr2, (integer(4))
-!             Description: real(4) arr2(7,n), n >= nfin)
+!             Description: real(8) arr2(7,n), n >= nfin)
 !             If nfout2 == 0, no final result.
 ! arr2(1,:) - central periods, s
 ! arr2(2,:) - observed periods, s
@@ -69,10 +86,10 @@ subroutine aftanpg(PIover4, n, seis, t0, dt, delta, vmin, vmax, tmin, tmax, &
 ! arr2(5,:) - amplitudes, Db
 ! arr2(6,:) - signal/noise ratio, Db
 ! arr2(7,:) - maximum half width, s
-! tamp      - time to the beginning of ampo table, s (real(4))
+! tamp      - time to the beginning of ampo table, s (real(8))
 ! nrow      - number of rows in array ampo, (integer(4))
 ! ncol      - number of columns in array ampo, (integer(4))
-! amp       - FTAN amplitude array, Db, (real(4))
+! amp       - FTAN amplitude array, Db, (real(8))
 ! ierr      - completion status, =0 - O.K.,           (integer(4))
 !                                =1 - some problems occures
 !                                =2 - no final results
@@ -87,22 +104,22 @@ include 'fftw3.f'
 integer(4), intent(in) :: n, npoints
 integer(4), intent(in) :: nfin, nphpr
 
-real(4), intent(in) :: tresh, ffact, perc
-real(4), intent(in) :: t0, dt, delta, taperl
-real(4), intent(in) :: vmin, vmax, tmin, tmax
+real(8), intent(in) :: tresh, ffact, perc
+real(8), intent(in) :: t0, dt, delta, taperl
+real(8), intent(in) :: vmin, vmax, tmin, tmax
 
 real(8), intent(in) :: PIover4
 
-real(4), intent(in) :: seis(n)
+real(8), intent(in) :: seis(n)
 
-real(4), intent(in) :: phprper(nphpr), phprvel(nphpr)
+real(8), intent(in) :: phprper(nphpr), phprvel(nphpr)
 
 integer(4), intent(out) :: nrow, ncol
 integer(4), intent(out) :: nfout1, nfout2, ierr
 
-real(4), intent(out) :: tamp
+real(8), intent(out) :: tamp
 
-real(4), dimension(:,:), allocatable, intent(out) :: amp, arr1, arr2
+real(8), dimension(:,:), allocatable, intent(out) :: amp, arr1, arr2
 
 
 integer(4) i, j, k, m, nf, nq
@@ -115,26 +132,26 @@ integer(4) njump, nijmp, nii, ntapb, ntape, ntime
 
 integer(8) planf, planb
 
-real(4) t, omb, ome, dom, step, dph, tm, ph
-real(4) time, dmaxt, wor, lm, rm, alpha, amax
+real(8) t, omb, ome, dom, step, dph, tm, ph
+real(8) time, tim, dmaxt, wor, lm, rm, alpha, amax
 
 real(8), parameter :: PI = 4.d0*datan(1.d0)
 
-complex czero
+complex(8), parameter :: czero = (0.d0, 0.d0)
 
 integer(4), dimension(:), allocatable :: ii, ijmp, indx
 
 integer(4), dimension(:,:), allocatable :: ind
 
-real(4), dimension(:), allocatable :: tim, phgrc, trig1
-real(4), dimension(:), allocatable :: om, per, om1, per1, ftrig, ftrig1
-real(4), dimension(:), allocatable :: grvel, tvis, ampgr, phgr, snr, wdth
-real(4), dimension(:), allocatable :: grvel1, tvis1, ampgr1, phgr1, snr1, wdth1
-real(4), dimension(:), allocatable :: grvelt, tvist, ampgrt, phgrt, snrt, wdtht
+real(8), dimension(:), allocatable :: phgrc, trig1
+real(8), dimension(:), allocatable :: om, per, om1, per1, ftrig, ftrig1
+real(8), dimension(:), allocatable :: grvel, tvis, ampgr, phgr, snr, wdth
+real(8), dimension(:), allocatable :: grvel1, tvis1, ampgr1, phgr1, snr1, wdth1
+real(8), dimension(:), allocatable :: grvelt, tvist, ampgrt, phgrt, snrt, wdtht
 
-real(4), dimension(:,:), allocatable :: ipar, pha, ampo
+real(8), dimension(:,:), allocatable :: ipar, pha, ampo
 
-complex, dimension(:), allocatable :: s, sf, fils, tmp
+complex(8), dimension(:), allocatable :: s, sf, fils, tmp
 
 
 
@@ -144,16 +161,15 @@ ierr = 0
 ip = 1
 iml = 0
 imr = 0
-lm = 0.0
-rm = 0.0
-czero = (0.0, 0.0)
+lm = 0.d0
+rm = 0.d0
 
 
 ! number of FTAN filters
 nf = nfin
 
 ! automatic width of filters * factor ffact
-alpha = ffact*20.0*sqrt(delta*1.e-3)
+alpha = ffact*20.d0*sqrt(delta*1.d-3)
 
 ! number of samples for tapering, left end
 ntapb = nint(taperl*tmax/dt)
@@ -162,8 +178,8 @@ ntapb = nint(taperl*tmax/dt)
 ntape = nint(tmax/dt)
 
 ! [omb,ome] - frequency range
-omb = 2.0*PI/tmax
-ome = 2.0*PI/tmin
+omb = 2.d0*PI/tmax
+ome = 2.d0*PI/tmin
 
 ! seismgram tapering
 nb = max(2, nint((delta/vmax-t0)/dt))
@@ -189,25 +205,25 @@ ntime = ne-nb+1
 call taper(max(nb,ntapb+1), min(ne,n-ntape), n, seis, ntapb, ntape, ns, s)
 
 ! prepare FTAN filters
-dom = 2.0*PI/(ns*dt)
+dom = 2.d0*PI/(ns*dt)
 step =(log(omb) - log(ome))/(nf - 1)
 
 ! log scaling for frequency
 allocate(om(1:nf), per(1:nf), stat=ier)
 do k = 1, nf, 1
    om(k) = exp(log(ome) + (k-1)*step)
-   per(k) = 2.0*PI/om(k)
+   per(k) = 2.d0*PI/om(k)
 enddo
 
 ! make backward FFT for seismogram: s ==> sf
 allocate(sf(1:ns), stat=ier)
-call sfftw_plan_dft_1d(planf, ns, s, sf, FFTW_FORWARD, FFTW_ESTIMATE)
-call sfftw_execute(planf)
-call sfftw_destroy_plan(planf)
+call dfftw_plan_dft_1d(planf, ns, s, sf, FFTW_FORWARD, FFTW_ESTIMATE)
+call dfftw_execute(planf)
+call dfftw_destroy_plan(planf)
 
 ! filtering and FTAN amplitude diagram construction
 allocate(fils(1:ns), tmp(1:ns), stat=ier)
-call sfftw_plan_dft_1d(planb, ns, fils, tmp, FFTW_BACKWARD, FFTW_ESTIMATE)
+call dfftw_plan_dft_1d(planb, ns, fils, tmp, FFTW_BACKWARD, FFTW_ESTIMATE)
 
 
 ! main loop by frequency
@@ -223,10 +239,10 @@ do k = 1, nf, 1
    ! spectra ends ajustment
    fils(nq+1:ns) = czero
 
-   fils(1) = cmplx(0.50*fils(1), 0.0)
-   fils(nq) = cmplx(real(fils(nq)), 0.0)
+   fils(1) = cmplx(real(0.5d0*fils(1)), 0.d0)
+   fils(nq) = cmplx(real(fils(nq)), 0.d0)
    ! forward FFT: fils ==> tmp
-   call sfftw_execute(planb)
+   call dfftw_execute(planb)
 
    tmp(1:ns) = tmp(1:ns) / real(ns)
 
@@ -236,25 +252,25 @@ do k = 1, nf, 1
       pha(j,k) = atan2(imag(tmp(m)), real(tmp(m)))
       wor = abs(tmp(m))
       ampo(j,k) = wor
-      amp(j,k) = 20.0*log10(wor)
+      amp(j,k) = 20.d0*log10(wor)
       j = j + 1
    enddo
 
 enddo
-call sfftw_destroy_plan(planb)
+call dfftw_destroy_plan(planb)
 deallocate(s, sf, fils, tmp)
 
 
-! normalization amp diagram to 100 dB with three decade cutting
+! normalization amp diagram to 100 Db with three decade cutting
 amax = maxval(amp(1:ntall,1:nf))
-amp(1:ntall,1:nf) = max(amp(1:ntall,1:nf) + 100.0 - amax, 40.0)
+amp(1:ntall,1:nf) = max(amp(1:ntall,1:nf) - amax + 100.d0, 40.d0)
 
 
 ! construction reference indices table ind. It points to local maxima.
 ! table ipar contains three parameter for each local maximum:
-! tim - group time tvis - observed period ampgr - amplitude values in dB
+! tim - group time tvis - observed period ampgr - amplitude values in Db
 nfout1 = 0
-allocate(tim(1:nf), tvis(1:nf), ampgr(1:nf), stat=ier)
+allocate(tvis(1:nf), ampgr(1:nf), stat=ier)
 allocate(grvel(1:nf), snr(1:nf), wdth(1:nf), phgr(1:nf), stat=ier)
 ! tmp arrays
 allocate(ind(1:2,1:ntall*nf), stat=ier)
@@ -354,25 +370,25 @@ do k = 1, nf, 1
          endif
       enddo
 
-      ipar(4,j) = 20.0*log10(ampo(m,k)/sqrt(lm*rm))
+      ipar(4,j) = 20.d0*log10(ampo(m,k)/sqrt(lm*rm))
       if ((1 == indl) .and. (indr == ntall)) then
-         ipar(4,j) = ipar(4,j) + 100.0
+         ipar(4,j) = ipar(4,j) + 100.d0
       end if
-      ipar(5,j) = 0.50*dt*(abs(dble(m-indl)) + abs(dble(m-indr)))
+      ipar(5,j) = 0.5d0*dt*(abs(dble(m-indl)) + abs(dble(m-indr)))
 
    enddo
 
    ! End of SNR computations
-   tim(k)   = ipar(1,ia)
+   tim      = ipar(1,ia)
    tvis(k)  = ipar(2,ia)
    ampgr(k) = ipar(3,ia)
-   grvel(k) = delta / (tim(k) + t0)
+   grvel(k) = delta / (tim + t0)
    snr(k)   = ipar(4,ia)
    wdth(k)  = ipar(5,ia)
    phgr(k)  = ipar(6,ia)
 
 enddo
-deallocate(pha, ampo, tim)
+deallocate(pha, ampo)
 nfout1 = nf
 
 
@@ -386,10 +402,10 @@ call trigger(grvel, om, nf, tresh, trig1, ftrig, ierr)
 
 allocate(per1(1:nf), om1(1:nf), ftrig1(1:nf), stat=ier)
 allocate(ii(1:nf), ijmp(1:nf), indx(1:nf), stat=ier)
-allocate(grvelt(1:nf), tvist(1:nf), ampgrt(1:nf), &
-         phgrt(1:nf), snrt(1:nf), wdtht(1:nf), stat=ier)
-allocate(grvel1(1:nf), tvis1(1:nf), ampgr1(1:nf), &
-         phgr1(1:nf), snr1(1:nf), wdth1(1:nf), stat=ier)
+allocate(tvist(1:nf), ampgrt(1:nf), grvelt(1:nf), &
+         snrt(1:nf), wdtht(1:nf), phgrt(1:nf), stat=ier)
+allocate(tvis1(1:nf), ampgr1(1:nf), grvel1(1:nf), &
+         snr1(1:nf), wdth1(1:nf), phgr1(1:nf), stat=ier)
 
 
 
@@ -408,7 +424,7 @@ if (0 /= ierr) then
    njump = 0
    nijmp = 0
    do i = 1, nf-1, 1
-      if (abs(trig1(i+1)-trig1(i)) > 1.50) then
+      if (abs(trig1(i+1)-trig1(i)) > 1.5d0) then
          nijmp = nijmp + 1
          ijmp(nijmp) = i
       endif
@@ -430,12 +446,12 @@ if (0 /= ierr) then
          kk = ii(ki)
 
          do i = 1, nf, 1
-            grvel1(i) = grvelt(i)
             tvis1(i)  = tvist(i)
             ampgr1(i) = ampgrt(i)
-            phgr1(i)  = phgrt(i)
+            grvel1(i) = grvelt(i)
             snr1(i)   = snrt(i)
             wdth1(i)  = wdth(i)
+            phgr1(i)  = phgrt(i)
          enddo
 
          istrt = ijmp(kk)
@@ -474,7 +490,7 @@ if (0 /= ierr) then
 
          iflag = 0
          do k = istrt, iend+1, 1
-            if (abs(trig1(k)) >= 0.50) then
+            if (abs(trig1(k)) >= 0.5d0) then
                iflag = 1
                exit
             end if
@@ -483,13 +499,13 @@ if (0 /= ierr) then
          if (0 == iflag) then
 
             do i = 1, nf, 1
-               grvelt(i) = grvel1(i)
                tvist(i)  = tvis1(i)
                ampgrt(i) = ampgr1(i)
-               phgrt(i)  = phgr1(i)
+               grvelt(i) = grvel1(i)
                snrt(i)   = snr1(i)
                wdtht(i)  = wdth1(i)
-               njump = njump + 1
+               phgrt(i)  = phgr1(i)
+               njump     = njump + 1
             enddo
 
          endif
@@ -499,12 +515,12 @@ if (0 /= ierr) then
    endif ! if (0 /= nii) then
 
    do i = 1, nf, 1
-      grvel1(i) = grvelt(i)
       tvis1(i)  = tvist(i)
       ampgr1(i) = ampgrt(i)
-      phgr1(i)  = phgrt(i)
+      grvel1(i) = grvelt(i)
       snr1(i)   = snrt(i)
       wdth1(i)  = wdtht(i)
+      phgr1(i)  = phgrt(i)
    enddo
 
 
@@ -521,14 +537,14 @@ if (0 /= ierr) then
 
       do i = 1, nf, 1
 
-         if (abs(trig1(i)) >= 0.50) then
+         if (abs(trig1(i)) >= 0.5d0) then
             nindx = nindx + 1
             indx(nindx) = i
          endif
 
       enddo
 
-      nindx = nindx + 1
+      nindx = nindx+1
       indx(nindx) = nf
 
       imax = 0
@@ -549,17 +565,19 @@ if (0 /= ierr) then
 
       do i = ist, ibe, 1
          per1(i-ist+1)   = per(i)
-         grvel1(i-ist+1) = grvel1(i)
          tvis1(i-ist+1)  = tvis1(i)
          ampgr1(i-ist+1) = ampgr1(i)
-         phgr1(i-ist+1)  = phgr1(i)
+         grvel1(i-ist+1) = grvel1(i)
          snr1(i-ist+1)   = snr1(i)
          wdth1(i-ist+1)  = wdth1(i)
+         phgr1(i-ist+1)  = phgr1(i)
          om1(i-ist+1)    = om(i)
       enddo
 
-      call trigger(grvel1, om1, nfout2, tresh, trig1, ftrig1, ier)
-      if (nfout2 < 0.01*perc*nf) then
+
+      call trigger(grvel1(1:nfout1), om1(1:nfout1), nfout2, tresh, &
+                             trig1(1:nfout1), ftrig1(1:nfout1), ier)
+      if (nfout2 < 0.01d0*perc*nf) then
          ier = 1
          nfout2 = 0
       endif
@@ -582,25 +600,25 @@ else
       per1(i)   = per(i)
       tvis1(i)  = tvis(i)
       ampgr1(i) = ampgr(i)
-      phgr1(i)  = phgr(i)
       grvel1(i) = grvel(i)
       snr1(i)   = snr(i)
       wdth1(i)  = wdth(i)
+      phgr1(i)  = phgr(i)
    enddo
 
 endif
-deallocate(ind, ii, ijmp, indx)
-deallocate(om, om1, trig1, ipar)
+deallocate(ii, ijmp, indx)
+deallocate(om, om1, trig1, ind, ipar)
 deallocate(grvelt, tvist, snrt, wdtht, phgrt)
 ! ==========================================
 ! fill out output data arrays
 ! ==========================================
-allocate(phgrc(1:nfout1), phgr(1:nfout1), stat=ier)
 if ((0 /= nfout1) .and. (0 /= nphpr)) then
-   call phtovel(delta, ip, nfout1, tvis, grvel, phgr, nphpr, phprper, phprvel, phgrc)
+   allocate(phgrc(1:nfout1), stat=ier)
+   call phtovel(delta, ip, nf, tvis, grvel, phgr, nphpr, phprper, phprvel, nfout1, phgrc)
    phgr(1:nfout1) = phgrc(1:nfout1)
+   deallocate(phgrc)
 endif
-deallocate(phgrc)
 
 
 allocate(arr1(1:8,1:nfout1), stat=ier)
@@ -619,12 +637,13 @@ deallocate(ampgr, ftrig, snr, wdth)
 
 
 
+
 if (0 /= nfout2) then
 
    if (0 /= nphpr) then
 
-      allocate(phgrc(1:nfout2), phgr1(1:nfout2), stat=ier)
-      call phtovel(delta, ip, nfout2, tvis1, grvel1, phgr1, nphpr, phprper, phprvel, phgrc)
+      allocate(phgrc(1:nfout2), stat=ier)
+      call phtovel(delta, ip, nf, tvis1, grvel1, phgr1, nphpr, phprper, phprvel, nfout2, phgrc)
       phgr1(1:nfout2) = phgrc(1:nfout2)
       deallocate(phgrc)
 

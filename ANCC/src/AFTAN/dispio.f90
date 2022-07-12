@@ -1,3 +1,20 @@
+! This file is part of ANCC.
+!
+! AFTAN is free software: you can redistribute it and/or modify
+! it under the terms of the GNU General Public License as published by
+! the Free Software Foundation, either version 3 of the License, or
+! (at your option) any later version.
+!
+! AFTAN is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU General Public License for more details.
+!
+! You should have received a copy of the GNU General Public License
+! along with this program.  If not, see <https://www.gnu.org/licenses/>.
+!
+!
+!
 module dispio_m
 
 implicit none
@@ -25,13 +42,13 @@ integer, intent(in) :: nfout1, nfout2
 
 character(len=*), intent(in) :: filename
 
-real(SGL), dimension(8,nfout1), intent(in) :: array1
-real(SGL), dimension(7,nfout2), intent(in) :: array2
+real(DBL), dimension(8,nfout1), intent(in) :: array1
+real(DBL), dimension(7,nfout2), intent(in) :: array2
 
 
 integer :: lowPeriod, highPeriod, n, i, ier
 
-real(SGL), allocatable, dimension(:) :: x, y, z, snr
+real(DBL), allocatable, dimension(:) :: x, y, z, snr
 
 
 
@@ -52,8 +69,8 @@ call linear_interpo(array1(2,1:nfout1), array1(7,1:nfout1), x, snr, ier)
 
 open(unit=33, file=trim(adjustl(filename))//'_1', status='replace', action='write')
    do i = 1, n, 1
-      !write(33, "(I5,2F10.4,F12.4)") int(x(i)), y(i), z(i), snr(i)
-      write(33, *) x(i), y(i), z(i), snr(i)
+      write(33, "(I5,2F10.4,F12.4)") int(x(i)), y(i), z(i), snr(i)
+      !write(33, *) x(i), y(i), z(i), snr(i)
    end do
 close(unit=33)
 
@@ -78,8 +95,8 @@ call linear_interpo(array2(2,1:nfout2), array2(6,1:nfout2), x, snr, ier)
 
 open(unit=33, file=trim(adjustl(filename))//'_2', status='replace', action='write')
    do i = 1, n, 1
-      !write(33, "(I5,2F10.4,F12.4)") int(x(i)), y(i), z(i), snr(i)
-      write(33, *) x(i), y(i), z(i), snr(i)
+      write(33, "(I5,2F10.4,F12.4)") int(x(i)), y(i), z(i), snr(i)
+      !write(33, *) x(i), y(i), z(i), snr(i)
    end do
 close(unit=33)
 
@@ -100,12 +117,12 @@ subroutine sort_array_xy(array_x, array_y)
 
 implicit none
 
-real(SGL), dimension(:), intent(inout) :: array_x, array_y
+real(DBL), dimension(:), intent(inout) :: array_x, array_y
 
 
 integer :: n, i, j, ip
 
-real(SGL) :: temp, ip_x, ip_y
+real(DBL) :: temp, ip_x, ip_y
 
 
 n = size(array_x)
@@ -146,7 +163,7 @@ implicit none
 
 integer :: n, i
 
-real(SGL), dimension(:), intent(in) :: array
+real(DBL), dimension(:), intent(in) :: array
 
 
 any_near_dupl = .false.
@@ -175,14 +192,14 @@ subroutine find_max_nonpos(array, idx)
 implicit none
 
 
-real(SGL), dimension(:), intent(in) :: array
+real(DBL), dimension(:), intent(in) :: array
 
 integer, intent(out) :: idx
 
 
 integer :: n, i
 
-real(SGL) :: max_value
+real(DBL) :: max_value
 
 
 idx = 0
@@ -190,7 +207,7 @@ max_value = -huge(max_value)
 
 n = size(array)
 do i = 1, n, 1
-   if ((array(i) <= 0) .and. (array(i) > max_value)) then
+   if ((array(i) <= 0.0) .and. (array(i) > max_value)) then
       idx = i
       max_value = array(i)
    end if
@@ -211,18 +228,18 @@ subroutine linear_interpo(x0, y0, x, y, ier)
 
 implicit none
 
-real(SGL), dimension(:), intent(in) :: x0, y0, x
+real(DBL), dimension(:), intent(in) :: x0, y0, x
 
 integer, intent(out) :: ier
 
-real(SGL), dimension(:), intent(out) :: y
+real(DBL), dimension(:), intent(out) :: y
 
 
 integer :: n1, n2, k, idx
 
-real(SGL) :: x1, x2, y1, y2
+real(DBL) :: x1, x2, y1, y2
 
-real(SGL), allocatable, dimension(:) :: x0_c, y0_c
+real(DBL), allocatable, dimension(:) :: x0_c, y0_c
 
 
 

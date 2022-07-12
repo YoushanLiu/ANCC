@@ -2,7 +2,7 @@ include ../../config.h
 
 BIN = AFTAN
 
-LIBS = -lfftw3f
+LIBS = -lfftw3
 
 OBJS = misc.o swapn.o taper.o dispio.o ftfilt.o fmax.o trigger.o tapers.o tgauss.o mspline.o pred_cur.o phtovel.o aftanpg.o aftanipg.o AFTAN.o
 
@@ -19,8 +19,8 @@ install:
 ifeq ($(wildcard $(INST_DIR)),)
 	mkdir $(INST_DIR)
 endif
-	$(FC) $(FFLAGS) $(OBJS) $(LIBS) -o $(INST_DIR)/$(BIN)
-
+	$(FC) $(FFLAGS) $(OBJS) $(LIBS) -o ../../$(BIN)
+#$(INST_DIR)
 clean:
 	rm -rf $(OBJS) *.mod *__genmod.f90
 

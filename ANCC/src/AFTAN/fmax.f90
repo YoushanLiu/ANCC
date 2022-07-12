@@ -1,3 +1,20 @@
+! This file is part of ANCC.
+!
+! AFTAN is free software: you can redistribute it and/or modify
+! it under the terms of the GNU General Public License as published by
+! the Free Software Foundation, either version 3 of the License, or
+! (at your option) any later version.
+!
+! AFTAN is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU General Public License for more details.
+!
+! You should have received a copy of the GNU General Public License
+! along with this program.  If not, see <https://www.gnu.org/licenses/>.
+!
+!
+!
 !----------------------------------------------------------------------
 ! parabolic interpolation of signal amplitude and phase,
 ! finding phase derivative
@@ -6,29 +23,29 @@ subroutine fmax(am1, am2, am3, ph1, ph2, ph3, PIover4, om, dt, t, dph, tm, ph)
 
 implicit none
 
-real(4), intent(in) :: om, dt
-real(4), intent(in) :: am1, am2, am3
-real(4), intent(in) :: ph1, ph2, ph3
+real(8), intent(in) :: om, dt
+real(8), intent(in) :: am1, am2, am3
+real(8), intent(in) :: ph1, ph2, ph3
 
 real(8), intent(in) :: PIover4
 
 
-real(4), intent(out) :: t, dph, tm, ph
+real(8), intent(out) :: t, dph, tm, ph
 
 
 integer(4) k
 
 real(8), parameter :: twoPI = 8.d0*datan(1.d0)
 
-real(4) a1, a2, a3, dd
+real(8) a1, a2, a3, dd
 
 
 
-dd = am1 + am3 - 2.0*am2
+dd = am1 + am3 - 2.d0*am2
 
-t = 0.0
-if (0.0 /= dd) then
-   t = 0.50*(am1 - am3)/dd
+t = 0.d0
+if (0.d0 /= dd) then
+   t = 0.5d0*(am1 - am3)/dd
 endif
 
 !  phase derivative
@@ -45,9 +62,9 @@ a3 = a3 - k*twoPI
 
 
 ! interpolation
-dph = t*(a1 + a3 - 2.0*a2) + 0.50*(a3 - a1)
-tm = 0.50*t*t*(am1 + am3 - 2.0*am2) + 0.50*t*(am3 - am1) + am2
-ph = 0.50*t*t*(a1 + a3 - 2.0*a2) + 0.50*t*(a3 - a1) + a2 + 0.1250*twoPI*PIover4
+dph = t*(a1 + a3 - 2.d0*a2) + 0.5d0*(a3 - a1)
+tm = 0.5d0*t*t*(am1 + am3 - 2.d0*am2) + 0.5d0*t*(am3 - am1) + am2
+ph = 0.5d0*t*t*(a1 + a3 - 2.d0*a2) + 0.5d0*t*(a3 - a1) + a2 + 0.125d0*twoPI*PIover4
 
 
 return

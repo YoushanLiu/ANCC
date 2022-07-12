@@ -1,21 +1,4 @@
 /*
-This file is part of ANCC.
-
-AFTAN is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-AFTAN is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-*/
-/*
  * Read SAC header and seismogram and make output
  */
 #include <stdio.h>
@@ -85,15 +68,15 @@ void readhead_(int *sac, char *name, int *n, int *ierr)
             *ierr = 1;
             return;
         }
-        *n = nn;
+        //*n = nn;
     }
     fclose(fd);
 
 }
 
 
-void readdata_(int *sac, char *name, double *dt, double *delta,
-               double *t0, double *seis, int *ierr)
+void readdata_(int *sac, char *name, float *dt, float *delta,
+               float *t0, float *seis, int *ierr)
 {
 
     int i, n, nn, iswap, *nsam;
@@ -104,7 +87,6 @@ void readdata_(int *sac, char *name, double *dt, double *delta,
 
     float dumm;
     float dum[2];
-    float *tr;
     char *p = 0, ch = 0;
 
 
@@ -141,10 +123,9 @@ void readdata_(int *sac, char *name, double *dt, double *delta,
         nsam = &sach.npts;
         *t0 = sach.b;
         /* The body */
-        tr = (float *)malloc(*nsam * sizeof(float));
-        fread(tr, sizeof(float), *nsam, fd);
+        fread(seis, sizeof(float), *nsam, fd);
         if (iswap)
-            swapn((unsigned char *)tr, (int)(sizeof(float)), *nsam);
+            swapn((unsigned char *)seis, (int)(sizeof(float)), *nsam);
         n = *nsam;
         /* make symmetric cross-correlaton */
         nn = (1.0 - *t0 / *dt) + 0.5;
@@ -156,13 +137,12 @@ void readdata_(int *sac, char *name, double *dt, double *delta,
             return;
         }
         for (i = 0; i < nn; i++)
-            tr[n-i-1] = 0.50f*(tr[i] + tr[n-i-1]);
+            seis[n-i-1] = 0.50f*(seis[i] + seis[n-i-1]);
         for (i = 0; i < nn; i++)
-            seis[i] = tr[nn-1+i];
+            seis[i] = seis[nn-1+i];
         seis[0] *= 0.5f;
         //*n = nn;
         *t0 = 0.0;
-        free(tr);
     }
     else
     {
@@ -193,9 +173,9 @@ void readdata_(int *sac, char *name, double *dt, double *delta,
 /*
  * print completion result
  */
-void printres_(double *xdt, double *delta, int *xnfout1, double **arr1,
-               int *xnfout2, double **arr2, double *xtamp, int *xnrow,
-               int *xncol, double **ampo, int *xierr, char *xname, char *xpref)
+void printres_(float *xdt, float *delta, int *xnfout1, float **arr1,
+               int *xnfout2, float **arr2, float *xtamp, int *xnrow,
+               int *xncol, float **ampo, int *xierr, char *xname, char *xpref)
 {
 
     int i, j, ierr;

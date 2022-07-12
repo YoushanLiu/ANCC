@@ -1,3 +1,20 @@
+! This file is part of ANCC.
+!
+! AFTAN is free software: you can redistribute it and/or modify
+! it under the terms of the GNU General Public License as published by
+! the Free Software Foundation, either version 3 of the License, or
+! (at your option) any later version.
+!
+! AFTAN is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU General Public License for more details.
+!
+! You should have received a copy of the GNU General Public License
+! along with this program.  If not, see <https://www.gnu.org/licenses/>.
+!
+!
+!
 ! =======================================================================
 ! estimate peacewise cubic spline coefficients
 ! =======================================================================
@@ -9,8 +26,8 @@ implicit none
 
 integer(4), dimension(:), allocatable :: nn, ndim
 
-real(4), dimension(:,:), allocatable :: xx
-real(4), dimension(:,:,:), allocatable :: sc, scc
+real(8), dimension(:,:), allocatable :: xx
+real(8), dimension(:,:,:), allocatable :: sc, scc
 
 
 contains
@@ -23,16 +40,16 @@ implicit none
 integer(4), intent(in) :: ip, n
 integer(4), intent(in) :: ind1, ind2
 
-real(4), intent(in) :: d1, d2
+real(8), intent(in) :: d1, d2
 
-real(4), intent(in) :: x(n), y(n)
+real(8), intent(in) :: x(n), y(n)
 
 
 integer(4) i, j, ier
 
-real(4) s, z
+real(8) s, z
 
-real(4), dimension(:,:), allocatable :: c, cc
+real(8), dimension(:,:), allocatable :: c, cc
 
 allocate(nn(1:n), ndim(1:n), stat=ier)
 
@@ -72,13 +89,13 @@ call cubspl(x, n, ind1, ind2, c)
 
 ! remove 2 and 6
 do i = 1, n-1, 1
-   c(3,i) = 0.50*c(3,i)
-   c(4,i) = c(4,i)/6.0
+   c(3,i) = 0.5d0*c(3,i)
+   c(4,i) = c(4,i)/6.d0
 enddo
 
 ! create integral coefficients
-s = 0.0
-cc = 0.0
+s = 0.d0
+cc = 0.d0
 do i = 1, n-1, 1
    do j = 1, 4, 1
       cc(j+1,i) = c(j,i)/dble(j)
@@ -117,20 +134,20 @@ implicit none
 
 integer(4), intent(in) :: ip
 
-real(4), intent(in) :: sa, sb
+real(8), intent(in) :: sa, sb
 
 
 integer(4), intent(out) :: ier
 
-real(4), intent(out) :: sint
+real(8), intent(out) :: sint
 
 
 integer(4) i, j, ii, n
 
-real(4) s1, s2, z
+real(8) s1, s2, z
 
-real(4), dimension(:), allocatable :: x
-real(4), dimension(:,:), allocatable :: cc
+real(8), dimension(:), allocatable :: x
+real(8), dimension(:,:), allocatable :: cc
 
 
 
@@ -147,7 +164,7 @@ enddo
 ! compute integral for sa
 ii = 0
 do i = 1, n-1, 1
-   if ((x(i) - sa)*(x(i+1) - sa) <= 0.0) then
+   if ((x(i) - sa)*(x(i+1) - sa) <= 0.d0) then
       ii = i
       exit
    end if
@@ -165,7 +182,7 @@ s1 = cc(1,ii) + z*(cc(2,ii) + z*(cc(3,ii) + z*(cc(4,ii) + z*cc(5,ii))))
 ! compute integral for sb
 ii = 0
 do i = 1, n-1, 1
-   if ((x(i) - sb)*(x(i+1) - sb) <= 0.0) then
+   if ((x(i) - sb)*(x(i+1) - sb) <= 0.d0) then
       ii = i
       exit
    end if
@@ -199,20 +216,20 @@ implicit none
 
 integer(4), intent(in) :: ip
 
-real(4), intent(in) :: xt
+real(8), intent(in) :: xt
 
 
 integer(4), intent(out) :: ier
 
-real(4), intent(out) :: s, sd, sdd
+real(8), intent(out) :: s, sd, sdd
 
 
 integer(4) i, j, ii, n
 
-real(4) z
+real(8) z
 
-real(4), dimension(:), allocatable :: x
-real(4), dimension(:,:), allocatable :: c
+real(8), dimension(:), allocatable :: x
+real(8), dimension(:,:), allocatable :: c
 
 
 
@@ -231,7 +248,7 @@ enddo
 ! find interval for interpolation
 ii = 0
 do i = 1, n-1, 1
-   if ((x(i) - xt)*(x(i+1) - xt) <= 0.0) then
+   if ((x(i) - xt)*(x(i+1) - xt) <= 0.d0) then
       ii = i
       exit
    end if
@@ -248,8 +265,8 @@ endif
 
 z = xt - x(ii)
 s = c(1,ii) + z*(c(2,ii) + z*(c(3,ii) + z*c(4,ii)))
-sd = c(2,ii) + z*(2.0*c(3,ii) + 3.0*z*c(4,ii))
-sdd = 2.0*c(3,ii) + 6.0*z*c(4,ii)
+sd = c(2,ii) + z*(2.d0*c(3,ii) + 3.d0*z*c(4,ii))
+sdd = 2.d0*c(3,ii) + 6.d0*z*c(4,ii)
 
 
 deallocate(x, c)
@@ -295,17 +312,17 @@ implicit none
 
 integer(4), intent(in) :: n
 
-real(4), intent(in) :: tau(n)
+real(8), intent(in) :: tau(n)
 
 integer(4), intent(in) :: ibcbeg, ibcend
 
 
-real(4), intent(out) :: c(4,n)
+real(8), intent(out) :: c(4,n)
 
 
 integer(4) i, j, l, m
 
-real(4)  divdf1, divdf3, dtau, g
+real(8)  divdf1, divdf3, dtau, g
 
 
 ! a tridiagonal linear system for the unknown slopes s(i) of
@@ -326,25 +343,25 @@ enddo
 
 if (1 == ibcbeg) then
 
-   c(4,1) = 1.0
-   c(3,1) = 0.0
+   c(4,1) = 1.d0
+   c(3,1) = 0.d0
 
    if (2 == n) then
 
       if (ibcend > 1) then
 
-         c(2,n) = 3.0*c(4,n) + 0.50*c(3,n)*c(2,n)
-         c(4,n) = 2.0
-         g = -1.0/c(4,n-1)
+         c(2,n) = 3.d0*c(4,n) + 0.5d0*c(3,n)*c(2,n)
+         c(4,n) = 2.d0
+         g = -1.d0/c(4,n-1)
          c(4,n) = g*c(3,n-1) + c(4,n)
          c(2,n) = (g*c(2,n-1) + c(2,n))/c(4,n)
 
       else if (ibcend < 1) then
 
          if (ibcbeg > 0) then
-            c(2,n) = 2.0*c(4,n)
-            c(4,n) = 1.0
-            g = -1.0/c(4,n-1)
+            c(2,n) = 2.d0*c(4,n)
+            c(4,n) = 1.d0
+            g = -1.d0/c(4,n-1)
             c(4,n) = g*c(3,n-1) + c(4,n)
             c(2,n) = (g*c(2,n-1) + c(2,n))/c(4,n)
          else
@@ -358,23 +375,23 @@ if (1 == ibcbeg) then
 
       do m = 2, l, 1
          g = -c(3,m+1)/c(4, m-1)
-         c(2,m) = g*c(2,m-1) + 3.0*(c(3,m)*c(4,m+1) + c(3,m+1)*c(4,m))
-         c(4,m) = g*c(3,m-1) + 2.0*(c(3,m) + c(3,m+1))
+         c(2,m) = g*c(2,m-1) + 3.d0*(c(3,m)*c(4,m+1) + c(3,m+1)*c(4,m))
+         c(4,m) = g*c(3,m-1) + 2.d0*(c(3,m) + c(3,m+1))
       enddo
 
       if (ibcend > 1) then
-         c(2,n) = 3.0*c(4,n) + 0.50*c(3,n)*c(2,n)
-         c(4,n) = 2.0
-         g = -1.0/c(4,n-1)
+         c(2,n) = 3.d0*c(4,n) + 0.5d0*c(3,n)*c(2,n)
+         c(4,n) = 2.d0
+         g = -1.d0/c(4,n-1)
       else if (ibcend < 1) then
          if ((3 == n) .and. (0 == ibcbeg)) then
             ! cannot arrive
-            c(2,n) = 2.0*c(4,n)
-            c(4,n) = 1.0
-            g = -1.0/c(4,n-1)
+            c(2,n) = 2.d0*c(4,n)
+            c(4,n) = 1.d0
+            g = -1.d0/c(4,n-1)
          else
             g = c(3,n-1) + c(3,n)
-            c(2,n) = ((c(3,n) + 2.0*g)*c(4,n)*c(3,n-1) + c(3,n)*c(3,n)*(c(1,n-1) - c(1,n-2))/c(3,n-1))/g
+            c(2,n) = ((c(3,n) + 2.d0*g)*c(4,n)*c(3,n-1) + c(3,n)*c(3,n)*(c(1,n-1) - c(1,n-2))/c(3,n-1))/g
             g = -g/c(4,n-1)
             c(4,n) = c(3,n-1)
          end if
@@ -386,23 +403,23 @@ if (1 == ibcbeg) then
 
 elseif (ibcbeg > 1) then
 
-   c(4,1) = 2.0
-   c(3,1) = 1.0
-   c(2,1) = 3.0*c(4,2) - 0.50*c(3,2)*c(2,1)
+   c(4,1) = 2.d0
+   c(3,1) = 1.d0
+   c(2,1) = 3.d0*c(4,2) - 0.5d0*c(3,2)*c(2,1)
 
    if (2 == n) then
 
       if (ibcend > 1) then
-         c(2,n) = 3.0*c(4,n) + 0.50*c(3,n)*c(2,n)
-         c(4,n) = 2.0
-         g = -1.0/c(4,n-1)
+         c(2,n) = 3.d0*c(4,n) + 0.5d0*c(3,n)*c(2,n)
+         c(4,n) = 2.d0
+         g = -1.d0/c(4,n-1)
          c(4,n) = g*c(3,n-1) + c(4,n)
          c(2,n) = (g*c(2,n-1) + c(2,n))/c(4,n)
       else if (ibcend < 1) then
          if (ibcbeg > 0) then
-            c(2,n) = 2.0*c(4,n)
-            c(4,n) = 1.0
-            g = -1.0/c(4,n-1)
+            c(2,n) = 2.d0*c(4,n)
+            c(4,n) = 1.d0
+            g = -1.d0/c(4,n-1)
             c(4,n) = g*c(3,n-1) + c(4,n)
             c(2,n) = (g*c(2,n-1) + c(2,n))/c(4,n)
          else
@@ -415,23 +432,23 @@ elseif (ibcbeg > 1) then
 
       do m = 2, l, 1
          g = -c(3,m+1)/c(4,m-1)
-         c(2,m) = g*c(2,m-1) + 3.0*(c(3,m)*c(4,m+1) + c(3,m+1)*c(4,m))
-         c(4,m) = g*c(3,m-1) + 2.0*(c(3,m) + c(3,m+1))
+         c(2,m) = g*c(2,m-1) + 3.d0*(c(3,m)*c(4,m+1) + c(3,m+1)*c(4,m))
+         c(4,m) = g*c(3,m-1) + 2.d0*(c(3,m) + c(3,m+1))
       enddo
 
       if (ibcend > 1) then
-         c(2,n) = 3.0*c(4,n) + 0.50*c(3,n)*c(2,n)
-         c(4,n) = 2.0
-         g = -1.0/c(4,n-1)
+         c(2,n) = 3.d0*c(4,n) + 0.5d0*c(3,n)*c(2,n)
+         c(4,n) = 2.d0
+         g = -1.d0/c(4,n-1)
       else if (ibcend < 1) then
          if ((3 == n) .and. (0 == ibcbeg)) then
             ! cannot arrive
-            c(2,n) = 2.0*c(4,n)
-            c(4,n) = 2.0
-            g = -1.0/c(4,n-1)
+            c(2,n) = 2.d0*c(4,n)
+            c(4,n) = 2.d0
+            g = -1.d0/c(4,n-1)
          else
             g = c(3,n-1) + c(3,n)
-            c(2,n) = ((c(3,n) + 2.0*g)*c(4,n)*c(3,n-1) + c(3,n)*c(3,n)*(c(1,n-1)-c(1,n-2))/c(3,n-1))/g
+            c(2,n) = ((c(3,n) + 2.d0*g)*c(4,n)*c(3,n-1) + c(3,n)*c(3,n)*(c(1,n-1)-c(1,n-2))/c(3,n-1))/g
             g = -g/c(4,n-1)
             c(4,n) = c(3,n-1)
          end if
@@ -447,26 +464,26 @@ else if (ibcbeg < 1) then
 
       c(4,1) = c(3,3)
       c(3,1) = c(3,2) + c(3, 3)
-      c(2,1) = ((c(3,2) + 2.0*c(3,1))*c(4,2)*c(3,3) + c(3,2)*c(3,2)*c(4,3))/c(3,1)
+      c(2,1) = ((c(3,2) + 2.d0*c(3,1))*c(4,2)*c(3,3) + c(3,2)*c(3,2)*c(4,3))/c(3,1)
       do m = 2, l, 1
          g = -c(3,m+1)/c(4, m-1)
-         c(2,m) = g*c(2,m-1) + 3.0*(c(3,m)*c(4,m+1) + c(3,m+1)*c(4,m))
-         c(4,m) = g*c(3,m-1) + 2.0*(c(3,m) + c(3,m+1))
+         c(2,m) = g*c(2,m-1) + 3.d0*(c(3,m)*c(4,m+1) + c(3,m+1)*c(4,m))
+         c(4,m) = g*c(3,m-1) + 2.d0*(c(3,m) + c(3,m+1))
       enddo
 
       if (ibcend > 1) then
-         c(2,n) = 3.0*c(4,n) + 0.50*c(3,n)*c(2,n)
-         c(4,n) = 2.0
-         g = -1.0/c(4,n-1)
+         c(2,n) = 3.d0*c(4,n) + 0.5d0*c(3,n)*c(2,n)
+         c(4,n) = 2.d0
+         g = -1.d0/c(4,n-1)
       else if (ibcend < 1) then
          if ((3 == n) .and. (0 == ibcbeg)) then
             ! cannot arrive
-            c(2,n) = 2.0*c(4,n)
-            c(4,n) = 1.0
-            g = -1.0/c(4,n-1)
+            c(2,n) = 2.d0*c(4,n)
+            c(4,n) = 1.d0
+            g = -1.d0/c(4,n-1)
          else
             g = c(3,n-1) + c(3,n)
-            c(2,n) = ((c(3,n) + 2.0*g)*c(4,n)*c(3,n-1) + c(3,n)*c(3,n)*(c(1,n-1)-c(1,n-2))/c(3,n-1))/g
+            c(2,n) = ((c(3,n) + 2.d0*g)*c(4,n)*c(3,n-1) + c(3,n)*c(3,n)*(c(1,n-1)-c(1,n-2))/c(3,n-1))/g
             g = -g/c(4,n-1)
             c(4,n) = c(3,n-1)
          end if
@@ -476,22 +493,22 @@ else if (ibcbeg < 1) then
 
    else
 
-      c(4,1) = 1.0
-      c(3,1) = 1.0
-      c(2,1) = 2.0*c(4,2)
+      c(4,1) = 1.d0
+      c(3,1) = 1.d0
+      c(2,1) = 2.d0*c(4,2)
       c(2,n) = c(4,n)
 
       if (ibcend > 1) then
-         c(2,n) = 3.0*c(4,n) + 0.50*c(3,n)*c(2,n)
-         c(4,n) = 2.0
-         g = -1.0/c(4,n-1)
+         c(2,n) = 3.d0*c(4,n) + 0.5d0*c(3,n)*c(2,n)
+         c(4,n) = 2.d0
+         g = -1.d0/c(4,n-1)
          c(4,n) = g*c(3,n-1) + c(4,n)
          c(2,n) = (g*c(2,n-1) + c(2,n))/c(4,n)
       else if (ibcend < 1) then
          if (ibcbeg > 0) then
             ! cannot arrive
-            c(2,n) = 2.0*c(4,n)
-            c(4,n) = 1.0
+            c(2,n) = 2.d0*c(4,n)
+            c(4,n) = 1.d0
             g = -1.d0/c(4,n-1)
             c(4,n) = g*c(3,n-1) + c(4,n)
             c(2,n) = (g*c(2,n-1) + c(2,n))/c(4,n)
@@ -513,9 +530,9 @@ end do
 do i = 2, n, 1
    dtau = c(3,i)
    divdf1 = (c(1,i) - c(1,i-1))/dtau
-   divdf3 = c(2,i-1) + c(2,i) - 2.0*divdf1
-   c(3,i-1) = 2.0*(divdf1 - c(2,i-1) - divdf3)/dtau
-   c(4,i-1) = (divdf3/dtau)*(6.0/dtau)
+   divdf3 = c(2,i-1) + c(2,i) - 2.d0*divdf1
+   c(3,i-1) = 2.d0*(divdf1 - c(2,i-1) - divdf3)/dtau
+   c(4,i-1) = (divdf3/dtau)*(6.d0/dtau)
 enddo
 
 
@@ -582,7 +599,7 @@ enddo
 ! c(4,n) = 1.d0
 ! goto 28
 ! ! second derivative prescribed at right endpoint.
-! 24 c(2,n) = 3.d0*c(4,n) + 0.50*c(3,n)*c(2,n)
+! 24 c(2,n) = 3.d0*c(4,n) + 0.5d0*c(3,n)*c(2,n)
 ! c(4, n) = 2.d0
 ! goto 28
 ! !MB25 if (ibcend-1) 26,30,24
@@ -630,9 +647,9 @@ end subroutine free_mspline
 
 
 
-real(4) function fsig(x1, x2, r)
+real(8) function fsig(x1, x2, r)
 
-real(4), intent(in) :: x1, x2, r
+real(8), intent(in) :: x1, x2, r
 
 fsig = (x1 - r)*(x2 - r)
 

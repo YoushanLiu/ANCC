@@ -1,3 +1,19 @@
+! This file is part of ANCC.
+!
+! AFTAN is free software: you can redistribute it and/or modify
+! it under the terms of the GNU General Public License as published by
+! the Free Software Foundation, either version 3 of the License, or
+! (at your option) any later version.
+!
+! AFTAN is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU General Public License for more details.
+!
+! You should have received a copy of the GNU General Public License
+! along with this program.  If not, see <https://www.gnu.org/licenses/>.
+!
+!
 !
 !* The sample of test driver for FTAN with phase match filter for
 !* subroutines aftanpg and aftanipg
@@ -14,19 +30,19 @@ integer(4) i, k, sac, nargc, iargc
 integer(4) n, npoints, nfin, nfout1, nfout2
 integer(4) nrow, ncol, npred, nprpv, ier, ioer
 
-real(4) t0, dt, tresh, ffact1, ffact2
-real(4) perc, taperl, fmatch, delta, tamp
-real(4) vmin, vmax, tmin, tmax, snr, lambda
-real(4) tmin_read, tmax_read
+real(8) t0, dt, tresh, ffact1, ffact2
+real(8) perc, taperl, fmatch, delta, tamp
+real(8) vmin, vmax, tmin, tmax, snr, lambda
+real(8) tmin_read, tmax_read
 
 real(8) PIover4
 
-real(4) x(1), y(1)
+real(8) x(1), y(1)
 
-real(4), dimension(:), allocatable :: seis
+real(8), dimension(:), allocatable :: seis
 
-real(4), dimension(:), allocatable :: prpvper, prpvvel
-real(4), dimension(:,:), allocatable :: ampo, arr1, arr2, pred
+real(8), dimension(:), allocatable :: prpvper, prpvvel
+real(8), dimension(:,:), allocatable :: ampo, arr1, arr2, pred
 
 character(1) isPerCut, isOutput, isVerbose
 
@@ -109,7 +125,7 @@ open(10, file=trim(adjustl(parfile)), status='old')
 
 
       tmin = tmin_read
-	   tmax = tmax_read
+	  tmax = tmax_read
       if ((isVerbose == 'Y') .or. (isVerbose == 'y')) then
          write(*,'(A, A)') 'AFTAN: ', trim(adjustl(filename))
       end if
@@ -119,7 +135,6 @@ open(10, file=trim(adjustl(parfile)), status='old')
       !
 
       call readhead(sac, filename, n, ier)
-      n = 2*n-1
       allocate(seis(1:n), stat=ier)
       call readdata(sac, filename, dt, delta, t0, seis, ier)
 
