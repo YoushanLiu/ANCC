@@ -19,8 +19,8 @@ install:
 ifeq ($(wildcard $(INST_DIR)),)
 	mkdir $(INST_DIR)
 endif
-	$(FC) $(FFLAGS) $(OBJS) $(LIBS) -o ../../$(BIN)
-#$(INST_DIR)
+	$(FC) $(FFLAGS) $(OBJS) $(LIBS) -o $(INST_DIR)/$(BIN)
+
 clean:
 	rm -rf $(OBJS) *.mod *__genmod.f90
 
