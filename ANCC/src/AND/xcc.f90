@@ -1424,8 +1424,8 @@ if (nstack > 0) then
       call sacio_readhead(str_tmp, shd, ier)
       delta = shd%dist
 
-      call system('echo '//trim(adjustl(str_tmp))//' > '//trim(adjustl(str_myrank))//'.c')
-      call system('AFTAN '//trim(adjustl(str_myrank))//'.c')
+      call system('echo '//trim(adjustl(str_tmp))//' > '//trim(adjustl(str_myrank))//'.lst')
+      call system('AFTAN '//trim(adjustl(str_myrank))//'.lst')
 
 
       if (is_pws) then
@@ -1439,11 +1439,11 @@ if (nstack > 0) then
          call sacio_readhead(str_tmp, shd, ier)
          delta = shd%dist
 
-         call system('echo '//trim(adjustl(str_tmp))//' > '//trim(adjustl(str_myrank))//'.c')
-         call system('AFTAN '//trim(adjustl(str_myrank))//'.c')
+         call system('echo '//trim(adjustl(str_tmp))//' > '//trim(adjustl(str_myrank))//'.lst')
+         call system('AFTAN '//trim(adjustl(str_myrank))//'.lst')
       end if
 
-      call system('rm -rf '//trim(adjustl(str_myrank))//'.c')
+      call system('rm -rf '//trim(adjustl(str_myrank))//'.lst')
 
 
       if (is_pws) then
@@ -1584,9 +1584,9 @@ if (nstack > 0) then
             call system('printf "r '//trim(adjustl(str_tmp))//'\nwh over\nq\n" | sac')
 
             ! Do the AFTAN
-            call system('echo '//trim(adjustl(str_tmp))//' > '//trim(adjustl(str_myrank))//'.c')
-            call system('AFTAN '//trim(adjustl(str_myrank))//'.c')
-            call system('rm -rf '//trim(adjustl(str_myrank))//'.c')
+            call system('echo '//trim(adjustl(str_tmp))//' > '//trim(adjustl(str_myrank))//'.lst')
+            call system('AFTAN '//trim(adjustl(str_myrank))//'.lst')
+            call system('rm -rf '//trim(adjustl(str_myrank))//'.lst')
 
             ! read the dispersion data file.
             str_tmp = trim(adjustl(str_tmp))//'_'//trim(adjustl(bs_type))
