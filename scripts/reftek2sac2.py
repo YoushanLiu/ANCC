@@ -13,7 +13,7 @@ Affiliation: Institute of Geology and Geophysics, Chinese Academy of Sciences
 
 
 folders structure:
-./your_data_folder/period folder/station folder/Reftek UnitID number/day folder/stream/reftek files
+./your_data_folder/stage folder/station folder/Reftek UnitID number/day folder/stream/reftek files
 
 for example:
 ./Raw2/2007_276_2008_005/NE00/2007276/9F78/1
@@ -127,7 +127,7 @@ def read_station_list(filename):
 			self.stlo = []
 			self.stel = []
 			self.netwk = []
-			
+
 
 	name = ''
 	stla = ''
@@ -305,7 +305,7 @@ def convert_hourly(hour_files_path, day_path):
 			#	# try to extract station name based on folder name
 			#	ipos = -1
 			#	for j in range(len(sta.name)):
-			#		res = findstr(hour_files_path[nrootdir:-1], sta.name[j])
+			#		res = findstr(hour_files_path[len_rootdir:-1], sta.name[j])
 			#		if ([] != res):
 			#			ipos = j
 			#			break
@@ -316,13 +316,14 @@ def convert_hourly(hour_files_path, day_path):
 
 			ipos = -1
 			for j in range(len(sta.name)):
-				res = findstr(hour_files_path[nrootdir:-1], sta.name[j])
+				res = findstr(hour_files_path[len_rootdir:-1], sta.name[j])
 				if ([] != res):
 					ipos = j
 					break
 			if (-1 == ipos):
 				print("Error: station %s is not in the station list or filed 'staion' in reftek header is NULL" % station_name)
 				return
+
 
 
 			network_name = sta.netwk[ipos]
@@ -363,7 +364,8 @@ def convert_hourly(hour_files_path, day_path):
 				sac.nzmsec = int(tr.stats.starttime.microsecond*1.e-3)
 				sac.b = 0
 				#sac.reftime += sac.b
-				#sac.reftime = tr.stats.starttime
+				sac.reftime = tr.stats.starttime
+
 
 
 				# write sac
@@ -390,7 +392,7 @@ def convert_daily(station_path):
 	for day_folder in day_folders_list:
 
 		day_path = station_path + day_folder + '/'
-		print('Entering directory ' + day_path[nrootdir:-1])
+		print('Entering directory ' + day_path[len_rootdir:-1])
 		print('\n')
 
 		UnitID_folders_list = os.listdir(day_path)
@@ -402,7 +404,7 @@ def convert_daily(station_path):
 			if (not os.path.isdir(UnitID_path)):
 				continue
 
-			print('Entering directory ' + UnitID_path[nrootdir:-1])
+			print('Entering directory ' + UnitID_path[len_rootdir:-1])
 			print('\n')
 
 			hour_files_path = UnitID_path + '1/'
@@ -410,19 +412,19 @@ def convert_daily(station_path):
 			if (not os.path.exists(hour_files_path)):
 				continue
 
-			print('Entering directory ' + hour_files_path[nrootdir:-1])
+			print('Entering directory ' + hour_files_path[len_rootdir:-1])
 			print('\n')
 
 			convert_hourly(hour_files_path, day_path)
 
-			print('Leaving directory ' + hour_files_path[nrootdir:-1])
+			print('Leaving directory ' + hour_files_path[len_rootdir:-1])
 			print('\n')
 
-			print('Leaving directory ' + UnitID_path[nrootdir:-1])
+			print('Leaving directory ' + UnitID_path[len_rootdir:-1])
 			print('\n')
 
 		del UnitID_folders_list
-		print('Leaving directory ' + day_path[nrootdir:-1])
+		print('Leaving directory ' + day_path[len_rootdir:-1])
 		print('\n')
 
 	del day_folders_list
@@ -433,32 +435,32 @@ def convert_daily(station_path):
 
 def reftek2sac(current_path):
 
-	global nrootdir, sta, sac_suffix
+	global len_rootdir, sta, sac_suffix
 
 	rootdir = current_path + '/' + data_folder + '/'
-	nrootdir = len(rootdir)
+	len_rootdir = len(rootdir)
 
-	period_folders_list = os.listdir(rootdir)
+	stage_folders_list = os.listdir(rootdir)
 
 
 	sac_suffix = '.SAC'
 
 	# convert reftek to sac
-	for period_folder in period_folders_list:
+	for stage_folder in stage_folders_list:
 
-		period_path = rootdir + period_folder + '/'
-		print('Entering directory ' + period_path[nrootdir:-1])
+		stage_path = rootdir + stage_folder + '/'
+		print('Entering directory ' + stage_path[len_rootdir:-1])
 		print('\n')
 
-		if (not os.path.exists(period_path)):
+		if (not os.path.exists(stage_path)):
 			continue
 
-		station_folders_list = os.listdir(period_path)
+		station_folders_list = os.listdir(stage_path)
 
 		for station_folder in station_folders_list:
 
-			station_path = period_path + station_folder + '/'
-			print('Entering directory ' + station_path[nrootdir:-1])
+			station_path = stage_path + station_folder + '/'
+			print('Entering directory ' + station_path[len_rootdir:-1])
 			print('\n')
 
 			if (not os.path.exists(station_path)):
@@ -466,14 +468,14 @@ def reftek2sac(current_path):
 
 			convert_daily(station_path)
 
-			print('Leaving directory ' + station_path[nrootdir:-1])
+			print('Leaving directory ' + station_path[len_rootdir:-1])
 			print('\n')
 
 		del station_folders_list
-		print('Leaving directory ' + period_path[nrootdir:-1])
+		print('Leaving directory ' + stage_path[len_rootdir:-1])
 		print('\n')
 
-	del period_folders_list
+	del stage_folders_list
 
 	return
 
