@@ -210,18 +210,26 @@ end do
 ! ***************************************************************
 ! Make the time fraction correction
 ! ***************************************************************
-tf = floor(t)
-frac2 = t - tf
-nf = nint(frac2/dt)
-frac = t - (tf + nf*dt)
-t = tf + nf*dt
-!if (frac > 0.5*dt) then
-!   t = t + dt
-!   frac = frac - dt
-!end if
-tf = floor(t)
-t = tf + nint((t - tf)*1.d6)*1.d-6
-frac = nint(frac*1.d6)*1.d-6
+!tf = floor(t)
+!frac2 = t - tf
+!nf = nint(frac2/dt)
+!frac = t - (tf + nf*dt)
+!t = tf + nf*dt
+!!if (frac > 0.5*dt) then
+!!   t = t + dt
+!!   frac = frac - dt
+!!end if
+!tf = floor(t)
+!t = tf + nint((t - tf)*1.d6)*1.d-6
+!frac = nint(frac*1.d6)*1.d-6
+
+
+tf = nint(t)
+nf = nint((t - tf)/dt)
+tf = tf + nf*dt
+frac = t - tf
+t = tf
+
 
 
 
