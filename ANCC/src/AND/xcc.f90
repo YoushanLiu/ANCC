@@ -212,7 +212,7 @@ end do
 ! ***************************************************************
 tf = floor(t)
 frac2 = t - tf
-nf = nint(sngl(frac2/dt))
+nf = nint(frac2/dt)
 frac = t - (tf + nf*dt)
 t = tf + nf*dt
 !if (frac > 0.5*dt) then
@@ -220,8 +220,8 @@ t = tf + nf*dt
 !   frac = frac - dt
 !end if
 tf = floor(t)
-t = tf + nint(sngl((t - tf)*1.d6))*1.d-6
-frac = nint(sngl(frac*1.d6))*1.d-6
+t = tf + nint((t - tf)*1.d6)*1.d-6
+frac = nint(frac*1.d6)*1.d-6
 
 
 
@@ -704,7 +704,7 @@ end if
 ! Record info.
 !dt = sdb%rec(ist,iev)%dt
 !N = sdb%rec(ist,iev)%npts         ! N:    number of real data points
-!Nlen = nint(sngl(tlen/dt))        ! Nlen: number of intercepted data points
+!Nlen = nint(tlen/dt)              ! Nlen: number of intercepted data points
 
 
 ! tend: desired ending time of the signal
@@ -734,7 +734,7 @@ if ((trb > t0) .or. (tre < tend)) then
 end if
 
 
-ngap = nint(sngl((t0 - trb)/dt))
+ngap = nint((t0 - trb)/dt)
 
 
 seis_data(1:Nlen) = seis_data(ngap+1:ngap+Nlen)
@@ -803,7 +803,7 @@ sf(nq+1:nfft) = czero
 
 ! Correct the ends
 sf(1) = 0.50*sf(1)
-sf(nq) = cmplx(real(sf(nq)), 0.0)
+!sf(nq) = cmplx(real(sf(nq)), 0.0)
 
 
 
