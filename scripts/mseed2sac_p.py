@@ -218,14 +218,14 @@ def convert_hourly(hour_files_path):
 			continue
 
 		# if this file is not a reftek format
-		is_sacfile = False
-		starts = [each.start() for each in re.finditer(sac_suffix, hour_file.upper())]
-		ends = [start+len(sac_suffix) - 1 for start in starts]
-		span = [(start, end) for start,end in zip(starts, ends)]
-		is_sac = is_sacfile and (len(span) >= 1)
+		#is_sacfile = False
+		#starts = [each.start() for each in re.finditer(sac_suffix, hour_file.upper())]
+		#ends = [start+len(sac_suffix) - 1 for start in starts]
+		#span = [(start, end) for start,end in zip(starts, ends)]
+		#is_sac = is_sacfile and (len(span) >= 1)
 
-		if (is_sacfile):
-			continue
+		#if (is_sacfile):
+		#	continue
 
 
 		#try:
