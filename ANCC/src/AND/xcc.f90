@@ -602,7 +602,7 @@ sf(nq+1:nfft) = czero
 
 ! Correct the ends
 sf(1) = 0.50*sf(1)
-sf(nq) = cmplx(real(sf(nq)), 0.0)
+!sf(nq) = cmplx(real(sf(nq)), 0.0)
 
 
 ! ***************************************************************
