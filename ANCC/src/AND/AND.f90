@@ -779,13 +779,13 @@ call MPI_BARRIER(MPI_COMM_WORLD, ier)
 
 
 ! length of taper
-ntaper = max(ceiling(sngl(max(t0, taper_min) / dt)), ntaper_min)
+ntaper = max(ceiling(max(t0, taper_min) / dt), ntaper_min)
 !ntaper = max(ceiling(sngl(max(0.50*(npts*dt-tlen), taper_min) / dt)), ntaper_min)
 
 
 
 ! Nlen: number of intercepted data points
-Nlen = nint(sngl(tlen/dt))
+Nlen = nint(tlen/dt)
 
 
 
@@ -820,7 +820,7 @@ call MPI_BARRIER(MPI_COMM_WORLD, ier)
 ! compute cross-correlation and AFTAN etc.
 ! ***********************************************************************
 
-nlag = nint(sngl(tlag/dt))
+nlag = nint(tlag/dt)
 if (myrank == myroot) then
 
    ! =====================================================================================
