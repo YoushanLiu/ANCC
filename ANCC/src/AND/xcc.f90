@@ -1254,8 +1254,10 @@ end if
 write(str_myrank, '(I6.6)') myrank
 
 ! Create tmp directory to save single cross-correlation data.
-call system('rm -rf '//trim(adjustl(tarfolder))//'/'//trim(adjustl(str_myrank)))
-call system('mkdir '//trim(adjustl(tarfolder))//'/'//trim(adjustl(str_myrank)))
+if (is_stack) then
+   call system('rm -rf '//trim(adjustl(tarfolder))//'/'//trim(adjustl(str_myrank)))
+   call system('mkdir '//trim(adjustl(tarfolder))//'/'//trim(adjustl(str_myrank)))
+end if
 
 
 ! Initiate stacking number and cross-correlation function.
