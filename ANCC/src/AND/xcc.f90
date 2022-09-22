@@ -1348,6 +1348,17 @@ end do
 
 
 
+! ***************************************************************
+! Write cross-correlation log if is_save_record is true.
+! ***************************************************************
+if (is_save_record) then
+   str_tmp = trim(adjustl(sdb%st(ist1)%n_name))//'_'//trim(adjustl(sdb%st(ist2)%n_name))
+   write(str_tmp2,"(I6)") nstack
+   call system('echo "'//trim(adjustl(str_tmp))//' '//trim(adjustl(str_tmp2))//'" | column -t >> CCRecord.lst')
+end if
+
+
+
 if ((0 == nstack) .or. (.not.(is_stack))) then
    if (allocated(fftdata1)) then
       deallocate(fftdata1)
@@ -1356,18 +1367,12 @@ if ((0 == nstack) .or. (.not.(is_stack))) then
        deallocate(fftdata2)
    end if
    call system('rm -rf '//trim(adjustl(tarfolder))//'/'//trim(adjustl(str_myrank)))
+   if (is_verbose) then
+      write(*,"(A)") 'Cross-correlation between '//trim(adjustl(sdb%st(ist1)%n_name))// &
+                             ' and '//trim(adjustl(sdb%st(ist2)%n_name))//' is done ... '
+      call flush(6)
+   end if
    return
-end if
-
-
-
-! ***************************************************************
-! Write cross-correlation log if is_save_record is true.
-! ***************************************************************
-if (is_save_record) then
-   str_tmp = trim(adjustl(sdb%st(ist1)%n_name))//'_'//trim(adjustl(sdb%st(ist2)%n_name))
-   write(str_tmp2,"(I6)") nstack
-   call system('echo "'//trim(adjustl(str_tmp))//' '//trim(adjustl(str_tmp2))//'" | column -t >> CCRecord.lst')
 end if
 
 
