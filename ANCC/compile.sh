@@ -18,8 +18,8 @@ cd ../
 
 ####################################
 echo
-echo "Enter into AND ... "
-cd AND
+echo "Enter into ANCC ... "
+cd ANCC
 make cleanall
 make
 make install
