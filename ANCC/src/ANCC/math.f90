@@ -1,0 +1,145 @@
+module math_m
+
+use db_m
+
+
+implicit none
+
+
+
+contains
+
+! ***************************************************************
+! This program is downloaded from http://fcode.cn/guide-96-1.html
+! After invoke this subroutine, random_number can produce different
+! random numbers in the range of [0 1]. Without using this subroutine,
+! random_number will produce the same random numbers every time.
+! ***************************************************************
+subroutine init_random_seed()
+
+
+#ifdef __INTEL_COMPILER
+use IFPORT
+#endif
+!#ifndef __GFORTRAN__
+!use IFPORT
+!#endif
+
+
+implicit none
+
+
+integer :: ised , i , pid
+
+integer(DBL) :: t
+
+integer, allocatable, dimension(:) :: sed
+
+
+call random_seed(size = ised) ! Get the size of the seed
+
+
+allocate(sed(ised)) ! Distribute the seed
+call system_clock(t) ! Get the time
+pid = getpid() ! Get the id of the processor
+t = ieor(t, int(pid, kind(t))) ! XOR operation
+
+do i = 1, ised, 1
+   sed(i) = lcg(t) ! LCG operation
+end do
+
+
+call random_seed(put = sed) ! Set the seed value
+
+
+end subroutine init_random_seed
+
+! ***************************************************************
+! Linear congruential generator
+! ***************************************************************
+function lcg(s)
+
+integer(DBL), intent(inout) :: s
+
+integer :: lcg
+
+
+if (0 == s) then
+
+   s = 104729
+
+else
+
+   s = mod(s, 4294967296_DBL)
+
+end if
+
+s = mod(s * 279470273_DBL, 4294967291_DBL)
+lcg = int(mod(s, int(huge(0), DBL)), kind(0))
+
+
+return
+
+
+end function lcg
+
+
+! ***************************************************************
+! ***************************************************************
+subroutine matrix_mean_std(A, mean, std, skip_value, nout)
+
+implicit none
+
+real(SGL), intent(in) :: skip_value
+
+real(SGL), dimension(:,:), intent(in) :: A
+
+integer, intent(out) :: nout
+
+real(SGL), dimension(:), allocatable, intent(out) :: mean, std
+
+
+integer i, j, ier
+integer n, nrow, ncol
+
+real(SGL) rn, rsum1, rsum2
+
+
+nrow = size(A,1)
+ncol = size(A,2)
+
+nout = ncol
+
+allocate(mean(1:ncol), std(1:ncol), stat=ier)
+do i = 1, ncol, 1
+
+   n = 0
+   std(i) = 0.0
+   mean(i) = 0.0
+
+   rsum1 = 0.0
+   rsum2 = 0.0
+   do j = 1, nrow, 1
+      if (abs(A(j,i)-skip_value) > epsilon(A(j,i))) then
+         rsum1 = rsum1 + A(j,i)
+         rsum2 = rsum2 + A(j,i)*A(j,i)
+         n = n + 1
+      end if
+   end do
+
+   rn = real(n)
+   if (n >= 1) then
+      mean(i) = rsum1 / rn
+   end if
+
+   if (n >= 2) then
+      std(i) = sqrt(abs(rn*rsum2 - rsum1*rsum1)/(rn*real(n-1)))
+   end if
+
+end do
+
+
+end subroutine matrix_mean_std
+
+
+end module math_m
