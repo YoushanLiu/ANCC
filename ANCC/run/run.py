@@ -68,11 +68,11 @@ else:
 	os.remove('AFTAN')
 	os.symlink(BIN_DIR + '/AFTAN', 'AFTAN')
 
-if (not os.path.exists(os.getcwd() + '/AND')):
-	os.symlink(BIN_DIR + '/AND', 'AND')
+if (not os.path.exists(os.getcwd() + '/ANCC')):
+	os.symlink(BIN_DIR + '/ANCC', 'ANCC')
 else:
-	os.remove('AND')
-	os.symlink(BIN_DIR + '/AND', 'AND')
+	os.remove('ANCC')
+	os.symlink(BIN_DIR + '/ANCC', 'ANCC')
 
 if (not os.path.exists(os.getcwd() + '/TF_PWS')):
 	os.symlink(BIN_DIR + '/TF_PWS', 'TF_PWS')
@@ -163,7 +163,7 @@ if len(duplicates) > 0:
 # Execute the main program to process the ambient noise data.
 ###########################################################
 starttime = UTCDateTime()
-os.system("mpirun -np %d ./AND %s %s %s"%(nprocs, SACfolder, PZfolder, tarfolder))
+os.system("mpirun -np %d ./ANCC %s %s %s"%(nprocs, SACfolder, PZfolder, tarfolder))
 endtime = UTCDateTime()
 
 elapsed_time = endtime - starttime
