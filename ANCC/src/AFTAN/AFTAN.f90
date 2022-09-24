@@ -125,11 +125,11 @@ open(10, file=trim(adjustl(parfile)), status='old')
 
 
       filename = trim(adjustl(filename))
-      outfile = trim(adjustl(infile(1:len_trim(infile)-4)))
+      outfile = trim(adjustl(infile(1:len_trim(filename)-4)))
 
 
       tmin = tmin_read
-	   tmax = tmax_read
+      tmax = tmax_read
       if ((isVerbose == 'Y') .or. (isVerbose == 'y')) then
          write(*,'(A, A)') 'AFTAN: ', trim(adjustl(filename))
       end if
@@ -177,12 +177,12 @@ open(10, file=trim(adjustl(parfile)), status='old')
       if (tmin >= 1) then
          call write_data(arr1, nfout1, arr2, nfout2, trim(adjustl(outfile))//'_1')
       endif
-	   if (allocated(ampo)) then
-		   deallocate(ampo)
-	   end if
-	   if (allocated(arr1)) then
-		   deallocate(arr1)
-	   end if
+      if (allocated(ampo)) then
+	 deallocate(ampo)
+      end if
+      if (allocated(arr1)) then
+	 deallocate(arr1)
+      end if
 
 
       if (0 == nfout2) then
@@ -199,9 +199,9 @@ open(10, file=trim(adjustl(parfile)), status='old')
          pred(i,1) = arr2(2,i)
          pred(i,2) = arr2(3,i)
       enddo
-	  if (allocated(arr2)) then
-		 deallocate(arr2)
-	  end if
+      if (allocated(arr2)) then
+	 deallocate(arr2)
+      end if
 
 
 
