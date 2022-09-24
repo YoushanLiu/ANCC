@@ -1276,13 +1276,15 @@ if (is_stack) then
 else
    path = trim(adjustl(tarfolder))//'/CC_AFTAN/'//trim(adjustl(stapair_path))//'/prestack'
    !path = trim(adjustl(tarfolder))//'/CC_AFTAN/'//trim(adjustl(stapair_path))
-   call system('rm -rf '//trim(adjustl(path)))
+   !call system('rm -rf '//trim(adjustl(path)))
    call system('mkdir -p '//trim(adjustl(path)))
 end if
 sacfile_prefix = trim(adjustl(path))//'/'//trim(adjustl(stapair_name))//'_'
 
 
 
+! Get the time interval.
+dt = sdb%rec(ist1,iev)%dt
 ! construct SAC header
 call sacio_newhead(shd, dt, 2*nlag+1, -nlag*dt)
 shd%evla = sdb%st(ist1)%lat
@@ -1312,9 +1314,6 @@ do iev = 1, nev, 1
    ! at this event. check_data is an internal procedure.
    ! ***************************************************************
    if (check_data(staname1, staname2)) then
-
-      ! Get the time interval.
-      dt = sdb%rec(ist1,iev)%dt
 
       ! ***************************************************************
       ! read in the FFT data for the two stations.
@@ -1350,15 +1349,17 @@ do iev = 1, nev, 1
       sacname = trim(adjustl(sacfile_prefix))//trim(adjustl(str_stack))//'.SAC'
 
 
-      call sacio_newhead(shd, dt, 2*nlag+1, -nlag*dt)
-      shd%evla = sdb%st(ist1)%lat
-      shd%evlo = sdb%st(ist1)%lon
-      shd%stla = sdb%st(ist2)%lat
-      shd%stlo = sdb%st(ist2)%lon
-      shd%kevnm = trim(adjustl(sdb%st(ist1)%name))
-      shd%kstnm = trim(adjustl(sdb%st(ist2)%name))
-      shd%kuser1 = trim(adjustl(sdb%st(ist1)%n_name))
-      shd%kuser2 = trim(adjustl(sdb%st(ist2)%n_name))
+      !! Get the time interval.
+      !dt = sdb%rec(ist1,iev)%dt
+      !call sacio_newhead(shd, dt, 2*nlag+1, -nlag*dt)
+      !shd%evla = sdb%st(ist1)%lat
+      !shd%evlo = sdb%st(ist1)%lon
+      !shd%stla = sdb%st(ist2)%lat
+      !shd%stlo = sdb%st(ist2)%lon
+      !shd%kevnm = trim(adjustl(sdb%st(ist1)%name))
+      !shd%kstnm = trim(adjustl(sdb%st(ist2)%name))
+      !shd%kuser1 = trim(adjustl(sdb%st(ist1)%n_name))
+      !shd%kuser2 = trim(adjustl(sdb%st(ist2)%n_name))
 
       ! Write the single cross-correlation function.
       call sacio_writesac(sacname, shd, tmpcorr, ier)
@@ -1409,7 +1410,7 @@ end if
 ! ***************************************************************
 
 
-if (nstack > 0) then
+if ((nstack > 0) .and (is_stack)) then
 
    path = trim(adjustl(tarfolder))//'/CC_AFTAN/'//trim(adjustl(stapair_path))
    call system('mkdir -p '//trim(adjustl(path)))
