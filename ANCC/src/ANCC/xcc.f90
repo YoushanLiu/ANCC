@@ -1277,7 +1277,7 @@ else
    path = trim(adjustl(tarfolder))//'/CC_AFTAN/'//trim(adjustl(stapair_path))//'/prestack'
    !path = trim(adjustl(tarfolder))//'/CC_AFTAN/'//trim(adjustl(stapair_path))
    call system('rm -rf '//trim(adjustl(path)))
-   call system('mkdir '//trim(adjustl(path)))
+   call system('mkdir -p '//trim(adjustl(path)))
 end if
 sacfile_prefix = trim(adjustl(path))//'/'//trim(adjustl(stapair_name))//'_'
 
