@@ -1201,9 +1201,8 @@ type(sachead) shd
 
 character(len=128) str_myrank, str_stack
 
-character(len=512) path, str_cmd
-character(len=512) path_ls, path_pws
 character(len=512) staname1, staname2
+character(len=512) path, path_ls, path_pws
 character(len=512) disp_name, bootstrap_name
 character(len=512) stapair_path, stapair_name
 character(len=512) sacname, listname, filename
@@ -1240,10 +1239,10 @@ if (nev <= 0) return
 stapair_name = trim(adjustl(sdb%st(ist1)%n_name))//'_'//trim(adjustl(sdb%st(ist2)%n_name))
 stapair_path = trim(adjustl(sdb%st(ist1)%n_name))//'/'//trim(adjustl(stapair_name))
 path_ls = trim(adjustl(tarfolder))//'/FINAL/LINEAR/'//trim(adjustl(stapair_path))
-path_pws = trim(adjustl(tarfolder))//'/FINAL/PWS/'//trim(adjustl(stapair_path))
 
 
 if (is_pws) then
+   path_pws = trim(adjustl(tarfolder))//'/FINAL/PWS/'//trim(adjustl(stapair_path))
    listname = trim(adjustl(path_pws))//'.dat'
    inquire(file=listname, exist=is_existed)
    if (is_existed) then
@@ -1266,18 +1265,22 @@ end if
 !write(str_pws,'(I6)') ipws
 
 
-! Each process has its own process id
-write(str_myrank, '(I6.6)') myrank
-
-! Create tmp directory to save single cross-correlation data.
 if (is_stack) then
-   call system('rm -rf '//trim(adjustl(tarfolder))//'/'//trim(adjustl(str_myrank)))
-   call system('mkdir '//trim(adjustl(tarfolder))//'/'//trim(adjustl(str_myrank)))
+   ! Each process has its own process id
+   write(str_myrank, '(I6.6)') myrank
+
+   ! Create tmp directory to save single cross-correlation data.
+   path = trim(adjustl(tarfolder))//'/'//trim(adjustl(str_myrank))
+   call system('rm -rf '//trim(adjustl(path)))
+   call system('mkdir '//trim(adjustl(path)))
+else
+   path = trim(adjustl(tarfolder))//'/CC_AFTAN/'//trim(adjustl(stapair_path))//'/prestack'
+   !path = trim(adjustl(tarfolder))//'/CC_AFTAN/'//trim(adjustl(stapair_path))
+   call system('rm -rf '//trim(adjustl(path)))
+   call system('mkdir '//trim(adjustl(path)))
 end if
+sacfile_prefix = trim(adjustl(path))//'/'//trim(adjustl(stapair_name))//'_'
 
-
-
-allocate(tmpcorr(1:2*nlag+1))
 
 
 ! construct SAC header
@@ -1293,17 +1296,8 @@ shd%kuser2 = trim(adjustl(sdb%st(ist2)%n_name))
 call geodist(shd)
 
 
-if (is_stack) then
-   path = trim(adjustl(tarfolder))//'/'//trim(adjustl(str_myrank))
-else
-   !path = trim(adjustl(tarfolder))//'/CC_AFTAN/'//trim(adjustl(stapair_path))//'/prestack/'
-   path = trim(adjustl(tarfolder))//'/CC_AFTAN/'//trim(adjustl(stapair_path))
-   str_cmd = 'mkdir -p '//trim(adjustl(path))
-   call system(str_cmd)
-end if
-sacfile_prefix = trim(adjustl(path))//'/'//trim(adjustl(stapair_name))//'_'
 
-
+allocate(tmpcorr(1:2*nlag+1))
 
 nstack = 0
 ! Loop on the events.
@@ -1393,6 +1387,9 @@ if ((0 == nstack) .or. (.not.(is_stack))) then
    if (allocated(fftdata2)) then
        deallocate(fftdata2)
    end if
+   if (allocated(tmpcorr)) then
+       deallocate(tmpcorr)
+   end if
    !call system('rm -rf '//trim(adjustl(tarfolder))//'/'//trim(adjustl(str_myrank)))
    if (is_verbose) then
       write(*,"(A)") 'Output cross-correlation between '//trim(adjustl(sdb%st(ist1)%n_name))// &
@@ -1415,8 +1412,7 @@ end if
 if (nstack > 0) then
 
    path = trim(adjustl(tarfolder))//'/CC_AFTAN/'//trim(adjustl(stapair_path))
-   str_cmd = 'mkdir -p '//trim(adjustl(path))
-   call system(str_cmd)
+   call system('mkdir -p '//trim(adjustl(path)))
 
    ! ***************************************************************
    ! Apply phase weighted stacking procedure, outputing both linear
@@ -1488,7 +1484,7 @@ if (nstack > 0) then
          ! ***************************************************************
          ! Write final dispersion data based on pws cross-correlation.
          ! ***************************************************************
-         disp_name = trim(adjustl(sacfile_prefix))//'_pws.SAC_'//trim(adjustl(bs_type))
+         disp_name = trim(adjustl(sacfile_prefix))//'_pws_'//trim(adjustl(bs_type))//'.dat'
          inquire(file=disp_name, exist=is_existed)
 
          if (.not.(is_existed)) then
@@ -1523,7 +1519,7 @@ if (nstack > 0) then
       ! ***************************************************************
       ! Write final dispersion data based on linear stacking cross-correlation.
       ! ***************************************************************
-      disp_name = trim(adjustl(sacfile_prefix))//'_ls.SAC_'//trim(adjustl(bs_type))
+      disp_name = trim(adjustl(sacfile_prefix))//'_ls_'//trim(adjustl(bs_type))//'.dat'
 
       inquire(file=disp_name, exist=is_existed)
       if (.not.(is_existed)) then
