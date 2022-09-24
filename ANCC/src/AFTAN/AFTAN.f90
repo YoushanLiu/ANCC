@@ -125,7 +125,7 @@ open(10, file=trim(adjustl(parfile)), status='old')
 
 
       filename = trim(adjustl(filename))
-      outfile = trim(adjustl(infile(1:len_trim(filename)-4)))
+      outfile = trim(adjustl(filename(1:len_trim(filename)-4)))
 
 
       tmin = tmin_read
