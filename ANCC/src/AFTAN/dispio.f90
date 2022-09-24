@@ -46,7 +46,7 @@ real(DBL), dimension(8,nfout1), intent(in) :: array1
 real(DBL), dimension(7,nfout2), intent(in) :: array2
 
 
-integer :: lowPeriod, highPeriod, n, i, ier
+integer lowPeriod, highPeriod, n, i, ier
 
 real(DBL), allocatable, dimension(:) :: x, y, z, snr
 
@@ -67,7 +67,7 @@ call linear_interpo(array1(2,1:nfout1), array1(3,1:nfout1), x, y, ier)
 call linear_interpo(array1(2,1:nfout1), array1(4,1:nfout1), x, z, ier)
 call linear_interpo(array1(2,1:nfout1), array1(7,1:nfout1), x, snr, ier)
 
-open(unit=33, file=trim(adjustl(filename))//'_1', status='replace', action='write')
+open(unit=33, file=trim(adjustl(filename))//'_1.dat', status='replace', action='write')
    do i = 1, n, 1
       write(33, "(I5,2F10.4,F12.4)") int(x(i)), y(i), z(i), snr(i)
       !write(33, *) x(i), y(i), z(i), snr(i)
@@ -93,7 +93,7 @@ call linear_interpo(array2(2,1:nfout2), array2(3,1:nfout2), x, y, ier)
 call linear_interpo(array2(2,1:nfout2), array2(4,1:nfout2), x, z, ier)
 call linear_interpo(array2(2,1:nfout2), array2(6,1:nfout2), x, snr, ier)
 
-open(unit=33, file=trim(adjustl(filename))//'_2', status='replace', action='write')
+open(unit=33, file=trim(adjustl(filename))//'_2.dat', status='replace', action='write')
    do i = 1, n, 1
       write(33, "(I5,2F10.4,F12.4)") int(x(i)), y(i), z(i), snr(i)
       !write(33, *) x(i), y(i), z(i), snr(i)
