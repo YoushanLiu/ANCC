@@ -46,7 +46,7 @@ real(8), dimension(:,:), allocatable :: ampo, arr1, arr2, pred
 
 character(1) isPerCut, isOutput, isVerbose
 
-character(256) filename, parfile
+character(256) filename, parfile, outfile
 
 
 
@@ -124,8 +124,12 @@ open(10, file=trim(adjustl(parfile)), status='old')
       if (0 /= ioer) exit
 
 
+      filename = trim(adjustl(filename))
+      outfile = trim(adjustl(infile(1:len_trim(infile)-4)))
+
+
       tmin = tmin_read
-	  tmax = tmax_read
+	   tmax = tmax_read
       if ((isVerbose == 'Y') .or. (isVerbose == 'y')) then
          write(*,'(A, A)') 'AFTAN: ', trim(adjustl(filename))
       end if
@@ -167,11 +171,11 @@ open(10, file=trim(adjustl(parfile)), status='old')
 
       if ((isOutput == 'Y') .or. (isOutput == 'y')) then
          call printres(dt, delta, nfout1, arr1, nfout2, arr2, &
-                   tamp, nrow, ncol, ampo, ier, filename, "_1")
+                    tamp, nrow, ncol, ampo, ier, outfile, "_1")
       end if
 
       if (tmin >= 1) then
-         call write_data(arr1, nfout1, arr2, nfout2, trim(adjustl(filename))//'_1')
+         call write_data(arr1, nfout1, arr2, nfout2, trim(adjustl(outfile))//'_1')
       endif
 	   if (allocated(ampo)) then
 		   deallocate(ampo)
@@ -208,28 +212,28 @@ open(10, file=trim(adjustl(parfile)), status='old')
 
       if ((isOutput == 'Y') .or. (isOutput == 'y')) then
          call printres(dt, delta, nfout1, arr1, nfout2, arr2, &
-                   tamp, nrow, ncol, ampo, ier, filename, "_2")
+                    tamp, nrow, ncol, ampo, ier, outfile, "_2")
       end if
 
 
       if (tmin >= 1) then
-         call write_data(arr1, nfout1, arr2, nfout2, trim(adjustl(filename))//'_2')
+         call write_data(arr1, nfout1, arr2, nfout2, trim(adjustl(outfile))//'_2')
       end if
 
 
       deallocate(seis)
-	  if (allocated(arr1)) then
-		 deallocate(arr1)
-	  end if
-	  if (allocated(arr2)) then
-		 deallocate(arr2)
-	  end if
-	  if (allocated(ampo)) then
-		 deallocate(ampo)
-	  end if
-	  if (allocated(pred)) then
-		 deallocate(pred)
-	  end if
+      if (allocated(arr1)) then
+         deallocate(arr1)
+      end if
+      if (allocated(arr2)) then
+         deallocate(arr2)
+      end if
+      if (allocated(ampo)) then
+         deallocate(ampo)
+      end if
+      if (allocated(pred)) then
+         deallocate(pred)
+      end if
 
    end do
 
