@@ -31,5 +31,4 @@ clean:
 
 
 cleanall: clean
-	rm -rf *.o
 	rm -rf $(INST_DIR)/$(BIN)
