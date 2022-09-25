@@ -1284,7 +1284,7 @@ sacfile_prefix = trim(adjustl(path))//'/'//trim(adjustl(stapair_name))//'_'
 
 
 ! Get the time interval.
-dt = sdb%rec(ist1,iev)%dt
+dt = nint(sdb%rec(ist1,1)%dt*1e6)*1.e-6
 ! construct SAC header
 call sacio_newhead(shd, dt, 2*nlag+1, -nlag*dt)
 shd%evla = sdb%st(ist1)%lat
