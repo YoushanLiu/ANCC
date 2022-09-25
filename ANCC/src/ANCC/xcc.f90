@@ -1393,8 +1393,8 @@ if ((0 == nstack) .or. (.not.(is_stack))) then
    end if
    !call system('rm -rf '//trim(adjustl(tarfolder))//'/'//trim(adjustl(str_myrank)))
    if (is_verbose) then
-      write(*,"(A)") 'Output cross-correlation between '//trim(adjustl(sdb%st(ist1)%n_name))// &
-                                    ' and '//trim(adjustl(sdb%st(ist2)%n_name))//' is done ... '
+      write(*,"(A)") 'Cross-correlation between '//trim(adjustl(sdb%st(ist1)%n_name))// &
+                             ' and '//trim(adjustl(sdb%st(ist2)%n_name))//' is done ... '
       call flush(6)
    end if
    return
