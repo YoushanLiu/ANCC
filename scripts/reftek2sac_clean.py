@@ -13,7 +13,7 @@ Affiliation: Institute of Geology and Geophysics, Chinese Academy of Sciences
 
 
 folders structure:
-./your_data_path/period folder/station folder/Reftek UnitID number/day folder/stream/reftek files
+./your_data_path/stage folder/station folder/Reftek UnitID number/day folder/stream/reftek files
 
 for example:
 ./Raw/NE00_2007_276_2008_005/NE00/2007276/9F78/1
@@ -68,7 +68,7 @@ from multiprocessing.dummy import Pool as ThreadPool
 dryrun = True
 
 # direction of the reftek data
-data_path = '/DATA_1/'
+data_path = './DATA_1/'
 
 
 ##############################################################
@@ -78,33 +78,34 @@ def reftek2sac(current_path):
 
 	sac_suffix = '.SAC'
 
-	rootdir = current_path + data_path
-	nrootdir = len(rootdir)
+	rootdir = data_path + '/'
+	#rootdir = current_path + '/' + data_path + '/'
+	len_rootdir = len(rootdir)
 
-	period_folders_list = os.listdir(rootdir)
+	stage_folders_list = os.listdir(rootdir)
 
-	#print(period_folders_list)
+	#print(stage_folders_list)
 	#return
 
 	# convert reftek to sac
-	for station_period_folder in period_folders_list:
+	for station_stage_folder in stage_folders_list:
 
-		station_period_path = rootdir + station_period_folder + '/'
-		print('Entering directory ' + station_period_path[nrootdir:-1])
+		station_stage_path = rootdir + station_stage_folder + '/'
+		print('Entering directory ' + station_stage_path[len_rootdir:-1])
 		print('\n')
 
-		if (not os.path.exists(station_period_path)):
+		if (not os.path.exists(station_stage_path)):
 			continue
 
-		day_folders_list = os.listdir(station_period_path)
+		day_folders_list = os.listdir(station_stage_path)
 
 		#print(day_folders_list)
 		#return
 
 		for day_folder in day_folders_list:
 
-			day_path = station_period_path + day_folder + '/'
-			print('Entering directory ' + day_path[nrootdir:-1])
+			day_path = station_stage_path + day_folder + '/'
+			print('\tEntering directory ' + day_path[len_rootdir:-1])
 			print('\n')
 
 			if (not os.path.exists(day_path)):
@@ -115,14 +116,14 @@ def reftek2sac(current_path):
 			os.system("rm -rf " + day_path + "./*" + sac_suffix)
 			continue
 
-			print('Leaving directory ' + day_path[nrootdir:-1])
+			print('\tLeaving directory ' + day_path[len_rootdir:-1])
 			print('\n')
 
 		del day_folders_list
-		print('Leaving directory ' + station_period_path[nrootdir:-1])
+		print('Leaving directory ' + station_stage_path[len_rootdir:-1])
 		print('\n')
 
-	del period_folders_list
+	del stage_folders_list
 
 	return
 

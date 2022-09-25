@@ -50,20 +50,19 @@ from multiprocessing.dummy import Pool as ThreadPool
 dryrun = False
 
 # direction of the reftek data
-input_folder = 'Raw'
-output_folder = 'cut_DATA'
+input_folder = './DATA_Raw'
+output_folder = './DATA_cut'
 
 # whether save input data
 save_input_data = True
 
 
 # segment length
-#segment_length = 24*3600
-segment_length = 3*3600
+segment_length = 3600*24
 
 # component list to be cut
 # three-components
-#component_list = ['Z', 'N', 'E]
+#component_list = ['Z', 'N', 'E']
 # only Z-component
 component_list = ['Z']
 # only N-component
@@ -206,14 +205,14 @@ def merge_data(hour_files_list):
 
 
 
-def cutdata_daily(station_period_path):
+def cutdata_daily(station_stage_path):
 
-	day_folders_list = os.listdir(station_period_path)
+	day_folders_list = os.listdir(station_stage_path)
 
 	for day_folder in day_folders_list:
 
-		day_path = station_period_path + day_folder + '/'
-		print('Entering directory ' + day_path[nrootdir:-1])
+		day_path = station_stage_path + day_folder + '/'
+		print('\tEntering directory ' + day_path[len_rootdir:-1])
 		print('\n')
 
 		if (not os.path.isdir(day_path)):
@@ -324,7 +323,7 @@ def cutdata_daily(station_period_path):
 			del tr, hour_files_list
 			print('%s is done ... \n' % date2str(starttime_daily))
 
-		print('Leaving directory ' + day_path[nrootdir:-1])
+		print('\tLeaving directory ' + day_path[len_rootdir:-1])
 		print('\n')
 
 	del day_folders_list
@@ -335,34 +334,36 @@ def cutdata_daily(station_period_path):
 
 def cutdata(current_path):
 
-	global nrootdir, output_path, sac_suffix
+	global len_rootdir, output_path, sac_suffix
 
-	rootdir = current_path + '/' + input_folder + '/'
-	nrootdir = len(rootdir)
+	rootdir = input_folder + '/'
+	#rootdir = current_path + '/' + input_folder + '/'
+	len_rootdir = len(rootdir)
 
-	period_folders_list = os.listdir(rootdir)
-
-	output_path = current_path + '/' + output_folder + '/'
+	stage_folders_list = os.listdir(rootdir)
+	
+	output_path = output_folder + '/'
+	#output_path = current_path + '/' + output_folder + '/'
 
 
 	sac_suffix = '.SAC'
 
 	# cut daily sac files into segments
-	for station_period_folder in period_folders_list:
+	for station_stage_folder in stage_folders_list:
 
-		station_period_path = rootdir + station_period_folder + '/'
-		print('Entering directory ' + station_period_path[nrootdir:-1])
+		station_stage_path = rootdir + station_stage_folder + '/'
+		print('Entering directory ' + station_stage_path[len_rootdir:-1])
 		print('\n')
 
-		if (not os.path.exists(station_period_path)):
+		if (not os.path.exists(station_stage_path)):
 			continue
 
-		cutdata_daily(station_period_path)
+		cutdata_daily(station_stage_path)
 
-		print('Leaving directory ' + station_period_path[nrootdir:-1])
+		print('Leaving directory ' + station_stage_path[len_rootdir:-1])
 		print('\n')
 
-	del period_folders_list
+	del stage_folders_list
 
 	return
 

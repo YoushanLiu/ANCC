@@ -5,7 +5,7 @@
 '''
 reftek2sac
 
-This program converts files from reftek to sac format using the ObsPy
+This program convert files from reftek to sac format using the ObsPy
 
 Date: 22/10/2020
 Author: Youshan Liu
@@ -13,7 +13,7 @@ Affiliation: Institute of Geology and Geophysics, Chinese Academy of Sciences
 
 
 folders structure:
-./your_data_folder/period folder/station folder/Reftek UnitID number/day folder/stream/reftek files
+./your_data_folder/stage folder/station folder/Reftek UnitID number/day folder/stream/reftek files
 
 for example:
 ./Raw/NE00_2007_276_2008_005/NE00/2007276/9F78/1
@@ -70,7 +70,7 @@ from multiprocessing.dummy import Pool as ThreadPool
 dryrun = False
 
 # direction of the reftek data
-data_folder = 'DATA_4'
+data_folder = './DATA_4'
 
 
 ##############################################################
@@ -78,13 +78,13 @@ data_folder = 'DATA_4'
 ##############################################################
 def convert_daily(day_folder):
 
-	day_path = station_period_path + day_folder + '/'
-	print('Entering directory ' + day_path[nrootdir:-1])
+	day_path = station_stage_path + day_folder + '/'
+	print('\tEntering directory ' + day_path[len_rootdir:-1])
 	print('\n')
 
 	os.system("rm -rf " + day_path + "./*" + sac_suffix)
 
-	print('Leaving directory ' + day_path[nrootdir:-1])
+	print('\tLeaving directory ' + day_path[len_rootdir:-1])
 	print('\n')
 
 	return
@@ -93,30 +93,31 @@ def convert_daily(day_folder):
 
 def reftek2sac(current_path):
 
-	global nrootdir, station_period_path, sta, sac_suffix
+	global len_rootdir, station_stage_path, sta, sac_suffix
 
-	rootdir = current_path + '/' + data_folder + '/'
-	nrootdir = len(rootdir)
+	rootdir = data_folder + '/'
+	#rootdir = current_path + '/' + data_folder + '/'
+	len_rootdir = len(rootdir)
 
-	period_folders_list = os.listdir(rootdir)
+	stage_folders_list = os.listdir(rootdir)
 
 
-	#print(period_folders_list)
+	#print(stage_folders_list)
 	#return
 
 	sac_suffix = '.SAC'
 
 	# convert reftek to sac
-	for station_period_folder in period_folders_list:
+	for station_stage_folder in stage_folders_list:
 
-		station_period_path = rootdir + station_period_folder + '/'
-		print('Entering directory ' + station_period_path[nrootdir:-1])
+		station_stage_path = rootdir + station_stage_folder + '/'
+		print('Entering directory ' + station_stage_path[len_rootdir:-1])
 		print('\n')
 
-		if (not os.path.isdir(station_period_path)):
+		if (not os.path.isdir(station_stage_path)):
 			continue
 
-		day_folders_list = os.listdir(station_period_path)
+		day_folders_list = os.listdir(station_stage_path)
 
 		pool = ThreadPool()
 		pool.map(convert_daily, day_folders_list)
@@ -124,10 +125,10 @@ def reftek2sac(current_path):
 		pool.join()
 
 		del day_folders_list
-		print('Leaving directory ' + station_period_path[nrootdir:-1])
+		print('Leaving directory ' + station_stage_path[len_rootdir:-1])
 		print('\n')
 
-	del period_folders_list
+	del stage_folders_list
 
 	return
 

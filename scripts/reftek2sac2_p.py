@@ -69,7 +69,7 @@ from multiprocessing.dummy import Pool as ThreadPool
 dryrun = False
 
 # direction of the reftek data
-data_folder = 'DATA_Raw'
+data_folder = './DATA_Raw'
 
 # station information file
 station_list = 'stainfo.lst'
@@ -388,7 +388,7 @@ def convert_hourly(hour_files_path, day_path):
 def convert_daily(day_folder):
 
 	day_path = station_path + day_folder + '/'
-	print('Entering directory ' + day_path[len_rootdir:-1])
+	print('\t\tEntering directory ' + day_path[len_rootdir:-1])
 	print('\n')
 
 	if (not os.path.isdir(day_path)):
@@ -403,7 +403,7 @@ def convert_daily(day_folder):
 		if (not os.path.isdir(UnitID_path)):
 			continue
 
-		print('Entering directory ' + UnitID_path[len_rootdir:-1])
+		print('\t\t\tEntering directory ' + UnitID_path[len_rootdir:-1])
 		print('\n')
 
 		hour_files_path = UnitID_path + '1/'
@@ -411,19 +411,19 @@ def convert_daily(day_folder):
 		if (not os.path.exists(hour_files_path)):
 			continue
 
-		print('Entering directory ' + hour_files_path[len_rootdir:-1])
+		print('\t\t\t\tEntering directory ' + hour_files_path[len_rootdir:-1])
 		print('\n')
 
 		convert_hourly(hour_files_path, day_path)
 
-		print('Leaving directory ' + hour_files_path[len_rootdir:-1])
+		print('\t\t\t\tLeaving directory ' + hour_files_path[len_rootdir:-1])
 		print('\n')
 
-		print('Leaving directory ' + UnitID_path[len_rootdir:-1])
+		print('\t\t\tLeaving directory ' + UnitID_path[len_rootdir:-1])
 		print('\n')
 
 	del UnitID_folders_list
-	print('Leaving directory ' + day_path[len_rootdir:-1])
+	print('\t\tLeaving directory ' + day_path[len_rootdir:-1])
 	print('\n')
 
 	return
@@ -433,8 +433,9 @@ def convert_daily(day_folder):
 def reftek2sac(current_path):
 
 	global len_rootdir, station_path, sta, sac_suffix
-
-	rootdir = current_path + '/' + data_folder + '/'
+	
+	rootdir = data_folder + '/'
+	#rootdir = current_path + '/' + data_folder + '/'
 	len_rootdir = len(rootdir)
 
 	stage_folders_list = os.listdir(rootdir)
@@ -457,7 +458,7 @@ def reftek2sac(current_path):
 		for station_folder in station_folders_list:
 
 			station_path = stage_path + station_folder + '/'
-			print('Entering directory ' + station_path[len_rootdir:-1])
+			print('\tEntering directory ' + station_path[len_rootdir:-1])
 			print('\n')
 
 			if (not os.path.isdir(station_path)):
@@ -471,7 +472,7 @@ def reftek2sac(current_path):
 			pool.join()
 
 			del day_folders_list
-			print('Leaving directory ' + station_path[len_rootdir:-1])
+			print('\tLeaving directory ' + station_path[len_rootdir:-1])
 			print('\n')
 
 		del station_folders_list

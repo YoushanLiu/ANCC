@@ -68,7 +68,7 @@ from obspy.io.sac import SACTrace
 dryrun = False
 
 # direction of the reftek data
-data_folder = 'Raw'
+data_folder = './Raw'
 
 # station information file
 station_list = 'NEsta.lst'
@@ -391,7 +391,7 @@ def convert_daily(station_stage_path):
 	for day_folder in day_folders_list:
 
 		day_path = station_stage_path + day_folder + '/'
-		print('Entering directory ' + day_path[len_rootdir:-1])
+		print('\tEntering directory ' + day_path[len_rootdir:-1])
 		print('\n')
 
 		if (not os.path.exists(day_path)):
@@ -406,7 +406,7 @@ def convert_daily(station_stage_path):
 			if (not os.path.isdir(UnitID_path)):
 				continue
 
-			print('Entering directory ' + UnitID_path[len_rootdir:-1])
+			print('\t\tEntering directory ' + UnitID_path[len_rootdir:-1])
 			print('\n')
 
 			hour_files_path = UnitID_path + '1/'
@@ -414,19 +414,19 @@ def convert_daily(station_stage_path):
 			if (not os.path.exists(hour_files_path)):
 				continue
 
-			print('Entering directory ' + hour_files_path[len_rootdir:-1])
+			print('\t\t\tEntering directory ' + hour_files_path[len_rootdir:-1])
 			print('\n')
 
 			convert_hourly(hour_files_path, day_path)
 
-			print('Leaving directory ' + hour_files_path[len_rootdir:-1])
+			print('\t\t\tLeaving directory ' + hour_files_path[len_rootdir:-1])
 			print('\n')
 
-			print('Leaving directory ' + UnitID_path[len_rootdir:-1])
+			print('\t\tLeaving directory ' + UnitID_path[len_rootdir:-1])
 			print('\n')
 
 		del UnitID_folders_list
-		print('Leaving directory ' + day_path[len_rootdir:-1])
+		print('\tLeaving directory ' + day_path[len_rootdir:-1])
 		print('\n')
 
 	del day_folders_list
@@ -438,8 +438,9 @@ def convert_daily(station_stage_path):
 def reftek2sac(current_path):
 
 	global len_rootdir, sta, sac_suffix
-
-	rootdir = current_path + '/' + data_folder + '/'
+	
+	rootdir = data_folder + '/'
+	#rootdir = current_path + '/' + data_folder + '/'
 	len_rootdir = len(rootdir)
 
 	stage_folders_list = os.listdir(rootdir)
