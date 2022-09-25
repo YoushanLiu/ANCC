@@ -25,4 +25,4 @@ clean:
 	rm -rf $(OBJS) *.mod *__genmod.f90
 
 cleanall:
-	rm -rf $(BIN)
+	rm -rf $(INST_DIR)/$(BIN)
