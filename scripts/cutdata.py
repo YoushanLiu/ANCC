@@ -321,7 +321,7 @@ def cutdata_daily(station_stage_path):
 
 
 			del tr, hour_files_list
-			print('%s is done ... \n' % date2str(starttime_daily))
+			print('\t\t%s is done ... \n' % date2str(starttime_daily))
 
 		print('\tLeaving directory ' + day_path[len_rootdir:-1])
 		#print('\n')
@@ -341,7 +341,7 @@ def cutdata(current_path):
 	len_rootdir = len(rootdir)
 
 	stage_folders_list = os.listdir(rootdir)
-	
+
 	output_path = output_folder + '/'
 	#output_path = current_path + '/' + output_folder + '/'
 
@@ -371,7 +371,7 @@ def cutdata(current_path):
 
 if __name__ == '__main__':
 
-	print('\n')
+	#print('\n')
 	print('cutdata: ')
 	print('This program cuts daily data into segments using the ObsPy (serial version)')
 	print('Youshan Liu at Institute of Geology and Geophysics, Chinese Academy of Sciences')

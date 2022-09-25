@@ -318,7 +318,7 @@ def cutdata_daily(day_folder):
 
 
 		del tr, hour_files_list
-		print('%s is done ... \n' % date2str(starttime_daily))
+		print('\t\t%s is done ... \n' % date2str(starttime_daily))
 
 	print('\tLeaving directory ' + day_path[len_rootdir:-1])
 	#print('\n')
@@ -372,7 +372,7 @@ def cutdata(current_path):
 
 if __name__ == '__main__':
 
-	print('\n')
+	#print('\n')
 	print('cutdata: ')
 	print('This program cuts daily data into segments using the ObsPy (parallel version)')
 	print('Youshan Liu at Institute of Geology and Geophysics, Chinese Academy of Sciences')

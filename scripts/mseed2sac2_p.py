@@ -108,10 +108,10 @@ fhigh = 5.0
 
 # whether downsampling seismograms
 is_decimate = True
-# the downsampling frequency
+# the downsampling_rate, downsampling frequency
 downsampling_rate = 20.0
 
-seconds_daily = 24*3600
+seconds_segment = 24*3600
 ##############################################################
 ##############################################################
 ##############################################################
@@ -134,7 +134,7 @@ def read_station_list(filename):
 			self.stlo = []
 			self.stel = []
 			self.netwk = []
-			
+
 
 	name = ''
 	stla = ''
@@ -172,7 +172,7 @@ def create_sac_filename(stats, network_name, channel_name, sac_suffix):
 	hh   = '%2.2d' % time.hour
 	mm   = '%2.2d' % time.minute
 	ss   = '%2.2d' % time.second
-	fff  = '%3.3d' % (0.001*time.microsecond)
+	fff  = '%3.3d' % (time.microsecond/1000)
 
 	sac_filename = yyyy + '.' + ddd + '.' + hh + '.' + \
 		           mm + '.' + ss + '.' + fff + '.' + \
@@ -221,14 +221,14 @@ def convert_hourly(hour_files_path):
 			continue
 
 		# if this file is not a reftek format
-		#is_sacfile = False
-		#starts = [each.start() for each in re.finditer(sac_suffix, hour_file.upper())]
-		#ends = [start+len(sac_suffix) - 1 for start in starts]
-		#span = [(start, end) for start,end in zip(starts, ends)]
-		#is_sacfile = is_sacfile and (len(span) >= 1)
+		is_sacfile = False
+		starts = [each.start() for each in re.finditer(sac_suffix, hour_file.upper())]
+		ends = [start+len(sac_suffix) - 1 for start in starts]
+		span = [(start, end) for start,end in zip(starts, ends)]
+		is_sacfile = is_sacfile and (len(span) >= 1)
 
-		#if (is_sacfile):
-		#	continue
+		if (is_sacfile):
+			continue
 
 
 		#try:
@@ -280,9 +280,11 @@ def convert_hourly(hour_files_path):
 			#	#tr.detrend('polynomial', order=50)
 			#	tr.detrend('spline', order=3, dspline=5)
 
+
 			# bandpass
 			if (is_bandpass):
 				tr.filter('bandpass', freqmin=flow, freqmax=fhigh, corners=2, zerophase=is_zerophase)
+
 
 			# downsampling
 			if (is_decimate):
@@ -322,6 +324,7 @@ def convert_hourly(hour_files_path):
 			#		print("Error: station %s is not in the station list or filed 'staion' in reftek header is NULL" % station_name)
 			#		return
 
+
 			ipos = -1
 			for j in range(len(sta.name)):
 				res = findstr(hour_files_path[nrootdir:-1], sta.name[j])
@@ -335,6 +338,8 @@ def convert_hourly(hour_files_path):
 
 			network_name = sta.netwk[ipos]
 			tr.stats.station = sta.name[ipos]
+			# set channel name
+			#tr.stats.channel = channel_name[i]
 
 
 			npts_org = tr.stats.npts
@@ -342,7 +347,7 @@ def convert_hourly(hour_files_path):
 			df = tr.stats.sampling_rate
 			starttime_org = tr.stats.starttime
 			endtime_org = tr.stats.endtime
-			
+
 
 			ibeg = 0
 			starttime = starttime_org
@@ -353,24 +358,24 @@ def convert_hourly(hour_files_path):
 			iday2 = endtime_org.julday
 			for iday in range(iday1,iday2+1):
 
-				#endtime = UTCDateTime(starttime.year, starttime.month, starttime.day, 23, 59, 59, 999999)
-				#midtime = starttime + 0.5*seconds_daily
+				#midtime = starttime + 0.5*seconds_segment
 				#endtime = UTCDateTime(midtime.year, midtime.month, midtime.day, 23, 59, 59, 999999)
-				#endtime = UTCDateTime(year=starttime.year, julday=starttime.julday, hour=23, \
-				#                                     minute=59, second=59, microsecond=999999)
-				time_duration = endtime - starttime
+				##endtime = UTCDateTime(starttime.year, starttime.month, starttime.day, 23, 59, 59, 999999)
+				#endtime = UTCDateTime(year=starttime.year, julday=starttime.julday, \
+				#                 hour=23, minute=59, second=59, microsecond=999999)
+				#time_duration = endtime - starttime
 
-				iend = min(ibeg + int(time_duration*df), npts_org)
-				#iend = min(ibeg + round(time_duration*df) + 1, npts_org)
+				iend = min(ibeg + int((endtime-starttime)*df), npts_org)
+				#iend = min(ibeg + round((endtime-starttime)*df) + 1, npts_org)
+
 
 				tr_out = tr.copy()
 				tr_out.data = tr.data[ibeg:iend+1]
 				tr_out.stats.starttime = starttime
 
 
-				sac_filename, day_path = create_sac_filename(tr_out.stats, network_name, st.stats.channel, sac_suffix)
 				#sac_filename, day_path = create_sac_filename(tr_out.stats, network_name, channel_name[i], sac_suffix)
-
+				sac_filename, day_path = create_sac_filename(tr_out.stats, network_name, tr.stats.channel, sac_suffix)
 
 
 				sac_path = output_path + '/' + sta.name[ipos] + '/' + day_path + '/'
@@ -420,15 +425,16 @@ def convert_hourly(hour_files_path):
 
 					del sac
 
-				npts = len(tr_out.data)
-				starttime = starttime + npts*dt
-				endtime = starttime + seconds_daily - dt
-				ibeg = iend + 1
 
 				del tr_out
+				starttime = starttime + (iend-ibeg+1)*dt
+				endtime = starttime + seconds_segment - dt
+				ibeg = iend + 1
+
 
 				if (ibeg > npts_org):
 					break
+
 
 			del tr
 
@@ -444,8 +450,8 @@ def convert_hourly(hour_files_path):
 def convert_daily(day_folder):
 
 	day_path = station_path + day_folder + '/'
-	print('Entering directory ' + day_path[nrootdir:-1])
-	print('\n')
+	print('\t\tEntering directory ' + day_path[nrootdir:-1])
+	#print('\n')
 
 	if (not os.path.isdir(day_path)):
 		return
@@ -459,8 +465,8 @@ def convert_daily(day_folder):
 		if (not os.path.isdir(UnitID_path)):
 			continue
 
-		print('Entering directory ' + UnitID_path[nrootdir:-1])
-		print('\n')
+		print('\t\t\tEntering directory ' + UnitID_path[nrootdir:-1])
+		#print('\n')
 
 		#hour_files_path = UnitID_path + '1/'
 
@@ -468,20 +474,20 @@ def convert_daily(day_folder):
 		#	continue
 
 		#print('Entering directory ' + hour_files_path[nrootdir:-1])
-		#print('\n')
+		##print('\n')
 
 		convert_hourly(UnitID_path)
 		#convert_hourly(hour_files_path, day_path)
 
 		#print('Leaving directory ' + hour_files_path[nrootdir:-1])
+		##print('\n')
+
+		print('\t\t\tLeaving directory ' + UnitID_path[nrootdir:-1])
 		#print('\n')
 
-		print('Leaving directory ' + UnitID_path[nrootdir:-1])
-		print('\n')
-
 	del UnitID_folders_list
-	print('Leaving directory ' + day_path[nrootdir:-1])
-	print('\n')
+	print('\t\tLeaving directory ' + day_path[nrootdir:-1])
+	#print('\n')
 
 	return
 
@@ -509,7 +515,7 @@ def mseed2sac(current_path):
 
 		period_path = rootdir + period_folder + '/'
 		print('Entering directory ' + period_path[nrootdir:-1])
-		print('\n')
+		#print('\n')
 
 		if (not os.path.isdir(period_path)):
 			continue
@@ -519,8 +525,8 @@ def mseed2sac(current_path):
 		for station_folder in station_folders_list:
 
 			station_path = period_path + station_folder + '/'
-			print('Entering directory ' + station_path[nrootdir:-1])
-			print('\n')
+			print('\tEntering directory ' + station_path[nrootdir:-1])
+			#print('\n')
 
 			if (not os.path.isdir(station_path)):
 				continue
@@ -533,12 +539,12 @@ def mseed2sac(current_path):
 			pool.join()
 
 			del day_folders_list
-			print('Leaving directory ' + station_path[nrootdir:-1])
-			print('\n')
+			print('\tLeaving directory ' + station_path[nrootdir:-1])
+			#print('\n')
 
 		del station_folders_list
 		print('Leaving directory ' + period_path[nrootdir:-1])
-		print('\n')
+		#print('\n')
 
 	del period_folders_list
 
@@ -548,7 +554,7 @@ def mseed2sac(current_path):
 
 if __name__ == '__main__':
 
-	print('\n')
+	#print('\n')
 	print('mseed2sac: ')
 	print('This program converts files from reftek to sac format using the ObsPy (parallel version)')
 	print('Youshan Liu at Institute of Geology and Geophysics, Chinese Academy of Sciences')

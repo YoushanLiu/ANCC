@@ -12,7 +12,7 @@ Affiliation: Institute of Geology and Geophysics, Chinese Academy of Sciences
 
 
 folders structure:
-./your_data_folder/stage folder/station folder/mseed UnitID number/day folder/stream/mseed files
+./your_data_folder/period folder/station folder/mseed UnitID number/day folder/stream/mseed files
 
 for example:
 ./Raw/NE00_2007_276_2008_005/NE00/2007276/9F78/1
@@ -76,7 +76,7 @@ data_folder = 'JD.Group5.EPS.Raw'
 output_folder = 'Group5_EPS'
 
 # station information file
-station_list = '../stainfo.lst'
+station_list = 'stainfo.lst'
 
 
 # component list to be converted
@@ -249,7 +249,6 @@ def convert_hourly(hour_files_path):
 			# cancel out the sort in obspy
 			#st.sort(reverse=True)
 		except:
-			print('Failed to read file')
 			continue
 
 
@@ -263,7 +262,6 @@ def convert_hourly(hour_files_path):
 		for i in range(0,min(len(channel_name),len(st))):
 
 			if (channel_name[i][-1] not in component_list):
-				print('Not in component_list')
 				continue
 
 			try:
@@ -453,9 +451,9 @@ def convert_hourly(hour_files_path):
 
 def convert_daily(day_folder):
 
-	day_path = station_stage_path + day_folder + '/'
-	print('Entering directory ' + day_path[nrootdir:-1])
-	print('\n')
+	day_path = station_period_path + day_folder + '/'
+	print('\tEntering directory ' + day_path[nrootdir:-1])
+	#print('\n')
 
 	if (not os.path.isdir(day_path)):
 		return
@@ -469,8 +467,8 @@ def convert_daily(day_folder):
 		if (not os.path.isdir(UnitID_path)):
 			continue
 
-		print('Entering directory ' + UnitID_path[nrootdir:-1])
-		print('\n')
+		print('\t\tEntering directory ' + UnitID_path[nrootdir:-1])
+		#print('\n')
 
 		#hour_files_path = UnitID_path + '1/'
 
@@ -478,20 +476,20 @@ def convert_daily(day_folder):
 		#	continue
 
 		#print('Entering directory ' + hour_files_path[nrootdir:-1])
-		#print('\n')
+		##print('\n')
 
 		convert_hourly(UnitID_path)
 		#convert_hourly(hour_files_path, day_path)
 
 		#print('Leaving directory ' + hour_files_path[nrootdir:-1])
+		##print('\n')
+
+		print('\t\tLeaving directory ' + UnitID_path[nrootdir:-1])
 		#print('\n')
 
-		print('Leaving directory ' + UnitID_path[nrootdir:-1])
-		print('\n')
-
 	del UnitID_folders_list
-	print('Leaving directory ' + day_path[nrootdir:-1])
-	print('\n')
+	print('\tLeaving directory ' + day_path[nrootdir:-1])
+	#print('\n')
 
 	return
 
@@ -499,7 +497,7 @@ def convert_daily(day_folder):
 
 def mseed2sac(current_path):
 
-	global nrootdir, station_stage_path, sta, sac_suffix, output_path
+	global nrootdir, station_period_path, sta, sac_suffix, output_path
 
 	rootdir = current_path + '/' + data_folder + '/'
 	nrootdir = len(rootdir)
@@ -509,22 +507,22 @@ def mseed2sac(current_path):
 		os.makedirs(output_path)
 
 
-	stage_folders_list = os.listdir(rootdir)
+	period_folders_list = os.listdir(rootdir)
 
 
 	sac_suffix = '.SAC'
 
 	# convert mseed to sac
-	for station_stage_folder in stage_folders_list:
+	for station_period_folder in period_folders_list:
 
-		station_stage_path = rootdir + station_stage_folder + '/'
-		print('Entering directory ' + station_stage_path[nrootdir:-1])
-		print('\n')
+		station_period_path = rootdir + station_period_folder + '/'
+		print('Entering directory ' + station_period_path[nrootdir:-1])
+		#print('\n')
 
-		if (not os.path.isdir(station_stage_path)):
+		if (not os.path.isdir(station_period_path)):
 			continue
 
-		day_folders_list = os.listdir(station_stage_path)
+		day_folders_list = os.listdir(station_period_path)
 
 		pool = ThreadPool()
 		pool.map(convert_daily, day_folders_list)
@@ -532,10 +530,10 @@ def mseed2sac(current_path):
 		pool.join()
 
 		del day_folders_list
-		print('Leaving directory ' + station_stage_path[nrootdir:-1])
-		print('\n')
+		print('Leaving directory ' + station_period_path[nrootdir:-1])
+		#print('\n')
 
-	del stage_folders_list
+	del period_folders_list
 
 	return
 
@@ -543,7 +541,7 @@ def mseed2sac(current_path):
 
 if __name__ == '__main__':
 
-	print('\n')
+	#print('\n')
 	print('mseed2sac: ')
 	print('This program converts files from mseed to sac format using the ObsPy (parallel version)')
 	print('Youshan Liu at Institute of Geology and Geophysics, Chinese Academy of Sciences')

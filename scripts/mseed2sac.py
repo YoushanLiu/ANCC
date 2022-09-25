@@ -69,14 +69,18 @@ from obspy.io.sac import SACTrace
 dryrun = False
 
 # direction of the mseed data
-data_folder = 'test2'
-output_folder = 'Group5_EPS'
+#data_folder = 'test2'
+#data_folder = 'JD5'
+#output_folder = 'Group5_EPS'
+data_folder = 'JD.Group5.EPS.Raw'
+output_folder = 'SAC.Group5.EPS'
 
 # station information file
 station_list = 'stainfo.lst'
 
 
-# component list to be converted# only Z-component
+# component list to be converted
+# only Z-component
 #component_list = ['Z']
 # only N-component
 #component_list = ['N']
@@ -106,7 +110,7 @@ is_decimate = True
 # the downsampling_rate, downsampling frequency
 downsampling_rate = 20.0
 
-seconds_daily = 24*3600
+seconds_segment = 24*3600
 ##############################################################
 ##############################################################
 ##############################################################
@@ -129,7 +133,7 @@ def read_station_list(filename):
 			self.stlo = []
 			self.stel = []
 			self.netwk = []
-			
+
 
 	name = ''
 	stla = ''
@@ -244,6 +248,7 @@ def convert_hourly(hour_files_path):
 			# cancel out the sort in obspy
 			#st.sort(reverse=True)
 		except:
+			#print('Fail to read data')
 			continue
 
 
@@ -335,8 +340,7 @@ def convert_hourly(hour_files_path):
 			network_name = sta.netwk[ipos]
 			tr.stats.station = sta.name[ipos]
 			# set channel name
-			#tr_out.stats.channel = channel_name[i]
-
+			#tr.stats.channel = channel_name[i]
 
 
 			npts_org = tr.stats.npts
@@ -344,7 +348,7 @@ def convert_hourly(hour_files_path):
 			df = tr.stats.sampling_rate
 			starttime_org = tr.stats.starttime
 			endtime_org = tr.stats.endtime
-			
+
 
 			ibeg = 0
 			starttime = starttime_org
@@ -358,10 +362,10 @@ def convert_hourly(hour_files_path):
 			for iday in range(iday1,iday2+1):
 
 				#print('\niday = %d' % iday)
-				#midtime = starttime + 0.5*seconds_daily
+				#midtime = starttime + 0.5*seconds_segment
 				#endtime = UTCDateTime(midtime.year, midtime.month, midtime.day, 23, 59, 59, 999999)
-				#endtime = UTCDateTime(year=starttime.year, julday=starttime.julday, hour=23, \
-				#                                     minute=59, second=59, microsecond=999999)
+				#endtime = UTCDateTime(year=starttime.year, julday=starttime.julday, \
+				#                 hour=23, minute=59, second=59, microsecond=999999)
 				#time_duration = endtime - starttime
 				#print(starttime)
 				#print(endtime)
@@ -369,12 +373,14 @@ def convert_hourly(hour_files_path):
 
 				iend = min(ibeg + int((endtime-starttime)*df), npts_org)
 
+
 				tr_out = tr.copy()
 				tr_out.data = tr.data[ibeg:iend+1]
 				tr_out.stats.starttime = starttime
 
 
-				sac_filename, day_path = create_sac_filename(tr_out.stats, network_name, st.stats.channel, sac_suffix)
+				#sac_filename, day_path = create_sac_filename(tr_out.stats, network_name, channel_name[i], sac_suffix)
+				sac_filename, day_path = create_sac_filename(tr_out.stats, network_name, tr.stats.channel, sac_suffix)
 
 
 				sac_path = output_path + '/' + sta.name[ipos] + '/' + day_path + '/'
@@ -392,6 +398,11 @@ def convert_hourly(hour_files_path):
 					if (os.path.exists(outfile) and os.path.isfile(outfile)):
 						os.remove(outfile)
 				else:
+
+					# set channel name
+					#tr_out.stats.channel = channel_name[i]
+					#print('channel = %s, %s, %s' %(tr.stats.channel, tr_out.stats.channel, channel_name[i]))
+
 
 					sac = SACTrace.from_obspy_trace(tr_out)
 
@@ -428,14 +439,13 @@ def convert_hourly(hour_files_path):
 
 
 				del tr_out
-				#npts = len(tr_out.data)
 				starttime = starttime + (iend-ibeg+1)*dt
-				endtime = starttime + seconds_daily - dt
+				endtime = starttime + seconds_segment - dt
 				ibeg = iend + 1
 				#print(tr_out.stats.npts)
 				#print(tr_out.stats.starttime)
 				#print(tr_out.stats.endtime)
-				#print('\n')
+				##print('\n')
 
 
 				if (ibeg > npts_org):
@@ -459,8 +469,8 @@ def convert_daily(station_period_path):
 	for day_folder in day_folders_list:
 
 		day_path = station_period_path + day_folder + '/'
-		print('Entering directory ' + day_path[nrootdir:-1])
-		print('\n')
+		print('\tEntering directory ' + day_path[nrootdir:-1])
+		#print('\n')
 
 		if (not os.path.exists(day_path)):
 			continue
@@ -474,8 +484,8 @@ def convert_daily(station_period_path):
 			if (not os.path.isdir(UnitID_path)):
 				continue
 
-			print('Entering directory ' + UnitID_path[nrootdir:-1])
-			print('\n')
+			print('\t\tEntering directory ' + UnitID_path[nrootdir:-1])
+			#print('\n')
 
 			#hour_files_path = UnitID_path + '1/'
 
@@ -483,20 +493,20 @@ def convert_daily(station_period_path):
 			#	continue
 
 			#print('Entering directory ' + hour_files_path[nrootdir:-1])
-			#print('\n')
+			##print('\n')
 
 			convert_hourly(UnitID_path)
 			#convert_hourly(hour_files_path, day_path)
 
 			#print('Leaving directory ' + hour_files_path[nrootdir:-1])
+			##print('\n')
+
+			print('\t\tLeaving directory ' + UnitID_path[nrootdir:-1])
 			#print('\n')
 
-			print('Leaving directory ' + UnitID_path[nrootdir:-1])
-			print('\n')
-
 		del UnitID_folders_list
-		print('Leaving directory ' + day_path[nrootdir:-1])
-		print('\n')
+		print('\tLeaving directory ' + day_path[nrootdir:-1])
+		#print('\n')
 
 	del day_folders_list
 
@@ -526,7 +536,7 @@ def mseed2sac(current_path):
 
 		station_period_path = rootdir + station_period_folder + '/'
 		print('Entering directory ' + station_period_path[nrootdir:-1])
-		print('\n')
+		#print('\n')
 
 		if (not os.path.exists(station_period_path)):
 			continue
@@ -534,7 +544,7 @@ def mseed2sac(current_path):
 		convert_daily(station_period_path)
 
 		print('Leaving directory ' + station_period_path[nrootdir:-1])
-		print('\n')
+		#print('\n')
 
 	del period_folders_list
 
@@ -544,7 +554,7 @@ def mseed2sac(current_path):
 
 if __name__ == '__main__':
 
-	print('\n')
+	#print('\n')
 	print('mseed2sac: ')
 	print('This program converts files from mseed to sac format using the ObsPy (serial version)')
 	print('Youshan Liu at Institute of Geology and Geophysics, Chinese Academy of Sciences')
