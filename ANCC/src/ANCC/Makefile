@@ -27,4 +27,4 @@ clean:
 	rm -rf *.o *.mod *_genmod.f90
 
 cleanall: clean
-	rm -rf $(BIN)
+	rm -rf $(INST_DIR)/$(BIN)
