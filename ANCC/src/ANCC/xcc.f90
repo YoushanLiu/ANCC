@@ -1939,7 +1939,7 @@ type(sachead), intent(inout) :: head
 real(8), parameter :: deg2rad = 4.d0*datan(1.d0) / 180.d0
 real(8), parameter :: R = 6371.0
 
-real stla, stlo, evla, evlo
+real stla, stlo, evla, evlo, c
 
 
 stla = head%stla * deg2rad
@@ -1947,7 +1947,9 @@ stlo = head%stlo * deg2rad
 evla = head%evla * deg2rad
 evlo = head%evlo * deg2rad
 
-head%dist = R * acos(sin(stla)*sin(evla) + cos(stla)*cos(evla)*cos(stlo - evlo))
+c = sin(stla)*sin(evla) + cos(stla)*cos(evla)*cos(stlo - evlo)
+if (abs(c) > 1.0) c = sign(1.0,c) * c
+head%dist = R * acos(c)
 
 
 end subroutine geodist
