@@ -1283,7 +1283,7 @@ sacfile_prefix = trim(adjustl(path))//'/'//trim(adjustl(stapair_name))//'_'
 
 
 
-!! construct SAC header
+! construct SAC header
 call sacio_nullhead(shd)
 shd%iztype = 11                 ! IO=11
 shd%iftype = 1                  ! ITIME=1
@@ -1357,7 +1357,7 @@ do iev = 1, nev, 1
          dt = nint(sdb%rec(ist1,iev)%dt*1e6)*1.d-6
 		 shd%delta = dt
 		 shd%b = -nlag*dt
-		 shd%e = nlag*dt
+		 shd%e =  nlag*dt
          !! Get the time interval.
          !dt = nint(sdb%rec(ist1,iev)%dt*1e6)*1.d-6
          !call sacio_newhead(shd, dt, 2*nlag+1, -nlag*dt)
