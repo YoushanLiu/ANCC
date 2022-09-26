@@ -1283,19 +1283,19 @@ sacfile_prefix = trim(adjustl(path))//'/'//trim(adjustl(stapair_name))//'_'
 
 
 
-! Get the time interval.
-dt = nint(sdb%rec(ist1,1)%dt*1e6)*1.e-6
-! construct SAC header
-call sacio_newhead(shd, dt, 2*nlag+1, -nlag*dt)
-shd%evla = sdb%st(ist1)%lat
-shd%evlo = sdb%st(ist1)%lon
-shd%stla = sdb%st(ist2)%lat
-shd%stlo = sdb%st(ist2)%lon
-shd%kevnm = trim(adjustl(sdb%st(ist1)%name))
-shd%kstnm = trim(adjustl(sdb%st(ist2)%name))
-shd%kuser1 = trim(adjustl(sdb%st(ist1)%n_name))
-shd%kuser2 = trim(adjustl(sdb%st(ist2)%n_name))
-call geodist(shd)
+!! Get the time interval.
+!dt = nint(sdb%rec(ist1,1)%dt*1e6)*1.e-6
+!! construct SAC header
+!call sacio_newhead(shd, dt, 2*nlag+1, -nlag*dt)
+!shd%evla = sdb%st(ist1)%lat
+!shd%evlo = sdb%st(ist1)%lon
+!shd%stla = sdb%st(ist2)%lat
+!shd%stlo = sdb%st(ist2)%lon
+!shd%kevnm = trim(adjustl(sdb%st(ist1)%name))
+!shd%kstnm = trim(adjustl(sdb%st(ist2)%name))
+!shd%kuser1 = trim(adjustl(sdb%st(ist1)%n_name))
+!shd%kuser2 = trim(adjustl(sdb%st(ist2)%n_name))
+!call geodist(shd)
 
 
 
@@ -1349,17 +1349,22 @@ do iev = 1, nev, 1
       sacname = trim(adjustl(sacfile_prefix))//trim(adjustl(str_stack))//'.SAC'
 
 
-      !! Get the time interval.
-      !dt = sdb%rec(ist1,iev)%dt
-      !call sacio_newhead(shd, dt, 2*nlag+1, -nlag*dt)
-      !shd%evla = sdb%st(ist1)%lat
-      !shd%evlo = sdb%st(ist1)%lon
-      !shd%stla = sdb%st(ist2)%lat
-      !shd%stlo = sdb%st(ist2)%lon
-      !shd%kevnm = trim(adjustl(sdb%st(ist1)%name))
-      !shd%kstnm = trim(adjustl(sdb%st(ist2)%name))
-      !shd%kuser1 = trim(adjustl(sdb%st(ist1)%n_name))
-      !shd%kuser2 = trim(adjustl(sdb%st(ist2)%n_name))
+      if (1 == nstack) then
+         ! Get the time interval.
+         dt = sdb%rec(ist1,iev)%dt
+         call sacio_newhead(shd, dt, 2*nlag+1, -nlag*dt)
+         shd%evla = sdb%st(ist1)%lat
+         shd%evlo = sdb%st(ist1)%lon
+         shd%stla = sdb%st(ist2)%lat
+         shd%stlo = sdb%st(ist2)%lon
+         shd%kevnm = trim(adjustl(sdb%st(ist1)%name))
+         shd%kstnm = trim(adjustl(sdb%st(ist2)%name))
+         shd%kuser1 = trim(adjustl(sdb%st(ist1)%n_name))
+         shd%kuser2 = trim(adjustl(sdb%st(ist2)%n_name))
+         call geodist(shd)
+      end if
+
+
 
       ! Write the single cross-correlation function.
       call sacio_writesac(sacname, shd, tmpcorr, ier)
