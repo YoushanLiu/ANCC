@@ -22,7 +22,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 #define PI 3.141592653589793
+#define deg2rad PI/180.0
 #define R 6371.0
+#define TINYVAL 1.e-38
 
 
 void read_sac(char *fname, float *wf, SACHead *shd, long Nmax)
@@ -113,23 +115,20 @@ void write_sac(char *fname, float *wf, SACHead *shd)
 
 void geodist(SACHead *shd)
 {
-    double stla, stlo, evla, evlo, deg2rad, c, theta;
-    //float PI = 3.141592653589793;
+    double stla, stlo, evla, evlo, c, theta;
 
-    deg2rad = PI / 180.0;
-
-    stla = shd->stla * deg2rad;
-    stlo = shd->stlo * deg2rad;
     evla = shd->evla * deg2rad;
     evlo = shd->evlo * deg2rad;
+    stla = shd->stla * deg2rad;
+    stlo = shd->stlo * deg2rad;
 
 	c = sin(stla)*sin(evla) + cos(stla)*cos(evla)*cos(stlo - evlo);
 
-	if (abs(c - 1.0) < 1.e-38)
+	if (abs(c - 1.0) < TINYVAL)
 	{
 		theta = 0.0;
 	}
-	else if (abs(c + 1.0) < 1.e-38)
+	else if (abs(c + 1.0) < TINYVAL)
 	{
 		then = PI;
 	}
