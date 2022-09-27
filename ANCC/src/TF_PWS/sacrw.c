@@ -113,7 +113,7 @@ void write_sac(char *fname, float *wf, SACHead *shd)
 
 void geodist(SACHead *shd)
 {
-    double stla, stlo, evla, evlo, deg2rad, c;
+    double stla, stlo, evla, evlo, deg2rad, c, theta;
     //float PI = 3.141592653589793;
 
     deg2rad = PI / 180.0;
@@ -124,14 +124,20 @@ void geodist(SACHead *shd)
     evlo = shd->evlo * deg2rad;
 
 	c = sin(stla)*sin(evla) + cos(stla)*cos(evla)*cos(stlo - evlo);
-	if (c > 1.0)
+
+	if (abs(c - 1.0) < 1.e-38)
 	{
-		c = 1.0;
+		theta = 0.0;
 	}
-	else if (c < -1.0)
+	else if (abs(c + 1.0) < 1.e-38)
 	{
-		c = -1.0;
+		then = PI;
 	}
-    shd->dist = (float)(R * acos(c));
+	else
+	{
+		theta = acos(c);
+	}
+
+    shd->dist = (float)(R *theta);
 
 }
