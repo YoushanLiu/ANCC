@@ -27,7 +27,7 @@ Some scripts for ambient noise tomography, such as computing cross-correlation (
 
 3. cross-correlation and frequency-time analysis (Ambient Noise Cross-Correlation)
 
-    It includes the AFTAN.
+    It includes the AFTAN to extract dispersion curve.
 
 4. generating instrument response automatically (makePZfiles)
 
