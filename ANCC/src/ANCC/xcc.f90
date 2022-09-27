@@ -1939,9 +1939,11 @@ end if
 end subroutine xcorr
 
 
-subroutine geodist(head)
 
-type(sachead), intent(inout) :: head
+
+subroutine geodist(shd)
+
+type(sachead), intent(inout) :: shd
 
 
 real(8), parameter :: PI = 4.d0*datan(1.d0)
@@ -1951,10 +1953,10 @@ real(8), parameter :: R = 6371.0
 real(8) stla, stlo, evla, evlo, c, theta
 
 
-evla = head%evla * deg2rad
-evlo = head%evlo * deg2rad
-stla = head%stla * deg2rad
-stlo = head%stlo * deg2rad
+evla = shd%evla * deg2rad
+evlo = shd%evlo * deg2rad
+stla = shd%stla * deg2rad
+stlo = shd%stlo * deg2rad
 
 c = sin(stla)*sin(evla) + cos(stla)*cos(evla)*cos(stlo - evlo)
 
@@ -1966,7 +1968,7 @@ else
    theta = acos(c)
 end if
 
-head%dist = R * theta
+shd%dist = R * theta
 
 
 end subroutine geodist
