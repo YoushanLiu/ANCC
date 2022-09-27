@@ -11,6 +11,8 @@ Some scripts for ambient noise tomography, such as computing cross-correlation (
     
     reftek2sac2_p.py  -> a parallel processing of reftek2sac2.py
 
+	Actually, it is easily modified to convert other file format by using the flexibilty of obspy's read function.
+
 2. cut daily data into predefined-segment data (scripts)
 
    This program first merges daily data, then cut it into predefined-segment. Simultaneously, it resamples data at each natural sampling point.
@@ -23,9 +25,9 @@ Some scripts for ambient noise tomography, such as computing cross-correlation (
     
     cutdata2_p.py     -> a parallel processing of cutdata2.py
 
-3. cross-correlation and frequency-time analysis (Ambient Noise Denoise)
+3. cross-correlation and frequency-time analysis (Ambient Noise Cross-Correlation)
 
-    It utilizes the AFTAN.
+    It includes the AFTAN.
 
 4. generating instrument response automatically (makePZfiles)
 
@@ -36,7 +38,7 @@ Some scripts for ambient noise tomography, such as computing cross-correlation (
 
 
 # Prerequisite
-    The SAC software is required by the AND.
+    The SAC software is required by the ANCC.
     The obspy is required by the scripts.
 
 
