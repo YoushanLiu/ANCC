@@ -1607,7 +1607,7 @@ if ((nstack > 0) .and (is_stack)) then
 
 
             ! Fill in the sac header.
-            call sacio_newhead(shd, dt, 2*nlag+1, -nlag*dt)
+            !call sacio_newhead(shd, dt, 2*nlag+1, -nlag*dt)
             !shd%evla = sdb%st(ist1)%lat
             !shd%evlo = sdb%st(ist1)%lon
             !shd%stla = sdb%st(ist2)%lat
