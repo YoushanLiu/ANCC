@@ -1944,20 +1944,29 @@ subroutine geodist(head)
 type(sachead), intent(inout) :: head
 
 
-real(8), parameter :: deg2rad = 4.d0*datan(1.d0) / 180.d0
+real(8), parameter :: PI = 4.d0*datan(1.d0)
+real(8), parameter :: PI / 180.d0
 real(8), parameter :: R = 6371.0
 
-real stla, stlo, evla, evlo, c
+real(8) stla, stlo, evla, evlo, c, theta
 
 
-stla = head%stla * deg2rad
-stlo = head%stlo * deg2rad
 evla = head%evla * deg2rad
 evlo = head%evlo * deg2rad
+stla = head%stla * deg2rad
+stlo = head%stlo * deg2rad
 
 c = sin(stla)*sin(evla) + cos(stla)*cos(evla)*cos(stlo - evlo)
-if (abs(c) > 1.0) c = sign(1.0,c) * c
-head%dist = R * acos(c)
+
+if (abs(c - 1.0) < tinyval) then
+   theta = 0.0
+else if (abs(c + 1.0) > tinyval) then
+   theta = PI
+else
+   theta = acos(c)
+end if
+
+head%dist = R * theta
 
 
 end subroutine geodist
