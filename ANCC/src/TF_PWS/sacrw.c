@@ -24,7 +24,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #define PI 3.141592653589793
 #define deg2rad PI/180.0
 #define R 6371.0
-#define TINYVAL 1.e-38
+#define TINYVAL 1.e-308
 
 
 void read_sac(char *fname, float *wf, SACHead *shd, long Nmax)
