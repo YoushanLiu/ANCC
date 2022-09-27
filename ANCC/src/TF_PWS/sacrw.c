@@ -115,6 +115,7 @@ void write_sac(char *fname, float *wf, SACHead *shd)
 
 void geodist(SACHead *shd)
 {
+
     double stla, stlo, evla, evlo, c, theta;
 
     evla = shd->evla * deg2rad;
