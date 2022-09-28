@@ -942,18 +942,19 @@ if (myrank == myroot) then
    ! Remove the DATA folder.
    ! ***********************************************************************
    if (.not.(is_overwrite_data)) then
-      call system('rm -rf '//'./tmp/DATA')
+      call system('rm -rf ./tmp/')
+      !call system('rm -rf '//'./tmp/DATA')
    end if
 
    ! ***********************************************************************
    ! Remove possible empty folder(s) and file(s).
    ! ***********************************************************************
-   call system("find "//trim(adjustl(tarfolder))//" -depth -type 'd' -empty -exec rmdir {} \;")
-   call system("find "//trim(adjustl(tarfolder))//' -name "*" -type f -size 0c | xargs -n 1 rm -f')
+   !call system("find "//trim(adjustl(tarfolder))//" -depth -type 'd' -empty -exec rmdir {} \;")
+   !call system("find "//trim(adjustl(tarfolder))//' -name "*" -type f -size 0c | xargs -n 1 rm -f')
 
    write(*,"(A)")
    if (is_ac) then
-      write(*,"(A)") 'Auto-correlation is done ... '
+       write(*,"(A)") 'Auto-correlation is done ... '
    else
       if (is_onlycc) then
          write(*,"(A)") 'Cross-correlation is done ... '
@@ -967,7 +968,7 @@ if (myrank == myroot) then
    ! ***********************************************************************
    ! Remove the tmp folder.
    ! ***********************************************************************
-   call system("find ./tmp -depth -type 'd' -empty -exec rmdir {} \;")
+   !call system("find ./tmp -depth -type 'd' -empty -exec rmdir {} \;")
 
 end if
 
