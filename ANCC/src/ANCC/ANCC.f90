@@ -934,6 +934,8 @@ if (allocated(strArray)) then
 end if
 
 
+write(*,"(A)") 'Postprocessing ...'
+
 if (myrank == myroot) then
 
    ! ***********************************************************************
