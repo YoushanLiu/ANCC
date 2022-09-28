@@ -934,7 +934,9 @@ end if
 
 if (myrank == myroot) then
 
+   write(*,"(A)")
    write(*,"(A)") 'Postprocessing ...'
+   write(*,"(A)")
    call flush(6)
 
    ! ***********************************************************************
