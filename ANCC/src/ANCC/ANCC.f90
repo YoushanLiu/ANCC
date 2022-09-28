@@ -932,9 +932,9 @@ if (allocated(strArray)) then
 end if
 
 
-write(*,"(A)") 'Postprocessing ...'
-
 if (myrank == myroot) then
+
+	write(*,"(A)") 'Postprocessing ...'
 
    ! ***********************************************************************
    ! Remove the DATA folder.
