@@ -934,7 +934,8 @@ end if
 
 if (myrank == myroot) then
 
-	write(*,"(A)") 'Postprocessing ...'
+   write(*,"(A)") 'Postprocessing ...'
+   call flush(6)
 
    ! ***********************************************************************
    ! Remove the DATA folder.
