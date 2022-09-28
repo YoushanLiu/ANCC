@@ -58,7 +58,7 @@ character(len=8) netname, staname, channel
 
 character(len=32) str_per1, str_per4, str_weight
 
-character(len=512) evpath, str_tmp, path
+character(len=512) evpath, str_date, path
 character(len=512) sacfolder, pzfolder, tarfolder
 
 
@@ -497,18 +497,18 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
 
       ! Split the input event path name.
       call split_string(evpath, '/', strArray, nstrArray)
-      str_tmp = strArray(nstrArray)
+      str_date = strArray(nstrArray)
 
 
       ! ***********************************************************************
       ! Fill in the event time information into sdb.ev.
       ! ***********************************************************************
-      read(str_tmp(1:4),*) sdb_tmp%ev(iev)%yy
-      read(str_tmp(5:6),*) sdb_tmp%ev(iev)%mm
-      read(str_tmp(7:8),*) sdb_tmp%ev(iev)%dd
-      read(str_tmp(10:11),*) sdb_tmp%ev(iev)%h
-      read(str_tmp(12:13),*) sdb_tmp%ev(iev)%m
-      read(str_tmp(14:15),*) sdb_tmp%ev(iev)%s
+      read(str_date(1:4),*) sdb_tmp%ev(iev)%yy
+      read(str_date(5:6),*) sdb_tmp%ev(iev)%mm
+      read(str_date(7:8),*) sdb_tmp%ev(iev)%dd
+      read(str_date(10:11),*) sdb_tmp%ev(iev)%h
+      read(str_date(12:13),*) sdb_tmp%ev(iev)%m
+      read(str_date(14:15),*) sdb_tmp%ev(iev)%s
       sdb_tmp%ev(iev)%jday = date2jday(sdb_tmp%ev(iev)%yy, sdb_tmp%ev(iev)%mm, sdb_tmp%ev(iev)%dd)
       sdb_tmp%ev(iev)%t0 = datetime2timestamp(sdb_tmp%ev(iev)%yy, sdb_tmp%ev(iev)%jday, &
                                     sdb_tmp%ev(iev)%h, sdb_tmp%ev(iev)%m, dble(sdb_tmp%ev(iev)%s))
@@ -519,12 +519,10 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
       ! ***********************************************************************
       call system('mkdir -p '//trim(adjustl(tarfolder)))
       if (is_overwrite_data) then
-         path = trim(adjustl(tarfolder))//'/DATA/'//trim(adjustl(strArray(nstrArray-2)))// &
-                      '/'//trim(adjustl(strArray(nstrArray-1)))//'/'//trim(adjustl(str_tmp))
-         sdb_tmp%ev(iev)%name = trim(adjustl(path))
+         sdb_tmp%ev(iev)%name = trim(adjustl(str_date))
       else
          path = './tmp/DATA/'//trim(adjustl(strArray(nstrArray-2)))//'/'// &
-           trim(adjustl(strArray(nstrArray-1)))//'/'//trim(adjustl(str_tmp))
+          trim(adjustl(strArray(nstrArray-1)))//'/'//trim(adjustl(str_date))
          sdb_tmp%ev(iev)%name = trim(adjustl(path))
 
          ! Create the target event folder.
@@ -941,10 +939,15 @@ if (myrank == myroot) then
    ! ***********************************************************************
    ! Remove the DATA folder.
    ! ***********************************************************************
-   if (.not.(is_overwrite_data)) then
-      call system('rm -rf ./tmp/')
-      !call system('rm -rf '//'./tmp/DATA')
+   if (is_overwrite_data) then
+      call system('rm -rf '//trim(adjustl(sacfolder)))
    end if
+
+   ! ***********************************************************************
+   ! Remove the tmp folder.
+   ! ***********************************************************************
+   call system('rm -rf ./tmp/')
+   !call system("find ./tmp -depth -type 'd' -empty -exec rmdir {} \;")
 
    ! ***********************************************************************
    ! Remove possible empty folder(s) and file(s).
@@ -964,11 +967,6 @@ if (myrank == myroot) then
    end if
    write(*,"(A)")
    call flush(6)
-
-   ! ***********************************************************************
-   ! Remove the tmp folder.
-   ! ***********************************************************************
-   !call system("find ./tmp -depth -type 'd' -empty -exec rmdir {} \;")
 
 end if
 
