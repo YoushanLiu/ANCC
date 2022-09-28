@@ -69,7 +69,7 @@ logical is_existed
 
 real(DBL) frac, dt, t0
 
-character(len=512) sacinfile, sacoutfile, sacname, str_tmp
+character(len=512) sacinfile, sacoutfile, sacname, str_date
 
 character(len=128), allocatable, dimension(:) :: strArray
 
@@ -98,9 +98,9 @@ if (.not.(is_existed)) return
 ! ***************************************************************
 if (is_verbose) then
    call split_string(evpath, '/', strArray, nstrArray)
-   str_tmp = strArray(nstrArray)
-   write(*,"('Event: ',A,'   Station: ',A)") trim(adjustl(str_tmp)), &
-                                     trim(adjustl(sdb%st(ist)%n_name))
+   str_date = strArray(nstrArray)
+   write(*,"('Event: ',A,'   Station: ',A)") trim(adjustl(str_date)), &
+                                      trim(adjustl(sdb%st(ist)%n_name))
    call flush(6)
    if (allocated(strArray)) then
       deallocate(strArray)
@@ -281,7 +281,7 @@ integer nstrArray, ier
 
 type(sachead) shd
 
-character(len=512) str_tmp
+character(len=512) str_date, sacname
 
 character(len=128), allocatable, dimension(:) :: strArray
 
@@ -309,11 +309,11 @@ open(unit=17, file=filename, status='replace', action='write', iostat=ier)
       do ist = 1, sdb%nst, 1
 
          call split_string(sdb%ev(iev)%name, '/', strArray, nstrArray)
-         str_tmp = strArray(nstrArray)
+         str_date = strArray(nstrArray)
 
-         write(17,"(A20,$)") str_tmp
+         write(17,"(A20,$)") trim(adjustl(str_date))
 
-         if (sdb%rec(ist,iev)%npts == 0) then    ! Write "NO DATA" if rec[ie][is] == 0
+         if (0 == sdb%rec(ist,iev)%npts) then    ! Write "NO DATA" if rec[ie][is] == 0
 
             write(17,"(A)") 'NO DATA at '//trim(adjustl(sdb%st(ist)%n_name))
 
@@ -325,19 +325,19 @@ open(unit=17, file=filename, status='replace', action='write', iostat=ier)
             ! Write sac file name, t0 (reference time), frac(time fraction),
             ! data length (npts*delta)
             call split_string(sdb%rec(ist,iev)%name, '/', strArray, nstrArray)
-            str_tmp = strArray(nstrArray)
+            sacname = strArray(nstrArray)
 
             if (allocated(strArray)) then
                deallocate(strArray)
             end if
 
             !write(17,"(A30,3X,'t0: ',I4,'/',I3.3,'/',I2.2,':',I2.2,':',A,4X,'Frac:', &
-            !     &F10.5,'s',4X,'Record Length:',F10.2,'s')") trim(adjustl(str_tmp)), &
+            !     &F10.5,'s',4X,'Record Length:',F10.2,'s')") trim(adjustl(sacname)), &
             !                          shd%nzyear, shd%nzjday, shd%nzhour, shd%nzmin, &
             !                 trim(adjustl(padzero(shd%nzsec+0.001*shd%nzmsec,2,3))), &
             !                                 sdb%rec(ist,iev)%frac, shd%delta*shd%npts
             write(17,"(A30,3X,'t0: ',I4,'/',I3.3,'/',I2.2,':',I2.2,':',F10.5,4X,'Frac:', &
-                     &F10.5,'s',4X,'Record Length:',F10.2,'s')") trim(adjustl(str_tmp)), &
+                     &F10.5,'s',4X,'Record Length:',F10.2,'s')") trim(adjustl(sacname)), &
                               shd%nzyear, shd%nzjday, shd%nzhour, shd%nzmin, shd%nzsec + &
                            0.001d0*shd%nzmsec, sdb%rec(ist,iev)%frac, shd%delta*shd%npts
 
@@ -503,7 +503,7 @@ type(sachead) shd
 
 character(len=128) str_myrank
 
-character(len=512) str_tmp
+character(len=512) sacname
 
 real(SGL), allocatable, dimension(:) :: seis_data, abs_data, wgt_data
 
@@ -530,7 +530,7 @@ call sacio_readsac(trim(adjustl(sdb%rec(ist,iev)%name)), shd, seis_data, ier)
 
 
 call split_string(sdb%rec(ist,iev)%name, '/', strArray, nstrArray)
-str_tmp = trim(adjustl(strArray(nstrArray-1)))//'/'//trim(adjustl(strArray(nstrArray)))
+sacname = trim(adjustl(strArray(nstrArray-1)))//'/'//trim(adjustl(strArray(nstrArray)))
 
 
 
@@ -622,7 +622,7 @@ if (abs(frac) > 0.01*dt) then
 
 
    if (is_verbose) then
-      write(*,"(A,' bandpass filtering and fractional time correction is done ... ')") trim(adjustl(str_tmp))
+      write(*,"(A,' bandpass filtering and fractional time correction is done ... ')") trim(adjustl(sacname))
       call flush(6)
    end if
 
@@ -660,7 +660,7 @@ if (is_onebit) then
    seis_data = sign(1.0, seis_data)
 
    if (is_verbose) then
-      write(*,*) trim(adjustl(str_tmp))//' one-bit normalization is done ... '
+      write(*,*) trim(adjustl(sacname))//' one-bit normalization is done ... '
       call flush(6)
    end if
 
@@ -699,7 +699,7 @@ else
       deallocate(abs_data, wgt_data)
 
       if (is_verbose) then
-         write(*,"(A)") trim(adjustl(str_tmp))//' time-domain running absolute average is done ... '
+         write(*,"(A)") trim(adjustl(sacname))//' time-domain running absolute average is done ... '
          call flush(6)
       end if
 
@@ -737,7 +737,7 @@ tre = trb + (n-1)*dt
 ! ***************************************************************
 if ((trb > t0) .or. (tre < tend)) then
    if (is_verbose) then
-      write(*,"(A,A,A,F10.2,A,F10.2,A)") 'Short length file: ', trim(adjustl(str_tmp)), &
+      write(*,"(A,A,A,F10.2,A,F10.2,A)") 'Short length file: ', trim(adjustl(sacname)), &
                                 '  Beginning time:', trb, 's  Bad length:', (N-1)*dt, 's'
       call flush(6)
    end if
@@ -755,7 +755,7 @@ seis_data(Nlen+1:n) = 0.0
 
 
 if (is_verbose) then
-   write(*,"(A)") trim(adjustl(str_tmp))//' cutting data is done ... '
+   write(*,"(A)") trim(adjustl(sacname))//' cutting data is done ... '
    call flush(6)
 end if
 
@@ -841,7 +841,7 @@ if (is_specwhitenning) then
 
 
    if (is_verbose) then
-      write(*,"(A)") trim(adjustl(str_tmp))//' spectral whitenning is done ... '
+      write(*,"(A)") trim(adjustl(sacname))//' spectral whitenning is done ... '
       call flush(6)
    end if
 
@@ -870,7 +870,7 @@ call write_bindata(trim(adjustl(sdb%rec(ist,iev)%name)), nq, sf(1:nq), ier)
 
 
 if (is_verbose) then
-   write(*,"(A)") trim(adjustl(str_tmp))//' fourier spectrum is done ... '
+   write(*,"(A)") trim(adjustl(sacname))//' fourier spectrum is done ... '
    call flush(6)
 end if
 
