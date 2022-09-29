@@ -1423,7 +1423,7 @@ end if
 ! ***************************************************************
 
 
-if ((nstack > 0) .and (is_stack)) then
+if ((nstack > 0) .and. is_stack) then
 
    path = trim(adjustl(tarfolder))//'/CC_AFTAN/'//trim(adjustl(stapair_path))
    call system('mkdir -p '//trim(adjustl(path)))
