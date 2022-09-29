@@ -1947,9 +1947,7 @@ implicit none
 
 type(sachead), intent(inout) :: shd
 
-
-real(8), parameter :: PI = 4.d0*datan(1.d0)
-real(8), parameter :: PI / 180.d0
+real(8), parameter :: deg2rad = PI / 180.d0
 real(8), parameter :: R = 6371.0
 
 real(8) stla, stlo, evla, evlo, c, theta
