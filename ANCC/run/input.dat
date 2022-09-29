@@ -17,7 +17,7 @@ Y 1                              # whether output phase weighted stacking (pws) 
 # INPUT PARAMETERS FOR BOOTSTRAP ANALYSIS
 ##############################################################################
 N 100                            # whether doing the bootstrap, number of repeating times
-2_2                              # a_b-type of dispersion (a=[1-normal; 2-phase matched filtering], b=[1-raw; 2-clear])
+2_2                              # a_b-type of dispersion (a=[1-normal; 2-phase matched filtering], b=[1-raw; 2-clean])
 
 
 ##############################################################################
