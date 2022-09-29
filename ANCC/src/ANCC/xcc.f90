@@ -1943,6 +1943,8 @@ end subroutine xcorr
 
 subroutine geodist(shd)
 
+implicit none
+
 type(sachead), intent(inout) :: shd
 
 
