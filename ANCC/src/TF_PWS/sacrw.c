@@ -131,7 +131,7 @@ void geodist(SACHead *shd)
 	}
 	else if (abs(c + 1.0) < TINYVAL)
 	{
-		then = PI;
+		theta = PI;
 	}
 	else
 	{
