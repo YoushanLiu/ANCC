@@ -58,7 +58,7 @@ do i = 1, nf-2, 1
    ftrig(i+1) = r
 
    if (abs(r) > tresh) then
-      trig(i+1) = sign(1.0, r)
+      trig(i+1) = sign(1.d0, r)
       ier = 1
    endif
 
