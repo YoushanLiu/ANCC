@@ -40,20 +40,20 @@ real(8) hh1, hh2, hh3, r
 
 
 ier = 0
-ftrig(1) = 0.0
-ftrig(nf) = 0.0
-trig(1) = 0.0
-trig(nf) = 0.0
+ftrig(1) = 0.d0
+ftrig(nf) = 0.d0
+trig(1) = 0.d0
+trig(nf) = 0.d0
 
 
 do i = 1, nf-2, 1
 
-   trig(i+1) = 0.0
+   trig(i+1) = 0.d0
    hh1 = om(i+1) - om(i)
    hh2 = om(i+2) - om(i+1)
    hh3 = hh1 + hh2
 
-   r = 25.0*(grvel(i)/hh1 - (1.0/hh1 + 1.0/hh2)*grvel(i+1) + grvel(i+2)/hh2)*hh3
+   r = 25.d0*(grvel(i)/hh1 - (1.d0/hh1 + 1.d0/hh2)*grvel(i+1) + grvel(i+2)/hh2)*hh3
 
    ftrig(i+1) = r
 
