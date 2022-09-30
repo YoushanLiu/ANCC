@@ -61,24 +61,24 @@ nprocs = multiprocessing.cpu_count()
 ###########################################################
 
 BIN_DIR = os.environ['HOME'] + '/bin'
-# create links
-if (not os.path.exists(os.getcwd() + '/AFTAN')):
-	os.symlink(BIN_DIR + '/AFTAN', 'AFTAN')
-else:
-	os.remove('AFTAN')
-	os.symlink(BIN_DIR + '/AFTAN', 'AFTAN')
-
-if (not os.path.exists(os.getcwd() + '/ANCC')):
-	os.symlink(BIN_DIR + '/ANCC', 'ANCC')
-else:
-	os.remove('ANCC')
-	os.symlink(BIN_DIR + '/ANCC', 'ANCC')
-
-if (not os.path.exists(os.getcwd() + '/TF_PWS')):
-	os.symlink(BIN_DIR + '/TF_PWS', 'TF_PWS')
-else:
-	os.remove('TF_PWS')
-	os.symlink(BIN_DIR + '/TF_PWS', 'TF_PWS')
+## create links
+#if (not os.path.exists(os.getcwd() + '/AFTAN')):
+#	os.symlink(BIN_DIR + '/AFTAN', 'AFTAN')
+#else:
+#	os.remove('AFTAN')
+#	os.symlink(BIN_DIR + '/AFTAN', 'AFTAN')
+#
+#if (not os.path.exists(os.getcwd() + '/ANCC')):
+#	os.symlink(BIN_DIR + '/ANCC', 'ANCC')
+#else:
+#	os.remove('ANCC')
+#	os.symlink(BIN_DIR + '/ANCC', 'ANCC')
+#
+#if (not os.path.exists(os.getcwd() + '/TF_PWS')):
+#	os.symlink(BIN_DIR + '/TF_PWS', 'TF_PWS')
+#else:
+#	os.remove('TF_PWS')
+#	os.symlink(BIN_DIR + '/TF_PWS', 'TF_PWS')
 
 ###########################################################
 
@@ -163,7 +163,7 @@ if len(duplicates) > 0:
 # Execute the main program to process the ambient noise data.
 ###########################################################
 starttime = UTCDateTime()
-os.system("mpirun -np %d ./ANCC %s %s %s"%(nprocs, SACfolder, PZfolder, tarfolder))
+os.system("mpirun -np %d ANCC %s %s %s"%(nprocs, SACfolder, PZfolder, tarfolder))
 endtime = UTCDateTime()
 
 elapsed_time = endtime - starttime
