@@ -1270,7 +1270,7 @@ if (is_stack) then
    write(str_myrank, '(I6.6)') myrank
 
    ! Create tmp directory to save single cross-correlation data.
-   path = trim(adjustl(tarfolder))//'/'//trim(adjustl(str_myrank))
+   path = './tmp/'//trim(adjustl(str_myrank))
    call system('rm -rf '//trim(adjustl(path)))
    call system('mkdir '//trim(adjustl(path)))
 else
@@ -1433,7 +1433,7 @@ if ((nstack > 0) .and. is_stack) then
    ! and phase weighted stacking final cross-correlations
    ! ***************************************************************
    sacfile_prefix = trim(adjustl(path))//'/'//trim(adjustl(stapair_name))
-   call system('ls '//trim(adjustl(tarfolder))//'/'//trim(adjustl(str_myrank))//'/*'// &
+   call system('ls ./tmp/'//trim(adjustl(str_myrank))//'/*.SAC'// &
                ' | TF_PWS -B '//trim(adjustl(str_per2))//' -E '//trim(adjustl(str_per1))// &
                ' -W '//trim(adjustl(str_weight))//' -O '//trim(adjustl(sacfile_prefix))// &
                ' -P '//trim(adjustl(str_pws)))
