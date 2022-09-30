@@ -254,7 +254,7 @@ allocate(fils(1:ns), tmp(1:ns), stat=ier)
 call dfftw_plan_dft_1d(plan2, ns, fils, tmp, FFTW_BACKWARD, FFTW_ESTIMATE)
 
 nq = ns/2 + 1
-sf(1) = 0.50*sf(1)
+sf(1) = 0.5d0*sf(1)
 sf(nq) = cmplx(real(sf(nq)), 0.d0)
 
 
