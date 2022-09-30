@@ -50,7 +50,7 @@ wd = max(16.d0, om2d*sqrt(tresh/alpha))
 om1 = nint(max(1.d0, om2d-0.5d0*wd))
 om2 = nint(min(real(ns), om1+wd))
 do i = om1, om2, 1
-   ampdom(i) = 0.50*(1.d0 - cos(PI*(i-om1)/(om2-om1)))
+   ampdom(i) = 0.5d0*(1.d0 - cos(PI*(i-om1)/(om2-om1)))
 enddo
 
 
