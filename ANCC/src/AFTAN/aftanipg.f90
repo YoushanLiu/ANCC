@@ -153,8 +153,8 @@ real(8) t, tim, dmaxt, wor, amax, dph, tm, ph
 
 real(8), parameter :: PI = 4.d0*datan(1.d0)
 
-complex(8), parameter :: c1j = cmplx(0.d0, 1.d0)
-complex(8), parameter :: czero = cmplx(0.d0, 0.d0)
+complex(8), parameter :: c1j = dcmplx(0.d0, 1.d0)
+complex(8), parameter :: czero = dcmplx(0.d0, 0.d0)
 
 integer(4), dimension(:), allocatable :: indx, ii, ijmp
 integer(4), dimension(:,:), allocatable :: ind
