@@ -109,7 +109,7 @@ ns = 2**ceiling(dlog(dble(ncorr))/dlog(2.d0) + 1)
 
 ! convert to complex
 allocate(ss(1:ns), stat=ier)
-ss = cmplx(0.d0,0.d0)
+ss = dcmplx(0.d0,0.d0)
 do k = 1, ncorr, 1
    ss(k) = cmplx(s(k), 0.d0)
 enddo
