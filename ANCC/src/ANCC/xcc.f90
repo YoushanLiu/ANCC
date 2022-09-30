@@ -1784,7 +1784,7 @@ end if ! if (nstack > 0) then
 
 
 ! Remove tmp directory.
-call system('rm -rf '//trim(adjustl(tarfolder))//'/'//trim(adjustl(str_myrank)))
+call system('rm -rf ./tmp/'//trim(adjustl(str_myrank)))
 
 
 
