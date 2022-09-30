@@ -35,7 +35,7 @@ complex(8), intent(out) :: fs(n)
 
 integer(4) k
 
-complex(8), parameter :: czero = cmplx(0.d0,0.d0)
+complex(8), parameter :: czero = dcmplx(0.d0,0.d0)
 
 
 real(8) ome, om2, b
