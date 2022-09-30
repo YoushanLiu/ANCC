@@ -137,7 +137,7 @@ real(8) time, tim, dmaxt, wor, lm, rm, alpha, amax
 
 real(8), parameter :: PI = 4.d0*datan(1.d0)
 
-complex(8), parameter :: czero = (0.d0, 0.d0)
+complex(8), parameter :: czero = dcmplx(0.d0, 0.d0)
 
 integer(4), dimension(:), allocatable :: ii, ijmp, indx
 
