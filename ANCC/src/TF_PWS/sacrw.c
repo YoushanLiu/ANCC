@@ -96,7 +96,7 @@ void write_sac(char *fname, float *wf, SACHead *shd)
     }
 
     // compute distance
-    geodist(&shd);
+    geodist(shd);
 
 
     fwrite(shd, sizeof(SACHead), 1, fsac);
