@@ -1,7 +1,7 @@
 # ANCC
-Some scripts for ambient noise tomography, such as computing cross-correlation (with parallel computing), extracting dispersion curves.
+Some scripts and programs for ambient noise tomography, such as computing cross-correlation, auto-correlation (with parallel computing), and extracting dispersion curves.
 
-1. convert the reftek file format (or other file formats) to the SAC file format (scripts)
+1. Convert the reftek file format (or other file formats) to the SAC file format (scripts)
 
     reftek2sac.py     -> file convertor with the folder structure, such as /root/stage_and_station_name/day/
     
@@ -13,7 +13,7 @@ Some scripts for ambient noise tomography, such as computing cross-correlation (
 
 	Actually, it is easily modified to convert other file formats by using the flexibilty of obspy's read function.
 
-2. cut daily data into predefined-segment data (scripts)
+2. Cut daily data into predefined-segment data (scripts)
 
    This program first merges daily data, then cut it into predefined-segment. Simultaneously, it resamples data at each natural sampling point.
 
@@ -25,13 +25,13 @@ Some scripts for ambient noise tomography, such as computing cross-correlation (
     
     cutdata2_p.py     -> a parallel processing of cutdata2.py
 
-3. cross-correlation and frequency-time analysis (Ambient Noise Cross-Correlation)
+3. Cross-correlation and frequency-time analysis (Ambient Noise Cross-Correlation)
 
     It includes the AFTAN to extract dispersion curve.
 
-4. generating instrument response automatically (makePZfiles)
+4. Generate instrument response automatically (makePZfiles)
 
-    In makePZfiles folder, you can generate automatically instrument response polezero files using resp2pz.py or makePZs.py 
+    In makePZfiles folder, you can generate instrument response polezero files automatically using resp2pz.py or makePZs.py, 
     once fill a excel sheet based on your project log. The former can take responses of sensor and DAS into consideration, 
     it will merge them into one PZ file. While, the latter only take the response of sensor into consideration, then genertes
     corresponding PZ files automatically.
