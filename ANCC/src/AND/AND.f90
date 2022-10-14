@@ -28,7 +28,7 @@ implicit none
 ! ***********************************************************************
 ! Variable declaration section.
 ! ***********************************************************************
-character(64) :: version = ' (v6.3)'
+character(64) :: version = ' (v6.4)'
 
 integer i, j, k, jmax, nlag
 integer nargin, myroot, ier
