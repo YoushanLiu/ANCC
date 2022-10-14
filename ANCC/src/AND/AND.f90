@@ -243,6 +243,7 @@ open(unit=iunit, file='input.dat', status='old', action='read', iostat=ier)
    read(iunit,*) str_onlycc
    read(iunit,*) str_overwrite_data
    read(iunit,*) str_stack_cc
+   read(iunit,*) str_ac
 
 close(unit=iunit)
 
