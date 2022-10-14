@@ -878,12 +878,6 @@ if (is_ac) then
 
       if ((ist1 < 1) .or. (ist2 < 1) .or. (ist1 > ndim1) .or. (ist2 > ndim2)) cycle
 
-
-      ! NOTE: You can comment here for some specific targets,
-      !       such as Z-N or Z-E cross-correlation
-      if (ist2 <= ist1) cycle
-
-
       call cc_and_aftan(sdb, ist1, ist2, nlag, N_bs, is_pws, str_pws, &
                   str_weight, str_per1, str_per4, bs_type, tarfolder)
 
