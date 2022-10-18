@@ -60,7 +60,7 @@ nprocs = multiprocessing.cpu_count()
 
 ###########################################################
 
-BIN_DIR = os.environ['HOME'] + '/bin'
+#BIN_DIR = os.environ['HOME'] + '/bin'
 ## create links
 #if (not os.path.exists(os.getcwd() + '/AFTAN')):
 #	os.symlink(BIN_DIR + '/AFTAN', 'AFTAN')
