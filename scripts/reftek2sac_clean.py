@@ -92,7 +92,7 @@ def reftek2sac(current_path):
 
 		station_stage_path = rootdir + station_stage_folder + '/'
 		print('Entering directory ' + station_stage_path[len_rootdir:-1])
-		#print('\n')
+		print('\n')
 
 		if (not os.path.exists(station_stage_path)):
 			continue
@@ -105,8 +105,8 @@ def reftek2sac(current_path):
 		for day_folder in day_folders_list:
 
 			day_path = station_stage_path + day_folder + '/'
-			print('\tEntering directory ' + day_path[len_rootdir:-1])
-			#print('\n')
+			print('Entering directory ' + day_path[len_rootdir:-1])
+			print('\n')
 
 			if (not os.path.exists(day_path)):
 				continue
@@ -116,12 +116,12 @@ def reftek2sac(current_path):
 			os.system("rm -rf " + day_path + "./*" + sac_suffix)
 			continue
 
-			print('\tLeaving directory ' + day_path[len_rootdir:-1])
-			#print('\n')
+			print('Leaving directory ' + day_path[len_rootdir:-1])
+			print('\n')
 
 		del day_folders_list
 		print('Leaving directory ' + station_stage_path[len_rootdir:-1])
-		#print('\n')
+		print('\n')
 
 	del stage_folders_list
 
