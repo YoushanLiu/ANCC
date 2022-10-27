@@ -212,8 +212,8 @@ def cutdata_daily(station_stage_path):
 	for day_folder in day_folders_list:
 
 		day_path = station_stage_path + day_folder + '/'
-		print('\tEntering directory ' + day_path[len_rootdir:-1])
-		#print('\n')
+		print('Entering directory ' + day_path[len_rootdir:-1])
+		print('\n')
 
 		if (not os.path.isdir(day_path)):
 			return
@@ -321,10 +321,10 @@ def cutdata_daily(station_stage_path):
 
 
 			del tr, hour_files_list
-			print('\t\t%s is done ... \n' % date2str(starttime_daily))
+			print('%s is done ... \n' % date2str(starttime_daily))
 
-		print('\tLeaving directory ' + day_path[len_rootdir:-1])
-		#print('\n')
+		print('Leaving directory ' + day_path[len_rootdir:-1])
+		print('\n')
 
 	del day_folders_list
 
@@ -353,7 +353,7 @@ def cutdata(current_path):
 
 		station_stage_path = rootdir + station_stage_folder + '/'
 		print('Entering directory ' + station_stage_path[len_rootdir:-1])
-		#print('\n')
+		print('\n')
 
 		if (not os.path.exists(station_stage_path)):
 			continue
@@ -361,7 +361,7 @@ def cutdata(current_path):
 		cutdata_daily(station_stage_path)
 
 		print('Leaving directory ' + station_stage_path[len_rootdir:-1])
-		#print('\n')
+		print('\n')
 
 	del stage_folders_list
 
