@@ -109,7 +109,7 @@ def reftek2sac(current_path):
 
 		stage_path = rootdir + stage_folder + '/'
 		print('Entering directory ' + stage_path[len_rootdir:-1])
-		#print('\n')
+		print('\n')
 
 		if (not os.path.isdir(stage_path)):
 			continue
@@ -119,8 +119,8 @@ def reftek2sac(current_path):
 		for station_folder in station_folder_list:
 
 			station_path = stage_path + station_folder + '/'
-			print('\tEntering directory ' + station_path[len_rootdir:-1])
-			#print('\n')
+			print('Entering directory ' + station_path[len_rootdir:-1])
+			print('\n')
 
 			if (not os.path.isdir(station_path)):
 				continue
@@ -133,12 +133,12 @@ def reftek2sac(current_path):
 			pool.join()
 
 			del day_folders_list
-			print('\tLeaving directory ' + station_path[len_rootdir:-1])
-			#print('\n')
+			print('Leaving directory ' + station_path[len_rootdir:-1])
+			print('\n')
 
 		del station_folder_list
 		print('Leaving directory ' + stage_path[len_rootdir:-1])
-		#print('\n')
+		print('\n')
 
 	del stage_folders_list
 
