@@ -126,7 +126,7 @@ def miniseed2reftek(current_path):
 
 		period_path = rootdir + period_folder + '/'
 		print('Entering directory ' + period_path[nrootdir:-1])
-		#print('\n')
+		print('\n')
 
 		if (not os.path.isdir(period_path)):
 			continue
@@ -136,8 +136,8 @@ def miniseed2reftek(current_path):
 		for station_folder in station_folder_list:
 
 			station_path = period_path + station_folder + '/'
-			print('\tEntering directory ' + station_path[nrootdir:-1])
-			#print('\n')
+			print('Entering directory ' + station_path[nrootdir:-1])
+			print('\n')
 
 			if (not os.path.isdir(station_path)):
 				continue
@@ -150,12 +150,12 @@ def miniseed2reftek(current_path):
 			pool.join()
 
 			del day_folders_list
-			print('\tLeaving directory ' + station_path[nrootdir:-1])
-			#print('\n')
+			print('Leaving directory ' + station_path[nrootdir:-1])
+			print('\n')
 
 		del station_folder_list
 		print('Leaving directory ' + period_path[nrootdir:-1])
-		#print('\n')
+		print('\n')
 
 	del period_folders_list
 
