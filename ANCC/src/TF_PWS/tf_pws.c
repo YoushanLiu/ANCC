@@ -373,7 +373,7 @@ int main(int arg, char *arv[])
         Strans(nfft, lo, hi, df, &wf[0], &st[0]);
 
 
-        #pragma omp parallel for private(i, m, n, ioffset, ampl, coef, realpart, imagpart) //num_threads(4)
+        #pragma omp parallel for private(i, m, n, ioffset, ampl, coeff, realpart, imagpart) //num_threads(4)
         for (m = 0; m < nfreq; m++)
         {
 
