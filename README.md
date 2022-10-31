@@ -11,7 +11,8 @@ Some scripts and programs for ambient noise tomography, such as computing cross-
     
     reftek2sac2_p.py  -> a parallel processing of reftek2sac2.py
 
-	Actually, it is easily modified to convert other file formats by using the flexibilty of obspy's read function.
+	Actually, it is easily modified to convert other file formats by using the flexibilty of obspy's read function, i.e. change the FORMAT parameter in read of obspy.
+	A file format should be given, it will improve the performance.
 
 2. Cut daily data into predefined-segment data (scripts)
 
