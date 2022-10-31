@@ -134,7 +134,7 @@ for year in os.listdir(SACfolder):
             #if (len(file_list) <= 1):
             #    print("skip %s because of single station folder\n"%(day_folder))
             #    continue
-            os.system("saclst knetwk kstnm stlo stla delta f %s | awk '{print $2,$3,$4,$5,$6}' >> stations.junk"%(sacfiles))
+            os.system("saclst knetwk kstnm stla stlo delta f %s | awk '{print $2,$3,$4,$5,$6}' >> stations.junk"%(sacfiles))
             os.system("ls %s -d >> events.lst"%(day_folder))
 os.system("sort stations.junk | uniq > stations.lst")
 os.system("rm -rf stations.junk")
