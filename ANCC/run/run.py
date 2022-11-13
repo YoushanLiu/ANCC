@@ -25,7 +25,6 @@
 #=======================================================================================
 # Required auxiliary files and programs:
 #   sac
-#   myTools.py
 #   input.dat
 #   ref1Dmod.dat
 #=======================================================================================
@@ -46,9 +45,9 @@ from multiprocessing.dummy import Pool as ThreadPool
 
 
 ###########################################################
-# Please modify the following three path varialbes with
-# your own case and set the right core numbers for parallel
-# processing according to your own computing resource.
+# Please modify the following three path varialbes in
+# your case and set the number of processors based on
+# your computing resource.
 ###########################################################
 
 SACfolder = "../DATA_cut"
