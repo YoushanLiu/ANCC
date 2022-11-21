@@ -1,6 +1,3 @@
-![Visitor Count](https://profile-counter.glitch.me/{YoushanLiu}/count.svg)
-# 
-
 # ANCC
 Some scripts and programs for ambient noise tomography, such as computing cross-correlation, auto-correlation (with parallel computing), and extracting dispersion curves.
 
