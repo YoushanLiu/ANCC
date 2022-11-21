@@ -42,6 +42,8 @@ Some scripts and programs for ambient noise tomography, such as computing cross-
     The SAC software is required by the ANCC.
     The obspy is required by the scripts.
 
+![Total visitor](https://visitor-count-badge.herokuapp.com/total.svg?repo_id=${YoushanLiu-ANCC})
+
 
 ANCC is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
