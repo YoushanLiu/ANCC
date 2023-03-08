@@ -1365,6 +1365,8 @@ do iev = 1, nev, 1
 		 shd%nzhour = shd%ev(iev)%h
 		 shd%nzmin  = shd%ev(iev)%m
 		 shd%nzsec  = shd%ev(iev)%s
+
+
          !! Get the time interval.
          !dt = nint(sdb%rec(ist1,iev)%dt*1e6)*1.d-6
          !call sacio_newhead(shd, dt, 2*nlag+1, -nlag*dt)
