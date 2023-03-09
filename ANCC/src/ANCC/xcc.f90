@@ -1359,14 +1359,6 @@ do iev = 1, nev, 1
 		 shd%b = -nlag*dt
 		 shd%e =  nlag*dt
 
-
-         shd%nzyear = sdb%ev(iev)%yy
-		 shd%nzjday = date2jday(shd%ev(iev)%yy, shd%ev(iev)%mm, shd%ev(iev)%dd)
-		 shd%nzhour = shd%ev(iev)%h
-		 shd%nzmin  = shd%ev(iev)%m
-		 shd%nzsec  = shd%ev(iev)%s
-
-
          !! Get the time interval.
          !dt = nint(sdb%rec(ist1,iev)%dt*1e6)*1.d-6
          !call sacio_newhead(shd, dt, 2*nlag+1, -nlag*dt)
@@ -1380,6 +1372,13 @@ do iev = 1, nev, 1
          !shd%kuser2 = trim(adjustl(sdb%st(ist2)%n_name))
          !call geodist(shd)
       end if
+
+
+      shd%nzyear = sdb%ev(iev)%yy
+	  shd%nzjday = date2jday(shd%ev(iev)%yy, shd%ev(iev)%mm, shd%ev(iev)%dd)
+	  shd%nzhour = shd%ev(iev)%h
+	  shd%nzmin  = shd%ev(iev)%m
+	  shd%nzsec  = shd%ev(iev)%s
 
 
 
