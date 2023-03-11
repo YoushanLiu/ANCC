@@ -1378,7 +1378,8 @@ do iev = 1, nev, 1
 	  shd%nzjday = date2jday(shd%ev(iev)%yy, shd%ev(iev)%mm, shd%ev(iev)%dd)
 	  shd%nzhour = shd%ev(iev)%h
 	  shd%nzmin  = shd%ev(iev)%m
-	  shd%nzsec  = shd%ev(iev)%s
+	  shd%nzsec  = int(shd%ev(iev)%s)
+	  shd%nzmsec = int((shd%ev(iev)%s - shd%nzsec)*1000)
 
 
 
