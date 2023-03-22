@@ -644,7 +644,7 @@ end if
 !     recvcounts, displs, record_type, myroot, MPI_COMM_WORLD, ier)
 !call MPI_BCAST(sdb%rec, nstxnev, record_type, myroot, MPI_COMM_WORLD, ier)
 call MPI_ALLGATHERV(sdb_tmp%rec, nstxnev_tmp, record_type, sdb%rec, &
-                  recvcounts, displs, record_type, MPI_COMM_WORLD, ier)
+                recvcounts, displs, record_type, MPI_COMM_WORLD, ier)
 
 
 deallocate(sdb_tmp%ev, sdb_tmp%rec, recvcounts, displs)
