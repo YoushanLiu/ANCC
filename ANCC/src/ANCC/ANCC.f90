@@ -194,7 +194,7 @@ call MPI_BARRIER(MPI_COMM_WORLD, ier)
 
 
 
-! Parse the command line input argument.
+! Parse the command line input arguments.
 call get_command_argument(1, sacfolder)
 call get_command_argument(2, pzfolder)
 call get_command_argument(3, tarfolder)
