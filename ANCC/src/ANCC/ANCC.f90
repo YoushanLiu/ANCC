@@ -454,7 +454,7 @@ open(unit=iunit, file='stations.lst', status='old', action='read', iostat=ier)
    ist = 0
 
    do
-      read(iunit, *, iostat=ier) netname, staname, lon, lat
+      read(iunit, *, iostat=ier) netname, staname, lat, lon
       if (0 /= ier) exit
       ist = ist + 1
       sdb%st(ist)%name = trim(adjustl(staname))
