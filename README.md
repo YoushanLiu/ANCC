@@ -1,5 +1,6 @@
 # ANCC
 Some scripts and programs for ambient noise tomography, such as computing cross-correlation, auto-correlation (with parallel computing), and extracting dispersion curves.
+It can also output prestack cross-correlation functions.
 
 1. Convert the reftek file format (or other file formats) to the SAC file format (scripts)
 
