@@ -1224,6 +1224,8 @@ real(DBL), allocatable, dimension(:) :: rand_tmp
 
 complex(SGL), allocatable, dimension(:) :: fftdata1, fftdata2
 
+real, external :: geodist
+
 
 
 
@@ -1298,7 +1300,8 @@ shd%kevnm = trim(adjustl(sdb%st(ist1)%name))
 shd%kstnm = trim(adjustl(sdb%st(ist2)%name))
 shd%kuser1 = trim(adjustl(sdb%st(ist1)%n_name))
 shd%kuser2 = trim(adjustl(sdb%st(ist2)%n_name))
-call geodist(shd)
+!call geodist(shd)
+shd%dist = geodist(shd%evla, shd%evlo, shd%stla, shd%stlo)
 
 
 
@@ -1950,22 +1953,22 @@ end subroutine xcorr
 
 
 
-subroutine geodist(shd)
+real function geodist(stla, stlo, evla, evlo)
 
 implicit none
 
-type(sachead), intent(inout) :: shd
+real, intent(in) :: stla, stlo, evla, evlo
 
 real(8), parameter :: deg2rad = PI / 180.d0
 real(8), parameter :: R = 6371.0
 
-real(8) stla, stlo, evla, evlo, c, theta
+real(8) c, theta
 
 
-evla = shd%evla * deg2rad
-evlo = shd%evlo * deg2rad
-stla = shd%stla * deg2rad
-stlo = shd%stlo * deg2rad
+evla = evla * deg2rad
+evlo = evlo * deg2rad
+stla = stla * deg2rad
+stlo = stlo * deg2rad
 
 c = sin(stla)*sin(evla) + cos(stla)*cos(evla)*cos(stlo - evlo)
 
@@ -1977,10 +1980,11 @@ else
    theta = acos(c)
 end if
 
-shd%dist = R * theta
+geodist = R * theta
 
+return
 
-end subroutine geodist
+end function geodist
 
 
 
