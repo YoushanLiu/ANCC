@@ -114,7 +114,7 @@ void write_sac(char *fname, float *wf, SACHead *shd)
 }
 
 
-float* geodist(float *evlaf, float *evlof, float *stlaf, float *stlof)
+float geodist(float evlaf, float evlof, float stlaf, float stlof)
 {
 
     double stla, stlo, evla, evlo, c, theta;
@@ -126,11 +126,11 @@ float* geodist(float *evlaf, float *evlof, float *stlaf, float *stlof)
 
 	c = sin(stla)*sin(evla) + cos(stla)*cos(evla)*cos(stlo - evlo);
 
-	if (abs(c - 1.0) < TINYVAL)
+	if (fabs(c - 1.0) < TINYVAL)
 	{
 		theta = 0.0;
 	}
-	else if (abs(c + 1.0) < TINYVAL)
+	else if (fabs(c + 1.0) < TINYVAL)
 	{
 		theta = PI;
 	}
@@ -142,3 +142,34 @@ float* geodist(float *evlaf, float *evlof, float *stlaf, float *stlof)
     return (float)(R * theta);
 
 }
+
+
+
+/*void geodist(SACHead *shd)
+{
+
+    double stla, stlo, evla, evlo, c, theta;
+
+    evla = shd->evla * deg2rad;
+    evlo = shd->evlo * deg2rad;
+    stla = shd->stla * deg2rad;
+    stlo = shd->stlo * deg2rad;
+
+	c = sin(stla)*sin(evla) + cos(stla)*cos(evla)*cos(stlo - evlo);
+
+	if (fabs(c - 1.0) < TINYVAL)
+	{
+		theta = 0.0;
+	}
+	else if (fabs(c + 1.0) < TINYVAL)
+	{
+		theta = PI;
+	}
+	else
+	{
+		theta = acos(c);
+	}
+
+    return (float)(R * theta);
+
+}*/
