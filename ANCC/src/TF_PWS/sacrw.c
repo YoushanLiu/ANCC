@@ -96,7 +96,8 @@ void write_sac(char *fname, float *wf, SACHead *shd)
     }
 
     // compute distance
-    geodist(shd);
+    //geodist(shd);
+	shd->dist = geodist(shd->evla, shd->evlo, shd->stla, shd->stlo);
 
 
     fwrite(shd, sizeof(SACHead), 1, fsac);
@@ -113,15 +114,15 @@ void write_sac(char *fname, float *wf, SACHead *shd)
 }
 
 
-void geodist(SACHead *shd)
+float* geodist(float *evlaf, float *evlof, float *stlaf, float *stlof)
 {
 
     double stla, stlo, evla, evlo, c, theta;
 
-    evla = shd->evla * deg2rad;
-    evlo = shd->evlo * deg2rad;
-    stla = shd->stla * deg2rad;
-    stlo = shd->stlo * deg2rad;
+    evla = evlaf * deg2rad;
+    evlo = evlof * deg2rad;
+    stla = stlaf * deg2rad;
+    stlo = stlof * deg2rad;
 
 	c = sin(stla)*sin(evla) + cos(stla)*cos(evla)*cos(stlo - evlo);
 
@@ -138,6 +139,6 @@ void geodist(SACHead *shd)
 		theta = acos(c);
 	}
 
-    shd->dist = (float)(R *theta);
+    return (float)(R * theta);
 
 }
