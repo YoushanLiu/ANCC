@@ -39,9 +39,10 @@ It can also output prestack cross-correlation functions.
     corresponding PZ files automatically.
 
 
-# Prerequisite
+# Prerequisites
     The SAC software is required by the ANCC.
     The obspy is required by the scripts.
+	The xlrd is required by the makePZs.py and resp2pz.py.
 
 
 
