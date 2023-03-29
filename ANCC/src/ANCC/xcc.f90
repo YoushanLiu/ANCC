@@ -1224,6 +1224,7 @@ real(DBL), allocatable, dimension(:) :: rand_tmp
 
 complex(SGL), allocatable, dimension(:) :: fftdata1, fftdata2
 
+real, external :: geodist
 
 
 
