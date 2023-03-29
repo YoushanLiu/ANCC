@@ -8,7 +8,7 @@ It can also output prestack cross-correlation functions.
     
     reftek2sac_p.py   -> a parallel processing of reftek2sac.py
     
-    reftek2sac2.py    -> file convertor with the folder structure, such as /root/staged/station_name/day/
+    reftek2sac2.py    -> file convertor with the folder structure, such as /root/stage/station_name/day/
     
     reftek2sac2_p.py  -> a parallel processing of reftek2sac2.py
 
@@ -35,7 +35,7 @@ It can also output prestack cross-correlation functions.
 
     In makePZfiles folder, you can generate instrument response polezero files automatically using resp2pz.py or makePZs.py, 
     once fill a excel sheet based on your project log. The former can take responses of sensor and DAS into consideration, 
-    it will merge them into one PZ file. While, the latter only take the response of sensor into consideration, then genertes
+    it then merge them into one PZ file. While, the latter only take the response of sensor into consideration, then genertes
     corresponding PZ files automatically.
 
 
