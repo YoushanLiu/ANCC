@@ -167,6 +167,7 @@ static SACHead sac_null = {
 
 void read_sac (char *fname, float *sig, SACHead *shd, long nmax);
 void write_sac(char *fname, float *sig, SACHead *shd);
-void geodist(SACHead *shd);
+float geodist(float evla, float evlo, float stla, float stlo);
+//void geodist(SACHead *shd);
 
 #endif
