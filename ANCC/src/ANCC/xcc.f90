@@ -1950,7 +1950,7 @@ end subroutine xcorr
 
 
 
-real function geodist(stlaf, stlof, evlaf, evlof)
+real function geodist(evlaf, evlof, stlaf, stlof)
 
 implicit none
 
@@ -1962,10 +1962,10 @@ real(8), parameter :: R = 6371.0
 real(8) stla, stlo, evla, evlo, c, theta
 
 
-evla = evla * deg2rad
-evlo = evlo * deg2rad
-stla = stla * deg2rad
-stlo = stlo * deg2rad
+evla = evlaf * deg2rad
+evlo = evlof * deg2rad
+stla = stlaf * deg2rad
+stlo = stlof * deg2rad
 
 c = sin(stla)*sin(evla) + cos(stla)*cos(evla)*cos(stlo - evlo)
 
