@@ -1375,11 +1375,11 @@ do iev = 1, nev, 1
 
 
       shd%nzyear = sdb%ev(iev)%yy
-	  shd%nzjday = date2jday(shd%ev(iev)%yy, shd%ev(iev)%mm, shd%ev(iev)%dd)
-	  shd%nzhour = shd%ev(iev)%h
-	  shd%nzmin  = shd%ev(iev)%m
-	  shd%nzsec  = int(shd%ev(iev)%s)
-	  shd%nzmsec = int((shd%ev(iev)%s - shd%nzsec)*1000)
+	  shd%nzjday = date2jday(sdb%ev(iev)%yy, sdb%ev(iev)%mm, sdb%ev(iev)%dd)
+	  shd%nzhour = sdb%ev(iev)%h
+	  shd%nzmin  = sdb%ev(iev)%m
+	  shd%nzsec  = int(sdb%ev(iev)%s)
+	  shd%nzmsec = int((sdb%ev(iev)%s - shd%nzsec)*1000)
 
 
 
