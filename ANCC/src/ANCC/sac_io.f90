@@ -329,6 +329,8 @@ open(unit=iunit, file=filename, status='replace', action='write', &
       return
    end if
 
+   call flush(iunit)
+
 close(unit=iunit)
 
 
