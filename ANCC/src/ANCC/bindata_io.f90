@@ -184,6 +184,8 @@ open(unit=iunit,file=trim(adjustl(outfile)),action='write',status='replace')
       write(iunit,"(F15.5,4x,2ES25.10)") (k-1)*dt, sacdata(n0+k-1), sacdata(n0-k+1)
    end do
 
+   call flush(iunit)
+
 close(unit=iunit)
 
 
