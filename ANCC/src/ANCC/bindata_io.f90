@@ -175,7 +175,11 @@ infile = trim(adjustl(filename))
 outfile = trim(adjustl(infile(1:len_trim(infile)-4)))//'.dat'
 
 
-open(unit=iunit,file=trim(adjustl(outfile)),action='write',status='replace')
+open(unit=iunit,file=trim(adjustl(outfile)),action='write', iostat=ier,status='replace')
+
+   if (0 /=0 ier) then
+      return
+   end if
 
    write(iunit,"(F15.5,5x,F15.5,11x,F15.5)") evlo, evla, dt
    write(iunit,"(F15.5,5x,F15.5,11x,F15.5)") stlo, stla, dt
