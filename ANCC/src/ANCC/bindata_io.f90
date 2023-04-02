@@ -56,16 +56,16 @@ integer iunit
 iunit = 11 + nprocs + myrank
 
 open(unit=iunit, file=filename, status='replace', action='write', &
-                iostat=ier, access='stream', form='unformatted')
+                   iostat=ier, access='stream', form='unformatted')
 
-  if (0 /= ier) then
+   if (0 /= ier) then
       write(*,"(A,A)") "Error: Cannot open: ", trim(adjustl(filename))
       call flush(6)
       return
-  end if
+   end if
 
-  write(iunit) n
-  write(iunit) comdata(1:n)
+   write(iunit) n
+   write(iunit) comdata(1:n)
 
 close(unit=iunit)
 
@@ -100,7 +100,7 @@ iunit = 11 + myrank
 
 
 open(unit=iunit, file=filename, status='old', action='read', &
-           iostat=ier, access='stream', form='unformatted')
+              iostat=ier, access='stream', form='unformatted')
 
    if (0 /= ier) then
       !write(*,*) trim(adjustl(filename))
@@ -175,7 +175,8 @@ infile = trim(adjustl(filename))
 outfile = trim(adjustl(infile(1:len_trim(infile)-4)))//'.dat'
 
 
-open(unit=iunit, file=trim(adjustl(outfile)), action='write', status='replace', iostat=ier)
+open(unit=iunit, file=trim(adjustl(outfile)), action='write', &
+                                  status='replace', iostat=ier)
 
    if (0 /= ier) then
       write(*,"(A,A)") "Error: Cannot open: ", trim(adjustl(outfile))
