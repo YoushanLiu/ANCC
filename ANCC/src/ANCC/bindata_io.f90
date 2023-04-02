@@ -103,7 +103,7 @@ open(unit=iunit, file=filename, status='old', action='read', &
            iostat=ier, access='stream', form='unformatted')
 
    if (0 /= ier) then
-      write(*,*) trim(adjustl(filename))
+      !write(*,*) trim(adjustl(filename))
       write(*,"(A,A)") "Error: Cannot read: ", trim(adjustl(filename))
       call flush(6)
       return
