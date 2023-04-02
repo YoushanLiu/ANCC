@@ -175,9 +175,10 @@ infile = trim(adjustl(filename))
 outfile = trim(adjustl(infile(1:len_trim(infile)-4)))//'.dat'
 
 
-open(unit=iunit,file=trim(adjustl(outfile)),action='write', iostat=ier,status='replace')
+open(unit=iunit, file=trim(adjustl(outfile)), action='write', status='replace', iostat=ier)
 
-   if (0 /=0 ier) then
+   if (0 /= ier) then
+      write(*,"(A,A)") "Error: Cannot open: ", trim(adjustl(outfile))
       return
    end if
 
