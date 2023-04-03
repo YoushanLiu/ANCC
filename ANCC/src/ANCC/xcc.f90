@@ -1295,8 +1295,8 @@ shd%stla = sdb%st(ist2)%lat
 shd%stlo = sdb%st(ist2)%lon
 shd%kevnm = trim(adjustl(sdb%st(ist1)%name))
 shd%kstnm = trim(adjustl(sdb%st(ist2)%name))
-shd%kuser1 = trim(adjustl(sdb%st(ist1)%n_name))
-shd%kuser2 = trim(adjustl(sdb%st(ist2)%n_name))
+!shd%kuser1 = trim(adjustl(sdb%st(ist1)%n_name))
+!shd%kuser2 = trim(adjustl(sdb%st(ist2)%n_name))
 !call geodist(shd)
 shd%dist = geodist(shd%evla, shd%evlo, shd%stla, shd%stlo)
 
