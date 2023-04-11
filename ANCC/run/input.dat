@@ -40,7 +40,7 @@ N                                # whether output all the preliminary results
 ##############################################################################
 Y                                # whether output the sac file record and cross-correlation record
 Y                                # whether verbose all the processing details
-Y                                # whether only compute cross-correlation
+Y                                # whether only compute cross-correlation, otherwise, it computes cross-correlation and does dispersion analysis
 N                                # whether overwrite the sac files
 Y                                # whether stack cross-correlation
 N                                # whether compute auto-correlation
