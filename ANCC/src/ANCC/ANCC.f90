@@ -296,6 +296,15 @@ end if
 
 
 ! Check parameter validation
+if (.not.(is_stack) .and. .not.(is_onlycc)) then
+   write(*,"(A)") "Dispersion analysis cannot be done for prestack cross-correlation functions !"
+   call flush(6)
+   call MPI_ABORT(MPI_COMM_WORLD, -1, ier)
+   call MPI_FINALIZE(ier)
+   stop
+end if
+
+
 if (is_bandpass_earthquake .and. (fr1 >= fr2)) then
    write(*,"(A)") 'Error: fr1 < fr2 should be satisfied !'
    call flush(6)
