@@ -294,11 +294,12 @@ def convert_hourly(hour_files_path):
 				decimate_factor = int(df / downsampling_rate)
 				if (abs(df - (decimate_factor*downsampling_rate)) > 0.0):
 					print("Error: decimate factor can only be integer !")
-				# Nyquist frequency of the downsampling rate
-				freq_lowpass = 0.499 * tr.stats.sampling_rate / decimate_factor
-				if (not(is_bandpass and (fhigh <= freq_lowpass))):
-					tr.filter('lowpass', freq=freq_lowpass, corners=2, zerophase=True)
-				tr.decimate(factor=decimate_factor, strict_length=False, no_filter=True)
+				if (decimate_factor > 1):
+					# Nyquist frequency of the downsampling rate
+					freq_lowpass = 0.499 * downsampling_rate
+					if (not(is_bandpass and (fhigh <= freq_lowpass))):
+						tr.filter('lowpass', freq=freq_lowpass, corners=2, zerophase=True)
+					tr.decimate(factor=decimate_factor, strict_length=False, no_filter=True)
 
 
 			# get the index of station name in station list
