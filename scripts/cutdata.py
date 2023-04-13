@@ -300,7 +300,8 @@ def cutdata_daily(station_stage_path):
 					sac.nzhour = tr_out.stats.starttime.hour
 					sac.nzmin = tr_out.stats.starttime.minute
 					sac.nzsec = tr_out.stats.starttime.second
-					sac.nzmsec = int(tr_out.stats.starttime.microsecond*1.e-3)
+					#sac.nzmsec = int(tr_out.stats.starttime.microsecond*1.e-3)
+					sac.nzmsec = round(tr_out.stats.starttime.microsecond*1.e-3)
 					sac.b = 0
 					#sac.reftime += sac.b
 					#sac.reftime = tr_out.stats.starttime
