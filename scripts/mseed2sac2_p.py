@@ -271,6 +271,10 @@ def convert_hourly(hour_files_path):
 				continue
 
 
+			dt = tr.stats.delta
+			df = tr.stats.sampling_rate
+
+
 			# some preprocess
 			if (is_demean):
 				tr.detrend(type='demean')
@@ -344,8 +348,6 @@ def convert_hourly(hour_files_path):
 
 
 			npts_org = tr.stats.npts
-			dt = tr.stats.delta
-			df = tr.stats.sampling_rate
 			starttime_org = tr.stats.starttime
 			endtime_org = tr.stats.endtime
 
@@ -381,7 +383,7 @@ def convert_hourly(hour_files_path):
 
 				sac_path = output_path + '/' + sta.name[ipos] + '/' + day_path + '/'
 				if (not os.path.exists(sac_path)):
-					os.makedirs(sac_path)
+					os.makedirs(sac_path, exist_ok=True)
 
 
 				outfile = sac_path + sac_filename
