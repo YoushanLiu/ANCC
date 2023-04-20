@@ -292,7 +292,7 @@ def convert_hourly(hour_files_path):
 
 			# downsampling
 			if (is_decimate):
-				df = tr.stats.sampling_rate
+				#df = tr.stats.sampling_rate
 				if (downsampling_rate > df):
 					print("Error: downsampling rate cannot large than original sampling rate !")
 				decimate_factor = int(df / downsampling_rate)
