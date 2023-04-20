@@ -278,7 +278,7 @@ def cutdata_daily(day_folder):
 
 			# create the path if it does not exist
 			if (not os.path.exists(mypath)):
-				os.makedirs(mypath)
+				os.makedirs(mypath, exist_ok=True)
 
 
 			outfile = mypath + sac_filename
