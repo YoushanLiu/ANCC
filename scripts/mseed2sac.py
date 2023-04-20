@@ -272,11 +272,7 @@ def convert_hourly(hour_files_path):
 				continue
 
 
-			dt = tr.stats.delta
-			df = tr.stats.sampling_rate
-
-
-			# some preprocesses
+				# some preprocesses
 			if (is_demean):
 				tr.detrend(type='demean')
 			if (is_detrend):
@@ -293,7 +289,7 @@ def convert_hourly(hour_files_path):
 
 			# downsampling
 			if (is_decimate):
-				#df = tr.stats.sampling_rate
+				df = tr.stats.sampling_rate
 				if (downsampling_rate > df):
 					print("Error: downsampling rate cannot large than original sampling rate !")
 				decimate_factor = int(df / downsampling_rate)
@@ -349,6 +345,8 @@ def convert_hourly(hour_files_path):
 
 
 			npts_org = tr.stats.npts
+			dt = tr.stats.delta
+			df = tr.stats.sampling_rate
 			starttime_org = tr.stats.starttime
 			endtime_org = tr.stats.endtime
 
