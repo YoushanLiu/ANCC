@@ -258,7 +258,7 @@ def cutdata_daily(day_folder):
 
 			tr_out = tr.copy()
 			tr_out.data = tr.data[ibeg:iend+1]
-			tr_out.stats.starttime = starttime_daily + starttime
+			tr_out.stats.starttime = starttime_daily + tbeg
 
 
 			# remove invalid data
