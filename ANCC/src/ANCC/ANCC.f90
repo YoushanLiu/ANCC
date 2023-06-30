@@ -723,8 +723,8 @@ end if
 
 !! Determine corresponding half-window length for time domain normalization
 !! Maximum allowed half-window length is 128 in sac for smooth command
-!if (nwt > 0.0) then
-!   nwt = min(int(nwt/dt), 128)
+!if (nwt > 0) then
+!   nwt = min(nwt, 128)
 !end if
 
 
