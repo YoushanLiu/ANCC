@@ -720,15 +720,6 @@ if (f4 > 0.5/dt) then
 end if
 
 
-
-!! Determine corresponding half-window length for time domain normalization
-!! Maximum allowed half-window length is 128 in sac for smooth command
-!if (nwt > 0) then
-!   nwt = min(nwt, 128)
-!end if
-
-
-
 call MPI_BARRIER(MPI_COMM_WORLD, ier)
 
 
@@ -793,6 +784,13 @@ ntaper = max(ceiling(max(t0, taper_min) / dt), ntaper_min)
 ! Nlen: number of intercepted data points
 Nlen = nint(tlen/dt)
 
+
+
+! Determine corresponding half-window length for time domain normalization
+! Maximum allowed half-window length is 128 in sac for smooth command
+if (nwt > 0) then
+   nwt = min(nwt, Nlen/2)
+end if
 
 
 
