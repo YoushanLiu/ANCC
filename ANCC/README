@@ -1,31 +1,31 @@
-In default, the intel compiler (such as ifort and mpiifort) is recommended. If you use a gnu compiler, you can comment flags for interl compiler 
+In default, the intel compiler (such as ifort and mpiifort) is recommended. If you use a gnu compiler, you can comment flags for intel compiler 
 and uncomments those for gnu compiler.
 
 This program includes three parts, i.e. AFTAN (original author, Colorado School of Mines), AND (original author [v2.0], Xingli Fan), TF_PWS (original author, Guoliang Li).
-The first part implement time-frequency analysis to extract dispersion curves for ambient noise tomography.
-The second part compute the cross-correlation function with MPI parallel computing.
-The third part implement a phase-weighted stack of cross-correlation.
+The first part implements time-frequency analysis to extract dispersion curves for ambient noise tomography.
+The second part computes the cross-correlation function with MPI parallel computing.
+The third part implements a phase-weighted stack of cross-correlation.
 
-After v3.0, all parts are change to single precision, it leads to a significant performance improvement.
-Any goto syntax are removed. All arrays are dynamically allocated based on the length of data istead of 32768 in the original version.
+After v3.0, all parts are single precision, which leads to a significant performance improvement.
+Any goto syntaxes are removed. All arrays are dynamically allocated based on the length of data instead of 32768 in the original version.
 In this version, a lot of errors had been corrected.
 
 In the original version, all fft operations are directly applied to time-domain signals. Because fft requires a periodic signal, 
-thus it will leads to some suprious oscillations at zero-lag. A cosine taper is applied before fft in time-domain, which can suppresses 
-unpysical zero-arrival suprious oscillations. Many unneccessary file copy and movement operations existed. 
-In addition, the length of cross-correlation of two signals with length of M and N is M+N-1. However, the original version allocate the same length arrays 
-for cross-correlation and signal itself, it will leads to potential aliasing in truncated frequency points.
-After v4.0, different length of arrays for cross-correlation and signal are adopted.
-All unneccessary files copy and movement are avoided, a slight permance improvement is obtained.
+thus it will lead to some spurious oscillations at zero lag. A cosine taper is applied before fft in time domain, which can suppress
+non-physical zero-arrival spurious oscillations. Many unnecessary file copy and movement operations existed. 
+In addition, the length of the cross-correlation of two signals with the length of M and N is M+N-1. However, the original version allocates the same length arrays 
+for cross-correlation and signal itself, it will lead to potential aliasing in truncated frequency points.
+After v4.0, different lengths of arrays for cross-correlation and signal are adopted.
+All unnecessary file copy and movement are avoided, and a slight performance improvement is obtained.
 
-In the original version, a master proccess send and receive task information, while other slave processors do the real computation.
-However, this is completely unneccessary. After redesigning the framework, mater/slave mode is remove. All processors can do the real computaiton.
-Thus, any message passing are avoided. It leads to a significant efficiency improvement.
-After v5.0, master/slave mode is removed. Some constants are moved to module and initialized. Many subroutines are optimized.
-And some related operations are merged, thus many unneccessary file I/O are avoided.
+In the original version, a master process sends and receives task information, while other slave processors do the real computation.
+However, this is completely unnecessary. After redesigning the framework, mater/slave mode is removed. All processors can do the real computation.
+Thus, any message passing parts are avoided. It leads to a significant efficiency improvement.
+After v5.0, master/slave mode is removed. Some constants are moved to a module and initialized. Many subroutines are optimized.
+And some related operations are merged, thus many unnecessary file I/O are avoided.
 
-Although master/slave mode has been removed in v5.0, however, database-constructing part is still serial. It usually takes tens hours. It significantly low the efficiency.
-After 6.0, the database-constructing part is also parallelized. The database struct is redesigned. As a result, the access order of array is same as the storage order 
-in computer memory. A further perormance is obtained.
+Although master/slave mode has been removed in v5.0, however, database-constructing part is still serial. It usually takes tens of hours. It significantly lowers the efficiency.
+After 6.0, the database-constructing part is also parallelized. The database struct is redesigned. As a result, the access order of the array is the same as the storage order 
+in computer memory. Further performance is obtained.
 
 In version 7.0, data overlap is allowed.
