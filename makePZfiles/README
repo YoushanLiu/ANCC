@@ -3,8 +3,8 @@ A script to generate instrument response automatically.
 After you download this script, you should first uncompress the DAS_RESP_Pool and Sensor_RESP_Pool.
 
 In this folder, you can generate automatically instrument response polezero files using resp2pz.py or makePZs.py 
-once fill a excel sheet, /DAS_RESP_Pool/das_used.lst, /Sensor_RESP_Pool/sensor_used.lst based on your project log. 
-The former can take responses of sensor and DAS into consideration, it will merge them into one PZ file. 
+once fill an Excel sheet, /DAS_RESP_Pool/das_used.lst, /Sensor_RESP_Pool/sensor_used.lst based on your project log. 
+The former can take the responses of the sensor and DAS into consideration, it will merge them into one PZ file. 
 And both das_used.lst and sensor_used.lst are required.
-While, the latter only take the response of sensor into consideration, 
-then genertes corresponding PZ files automatically. Thus, only sensor_used.lst is required.
+While the latter only takes the response of the sensor into consideration, 
+then generte corresponding PZ files automatically. Thus, only sensor_used.lst is required.
