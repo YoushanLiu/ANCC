@@ -5,7 +5,7 @@
 '''
 cutdata
 
-This program cuts daily sac files into segments using the ObsPy
+This program cuts daily SAC files into segments using the ObsPy
 
 Date: 25/10/2020
 Author: Youshan Liu
