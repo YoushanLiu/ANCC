@@ -4,7 +4,7 @@
 '''
 mseed2sac
 
-This program converts files from mseed to SAC format using the ObsPy
+This program converts files from MSEED to SAC format using the ObsPy
 
 Date: 22/10/2020
 Author: Youshan Liu
