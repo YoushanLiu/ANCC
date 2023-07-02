@@ -20,7 +20,7 @@ All unnecessary file copy and movement are avoided, and a slight performance imp
 
 In the original version, a master process sends and receives task information, while other slave processors do the real computation.
 However, this is completely unnecessary. After redesigning the framework, mater/slave mode is removed. All processors can do the real computation.
-Thus, any message passing parts are avoided. It leads to a significant efficiency improvement.
+Thus, any message-passing parts are avoided. It leads to a significant efficiency improvement.
 After v5.0, master/slave mode is removed. Some constants are moved to a module and initialized. Many subroutines are optimized.
 And some related operations are merged, thus many unnecessary file I/O are avoided.
 
