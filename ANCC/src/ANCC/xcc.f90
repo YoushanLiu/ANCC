@@ -1270,12 +1270,14 @@ if (is_stack) then
 
    ! Create tmp directory to save single cross-correlation data.
    path = './tmp/'//trim(adjustl(str_myrank))
-   call system('rm -rf '//trim(adjustl(path)))
+   !call system('rm -rf '//trim(adjustl(path)))
+   call system("perl -e 'for(<"//trim(adjustl(path))//"/*>){unlink}'")
    call system('mkdir '//trim(adjustl(path)))
 else
    path = trim(adjustl(tarfolder))//'/CC_AFTAN/'//trim(adjustl(stapair_path))//'/prestack'
    !path = trim(adjustl(tarfolder))//'/CC_AFTAN/'//trim(adjustl(stapair_path))
    !call system('rm -rf '//trim(adjustl(path)))
+   call system("perl -e 'for(<"//trim(adjustl(path))//"/*>){unlink}'")
    call system('mkdir -p '//trim(adjustl(path)))
 end if
 sacfile_prefix = trim(adjustl(path))//'/'//trim(adjustl(stapair_name))//'_'
