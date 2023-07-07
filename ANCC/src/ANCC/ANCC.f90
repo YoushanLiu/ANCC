@@ -319,14 +319,14 @@ end if
 ! ***********************************************************************
 !!call system('rm -rf '//trim(adjustl(tarfolder)))
 if (.not.(is_overwrite_data)) then
-   !call system('rm -rf ./tmp/DATA')
-   call system('perl -e for(<./tmp/DATA/*>){unlink}')
+   call system('rm -rf ./tmp/DATA')
+   !call system("perl -e 'for(<./tmp/DATA/*>){unlink}'")
 end if
 ! ***********************************************************************
 ! Clear the [tmp] folder in current folder.
 ! ***********************************************************************
-!call system('rm -rf ./tmp')
-call system('perl -e for(<./tmp/*>){unlink}')
+call system('rm -rf ./tmp')
+!call system("perl -e 'for(<./tmp/*>){unlink}'")
 ! ***********************************************************************
 ! Create the [tmp] folder in current folder.
 ! ***********************************************************************
@@ -946,15 +946,15 @@ if (myrank == myroot) then
    ! Remove the DATA folder.
    ! ***********************************************************************
    if (is_overwrite_data) then
-      !call system('rm -rf '//trim(adjustl(sacfolder)))
-      call system('perl -e for(<'//trim(adjustl(sacfolder))//'/*>){unlink}')
+      call system('rm -rf '//trim(adjustl(sacfolder)))
+      !call system("perl -e 'for(<'"//trim(adjustl(sacfolder))//"/*>){unlink}'")
    end if
 
    ! ***********************************************************************
    ! Remove the tmp folder.
    ! ***********************************************************************
-   !call system('rm -rf ./tmp/')
-   call system('perl -e for(<./tmp/*>){unlink}')
+   call system('rm -rf ./tmp/')
+   !call system("perl -e 'for(<./tmp/*>){unlink}'")
    !call system("find ./tmp -depth -type 'd' -empty -exec rmdir {} \;")
 
    ! ***********************************************************************
