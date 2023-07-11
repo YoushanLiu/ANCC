@@ -89,7 +89,7 @@ nprocs = multiprocessing.cpu_count()
 os.system('find %s -depth -type "d" -empty -exec rmdir {} \;' %(SACfolder))
 os.system('find %s -name "*" -type f -size 0c | xargs -n 1 rm -f' % (SACfolder))
 
-# Parse the station and event information.
+# Parse the station and event informations.
 ###########################################################
 os.system('rm -rf stations.junk events.lst')
 
