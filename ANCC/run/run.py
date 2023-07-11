@@ -32,7 +32,7 @@
 #        ado.edu/Products/), including the cross-correlation part and the frequency-time
 #        analysis part. The phase-weighted stacking program is modified from Guoliang Li'
 #        code (guoleonlee@gmail.com)
-#        Any bug reports, suggestions or comments related to this program can be directed
+#        Any bugs, suggestions or comments related to this program can be directed
 #        to Xingli Fan via <fanxldengcm@gmail.com>.
 #=======================================================================================
 #=======================================================================================
@@ -45,7 +45,7 @@ from multiprocessing.dummy import Pool as ThreadPool
 
 
 ###########################################################
-# Please modify the following three path varialbes in
+# Please modify the following three path variables in
 # your case and set the number of processors based on
 # your computing resource.
 ###########################################################
@@ -53,6 +53,9 @@ from multiprocessing.dummy import Pool as ThreadPool
 SACfolder = "../DATA_cut"
 PZfolder  = "../PZs_all"
 tarfolder = "./Result_10Hz"
+
+# whether compute auto-correlation
+is_auto_correlation = False
 
 nprocs = multiprocessing.cpu_count()
 
@@ -130,9 +133,9 @@ for year in os.listdir(SACfolder):
             day_folder = month_folder + '/' + day
             sacfiles = day_folder + '/*.SAC'
             file_list = glob.glob(sacfiles)
-            #if (len(file_list) <= 1):
-            #    print("skip %s because of single station folder\n"%(day_folder))
-            #    continue
+            if (not(is_auto_correlation) and (len(file_list) <= 1)):
+                print("skip %s because of single station folder\n"%(day_folder))
+                continue
             os.system("saclst knetwk kstnm stla stlo delta f %s | awk '{print $2,$3,$4,$5,$6}' >> stations.junk"%(sacfiles))
             os.system("ls %s -d >> events.lst"%(day_folder))
 os.system("sort stations.junk | uniq > stations.lst")
