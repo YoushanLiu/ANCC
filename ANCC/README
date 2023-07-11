@@ -10,8 +10,8 @@ After v3.0, all parts are single precision, which leads to a significant perform
 Any goto syntaxes are removed. All arrays are dynamically allocated based on the length of data instead of 32768 in the original version.
 In this version, a lot of errors had been corrected.
 
-In the original version, all fft operations are directly applied to time-domain signals. Because fft requires a periodic signal, 
-thus it will lead to some spurious oscillations at zero lag. A cosine taper is applied before fft in the time domain, which can suppress
+In the original version, all FFT operations are directly applied to time-domain signals. Because FFT requires a periodic signal, 
+thus it will lead to some spurious oscillations at zero lag. A cosine taper is applied before FFT in the time domain, which can suppress
 non-physical zero-arrival spurious oscillations. Many unnecessary file copy and movement operations existed. 
 In addition, the length of the cross-correlation of two signals with the length of M and N is M+N-1. However, the original version allocates the same length arrays 
 for cross-correlation and signal itself, it will lead to potential aliasing in truncated frequency points.
@@ -19,7 +19,7 @@ After v4.0, different lengths of arrays for cross-correlation and signal are ado
 All unnecessary file copy and movement are avoided, and a slight performance improvement is obtained.
 
 In the original version, a master process sends and receives task information, while other slave processors do the real computation.
-However, this is completely unnecessary. After redesigning the framework, the mater/slave mode is removed. All processors can do real computation.
+However, this is completely unnecessary. After redesigning the framework, the master/slave mode is removed. All processors can do real computation.
 Thus, any message-passing parts are avoided. It leads to a significant efficiency improvement.
 After v5.0, master/slave mode is removed. Some constants are moved to a module and initialized. Many subroutines are optimized.
 And some related operations are merged, thus many unnecessary file I/O are avoided.
