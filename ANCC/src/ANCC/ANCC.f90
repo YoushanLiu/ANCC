@@ -251,6 +251,8 @@ close(unit=iunit)
 ! ***********************************************************************
 ! Convert the periods to frequencies.
 ! ***********************************************************************
+write(str_per1,'(F8.2)') f1
+write(str_per4,'(F8.2)') f4
 f1 = 1.0/f1
 f2 = 1.0/f2
 f3 = 1.0/f3
@@ -867,8 +869,6 @@ else
    is_pws = .true.
 end if
 write(str_pws,'(I3)') ipws
-write(str_per1,'(F8.2)') 1.0/f1
-write(str_per4,'(F8.2)') 1.0/f4
 write(str_weight,'(I6)') nweight
 
 
