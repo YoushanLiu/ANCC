@@ -1169,7 +1169,7 @@ end subroutine bandstop_filter
 ! is_save_record: if output cross-correlation is_save_records [input]
 ! =======================================================================================
 subroutine cc_and_aftan(sdb, ist1, ist2, nlag, N_bs, is_pws, str_pws, &
-                   str_weight, str_per1, str_per2, bs_type, tarfolder)
+                   str_weight, str_per1, str_per4, bs_type, tarfolder)
 
 implicit none
 
@@ -1179,7 +1179,7 @@ logical, intent(in) :: is_pws
 type(sac_db), intent(in) :: sdb
 
 character(len=*), intent(in) :: tarfolder, bs_type
-character(len=*), intent(in) :: str_per1, str_per2
+character(len=*), intent(in) :: str_per1, str_per4
 character(len=*), intent(in) :: str_pws, str_weight
 
 
@@ -1445,9 +1445,9 @@ if ((nstack > 0) .and. is_stack) then
    ! ***************************************************************
    sacfile_prefix = trim(adjustl(path))//'/'//trim(adjustl(stapair_name))
    call system('ls ./tmp/'//trim(adjustl(str_myrank))//'/*.SAC'// &
-               ' | TF_PWS -B '//trim(adjustl(str_per2))//' -E '//trim(adjustl(str_per1))// &
-               ' -W '//trim(adjustl(str_weight))//' -O '//trim(adjustl(sacfile_prefix))// &
-               ' -P '//trim(adjustl(str_pws)))
+               ' | TF_PWS -B '//trim(adjustl(str_per4))//' -E '//trim(adjustl(str_per1))// &
+               ' -P '//trim(adjustl(str_pws)))//' -W '//trim(adjustl(str_weight))// &
+               ' -O '//trim(adjustl(sacfile_prefix))
 
    ! ***************************************************************
    ! Convert cross-correlation from sac format to ascii format
