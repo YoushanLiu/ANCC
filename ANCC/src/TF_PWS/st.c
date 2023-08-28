@@ -77,7 +77,7 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
 
 
     // fftwf_plan p1, p2;
-    fftwf_complex *cG;
+    //fftwf_complex *cG;
     static fftwf_plan p1, p2;
     static fftwf_complex *h, *H, *G;
 
@@ -141,7 +141,8 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
     mean = s;
 
     /* FFT. */
-    fftwf_execute(p1); /* h -> H */
+    //fftwf_execute(p1); /* h -> H */
+    fftwf_execute_dft(p1, h, H); /* h -> H */
 
 
     /* Hilbert transform. The upper half-circle gets multiplied by
@@ -166,7 +167,8 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
        multiplied with the FFT of scaled gaussians. */
 
     twopi = 2.0*M_PI*M_PI;
-    #pragma omp parallel for private(i, j, k, ioffset, n, nsqd, s, cG, g) //num_threads(4)
+    //#pragma omp parallel for private(i, j, k, ioffset, n, nsqd, s, cG, g) //num_threads(4)
+    #pragma omp parallel for private(i, j, k, ioffset, n, nsqd, s, G, g) //num_threads(4)
     for (n = lo; n <= hi; n++)
     {
 
@@ -194,7 +196,8 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
 
         scale = 1.0;
         g = (float *)malloc(sizeof(float)*len);
-        cG = (fftwf_complex*)malloc(sizeof(fftwf_complex)*len);
+        //cG = (fftwf_complex*)malloc(sizeof(fftwf_complex)*len);
+        memset(G, 0, sizeof(fftwf_complex) * len);
         if (n == 0)
         {
 
@@ -230,20 +233,24 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
                 s = g[i];
                 k = n + i;
                 if (k >= len) k -= len;
-                cG[i][0] = s * H[k][0];
-                cG[i][1] = s * H[k][1];
+                //cG[i][0] = s * H[k][0];
+                //cG[i][1] = s * H[k][1];
+                G[i][0] = s * H[k][0];
+                G[i][1] = s * H[k][1];
             }
 
             /* Inverse FFT the result to get the next row. */
-            #pragma omp critical (setction1)
+            //#pragma omp critical (setction1)
             {
 
+				/*
                 for (i = 0; i < len; i++)
                 {
                     G[i][0] = cG[i][0];
                     G[i][1] = cG[i][1];
-                }
-                fftwf_execute(p2); /* G -> h */
+                }*/
+                //fftwf_execute(p2); /* G -> h */
+                fftwf_execute_dft(p2, G, h); /* G -> h */
 
                 for (i = 0; i < len; i++)
                 {
@@ -260,10 +267,15 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
         }
 
         free(g);
-        fftwf_free(cG);
+        //fftwf_free(cG);
 
     }
 
+    if (0 != planlen) {
+    	fftwf_free(h);
+    	fftwf_free(G);
+    	fftwf_free(G);
+	}
 }
 
 /* This is the Fourier Transform of a Gaussian. */
@@ -401,7 +413,8 @@ void iStrans(int len, int lo, int hi, float *data, float *result)
     /* Inverse FFT. */
 
 
-    fftwf_execute(p2); /* H -> h */
+    //fftwf_execute(p2); /* H -> h */
+    fftwf_execute(p2, H, h); /* H -> h */
     fftwf_destroy_plan(p2);
 
     p = result;
@@ -486,7 +499,8 @@ void hilbert(int len, float *data, float *result)
 
 
     /* FFT. */
-    fftwf_execute(p1); /* h -> H */
+    //fftwf_execute(p1); /* h -> H */
+    fftwf_execute_dft(p1, h, H); /* h -> H */
 
 
     /* Hilbert transform. The upper half-circle gets multiplied by
@@ -506,7 +520,8 @@ void hilbert(int len, float *data, float *result)
 
 
     /* Inverse FFT. */
-    fftwf_execute(p2); /* H -> h */
+    //fftwf_execute(p2); /* H -> h */
+    fftwf_execute_dft(p2, H, h); /* H -> h */
 
 
     /* Fill in the rows of the result. */
@@ -640,7 +655,8 @@ void iStrans2(int len, int lo, int hi, double df, float *data, float *result)
 
         }
 
-        fftwf_execute(p2); /* H -> h */
+        //fftwf_execute(p2); /* H -> h */
+        fftwf_execute(p2, H, h); /* H -> h */
 
         out = 0.0;
         for (l2 = 0; l2 < len; l2++)
