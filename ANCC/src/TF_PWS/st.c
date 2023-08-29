@@ -148,7 +148,7 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
     /* Hilbert transform. The upper half-circle gets multiplied by
        two, and the lower half-circle gets set to zero.
        The real axis is left alone. */
-    l2 = (len + 1) / 2;
+    /*l2 = (len + 1) / 2;
     for (i = 1; i < l2; i++) {
         H[i][0] *= 2.;
         H[i][1] *= 2.;
@@ -157,7 +157,7 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
     for (i = l2; i < len; i++) {
         H[i][0] = 0.;
         H[i][1] = 0.;
-    }
+    }*/
 
 
     /* Fill in rows of the result. */
