@@ -44,13 +44,13 @@ void set_wisfile(void)
 
 /* Convert frequencies in Hz into rows of the ST, given sampling rate and
    length. */
-int st_freq(double f, int len, double srate)
+/*int st_freq(double f, int len, double srate)
 {
     return floor(f * len / srate + .5);
-}
+}*/
 
 
-static double gauss(int n, int m);
+//static double gauss(int n, int m);
 
 
 /* Stockwell transform of the real array data. The len argument is the
@@ -274,15 +274,16 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
     if (0 != planlen) {
     	fftwf_free(h);
     	fftwf_free(G);
-    	fftwf_free(G);
+    	fftwf_free(H);
 	}
+
 }
 
 /* This is the Fourier Transform of a Gaussian. */
-static double gauss(int n, int m)
+/*static double gauss(int n, int m)
 {
     return exp(-2.0 * M_PI * M_PI * m * m / (n * n));
-}
+}*/
 
 
 
@@ -433,11 +434,16 @@ void iStrans(int len, int lo, int hi, float *data, float *result)
     fclose(fp1);
 #endif
 
+    if (0 != planlen) {
+    	fftwf_free(h);
+    	fftwf_free(G);
+	}
+
 }
 
 
 /* This does just the Hilbert transform. */
-void hilbert(int len, float *data, float *result)
+/*void hilbert(int len, float *data, float *result)
 {
     int i, l2, nq;
 
@@ -531,7 +537,7 @@ void hilbert(int len, float *data, float *result)
         *p++ = h[i][1] / (float)len;
     }
 
-}
+}*/
 
 
 /* Inverse Stockwell transform, this inverse algorithm is based on Schimmel et al. 2005,
@@ -642,7 +648,7 @@ void iStrans2(int len, int lo, int hi, double df, float *data, float *result)
             H[n][1] = *(p + j + 1);
             if (0 == n)
             {
-                mean = H[n][0];
+                //mean = H[n][0];
                 H[n][0] = 0;
                 H[n][1] = 0;
             }
@@ -658,11 +664,11 @@ void iStrans2(int len, int lo, int hi, double df, float *data, float *result)
         //fftwf_execute(p2); /* H -> h */
         fftwf_execute(p2, H, h); /* H -> h */
 
-        out = 0.0;
+        /*out = 0.0;
         for (l2 = 0; l2 < len; l2++)
         {
             out = out + h[l2][0];
-        }
+        }*/
 
         /*
         if( i%40==10 )
@@ -672,7 +678,8 @@ void iStrans2(int len, int lo, int hi, double df, float *data, float *result)
         }
         */
 
-        *result++ = h[i][0] / (float)len + mean;
+        *result++ = h[i][0] / (float)len;
+        //*result++ = h[i][0] / (float)len + mean;
 
     }
 
@@ -703,6 +710,11 @@ void iStrans2(int len, int lo, int hi, double df, float *data, float *result)
     fclose(fp);
     fclose(fp1);
 #endif
+
+    if (0 != planlen) {
+    	fftwf_free(h);
+    	fftwf_free(H);
+	}
 
 }
 
