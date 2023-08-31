@@ -25,6 +25,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 char *Wisfile = NULL;
 char *Wistemplate = "%s/.fftwis";
 
+#define sigma 1.0
+#define sigma2 sigma*sigma
 #define WISLEN 8
 
 
@@ -64,10 +66,11 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
 {
 
     int i, j, k, n, nq, l2;
-    int nsqd, num, ioffset;
+    int nsq, num, ioffset;
 
     float s, mean;
-    float twopi, freq, scale;
+	float two_PIsq, freq;
+    //float two_PIsq, freq, scale;
 
     float *g;
 
@@ -166,15 +169,15 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
     /* Subsequent rows contain the inverse FFT of the spectrum
        multiplied with the FFT of scaled gaussians. */
 
-    twopi = 2.0*M_PI*M_PI;
+    two_PIsq = 2.0*M_PI*M_PI;
     //#pragma omp parallel for private(i, j, k, ioffset, n, nsqd, s, cG, g) //num_threads(4)
-    #pragma omp parallel for private(i, j, k, ioffset, n, nsqd, s, G, g) //num_threads(4)
+    #pragma omp parallel for private(i, j, k, ioffset, n, nsqd, s, G, h, g) //num_threads(4)
     for (n = lo; n <= hi; n++)
     {
 
         ioffset = (n - lo) * 2*len;
 
-        nsqd = n * n;
+        nsq = n * n;
         /* Scale the FFT of the gaussian. Negative frequencies
            wrap around. */
 
@@ -194,7 +197,7 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
           increase the frequency resolution but decrease the time resolution, and vice versa
         */
 
-        scale = 1.0;
+        //scale = 1.0; // sigma*sigma
         g = (float *)malloc(sizeof(float)*len);
         //cG = (fftwf_complex*)malloc(sizeof(fftwf_complex)*len);
         memset(G, 0, sizeof(fftwf_complex) * len);
@@ -217,11 +220,12 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
             //l2 = nq + 1;
             //for (i = 1; i < l2; i++)
             //{
-            //    g[i] = g[len - i] = exp(-twopi * i * i * scale / nsqd);
+            //    g[i] = g[len - i] = exp(-two_PIsq * i * i * scale / nsq);
             //}
             for (i = 1; i <= nq; i++)
             {
-                g[i] = exp(-twopi * i * i * scale / nsqd);
+                //g[i] = exp(-two_PIsq * i * i * scale / nsq);
+                g[i] = exp(-two_PIsq * i * i * sigma2 / nsq);
             }
             for (i = nq + 1; i < len; i++)
             {
@@ -303,7 +307,7 @@ void iStrans(int len, int lo, int hi, float *data, float *result)
     static fftwf_complex *h, *H;
 
 
-#ifdef debuge
+/*#ifdef debuge
     FILE *fp, *fp1;
 
     if ((fp = fopen("new_SP.dat", "w")) == NULL)
@@ -316,7 +320,7 @@ void iStrans(int len, int lo, int hi, float *data, float *result)
         printf("signal.dat cannot be writen!\n");
         exit(0);
     }
-#endif
+#endif*/
 
 
     nq = (int)(len / 2);
@@ -375,23 +379,23 @@ void iStrans(int len, int lo, int hi, float *data, float *result)
         for (i = 0; i < len; i++)
         {
 
-#ifdef debuge
+/*#ifdef debuge
             fprintf(fp, "%8.5f ", *p);
-#endif
+#endif*/
 
             H[n][0] += *p++;
 
-#ifdef debuge
+/*#ifdef debuge
             fprintf(fp, "%8.5f ", *p);
-#endif
+#endif*/
 
             H[n][1] += *p++;
 
         }
 
-#ifdef debuge
+/*#ifdef debuge
         fprintf(fp, "\n");
-#endif
+#endif*/
 
     }
 
@@ -423,16 +427,16 @@ void iStrans(int len, int lo, int hi, float *data, float *result)
 
         *p++ = h[i][0] / (float)len;
 
-#ifdef debuge
+/*#ifdef debuge
         fprintf(fp1, "%7.5lf ", h[i][0] / len);
-#endif
+#endif*/
 
     }
 
-#ifdef debuge
+/*#ifdef debuge
     fclose(fp);
     fclose(fp1);
-#endif
+#endif*/
 
     if (0 != planlen) {
     	fftwf_free(h);
@@ -568,7 +572,7 @@ void iStrans2(int len, int lo, int hi, double df, float *data, float *result)
     }
     */
 
-#ifdef debuge
+/*#ifdef debuge
     FILE *fp, *fp1;
 
     if ((fp = fopen("new_SP.dat", "w")) == NULL)
@@ -581,7 +585,7 @@ void iStrans2(int len, int lo, int hi, double df, float *data, float *result)
         printf("signal.dat cannot be writen!\n");
         exit(0);
     }
-#endif
+#endif*/
 
 
     nq = (int)(len / 2);
@@ -631,7 +635,7 @@ void iStrans2(int len, int lo, int hi, double df, float *data, float *result)
 
 
     /* Sum the complex array across time. */
-    scale = sqrt(2.0 * M_PI);
+    scale = sqrt(2.0 * M_PI) * sigma;
     memset(H, 0, sizeof(fftwf_complex) * len);
 
 
@@ -706,10 +710,10 @@ void iStrans2(int len, int lo, int hi, double df, float *data, float *result)
     fftwf_destroy_plan(p2);
 
 
-#ifdef debuge
+/*#ifdef debuge
     fclose(fp);
     fclose(fp1);
-#endif
+#endif*/
 
     if (0 != planlen) {
     	fftwf_free(h);
