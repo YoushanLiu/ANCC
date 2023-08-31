@@ -1,12 +1,6 @@
 # Makefile for ANCC
 
-# Select your compiler
-MPIFC=mpiifort # MPI Fortran compiler binding with ifort [recommended]
-#MPIFC=mpif90   # MPI Fortran compiler binding with gfortran or intel
-                # you should check mpif90 --version
-                # It binds with the GNU compiler if it outputs GNU Fortran (GCC)
-                # It binds with the Intel compiler if it outputs ifort (IFORT)
-#MPIFC=pgf90    # PGI Fortran compiler with -Mmpi=mpich2
+c
 
 
 
@@ -19,7 +13,7 @@ SUBDIRS = \
 SUBDIRS := $(addprefix ./src/,$(SUBDIRS))
 
 
-。PHONY: config build
+all: config build
 
 config:
 	@./config.guess $(MPIFC)
