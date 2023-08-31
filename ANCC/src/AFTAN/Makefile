@@ -1,28 +1,49 @@
-include ../../config.h
+# Makefile for ANCC
 
-BIN = AFTAN
+# Select your compiler
+MPIFC=mpiifort # MPI Fortran compiler binding with ifort [recommended]
+#MPIFC=mpif90   # MPI Fortran compiler binding with gfortran or intel
+                # you should check mpif90 --version
+                # It binds with the GNU compiler if it outputs GNU Fortran (GCC)
+                # It binds with the Intel compiler if it outputs ifort (IFORT)
+#MPIFC=pgf90    # PGI Fortran compiler with -Mmpi=mpich2
 
-LIBS = -lfftw3
-
-OBJS = misc.o swapn.o taper.o dispio.o ftfilt.o fmax.o trigger.o tapers.o tgauss.o mspline.o pred_cur.o phtovel.o aftanpg.o aftanipg.o AFTAN.o
 
 
-all: $(OBJS)
-%.o: %.c
-	$(CC) $(CFLAGS) $(LIBS) -c $< -o $@
-%.o: %.f90
-	$(FC) $(FFLAGS) $(LIBS) -c $< -o $@
-%.o: %.f
-	$(FC) $(FFLAGS) $(LIBS) -c $< -o $@
+SUBDIRS = \
+	AFTAN \
+	ANCC \
+	TF_PWS \
+	$(EMPTY_MACRO)
 
-install:
+SUBDIRS := $(addprefix ./src/,$(SUBDIRS))
+
+
+。PHONY: config build
+
+config:
+	@./config.guess $(MPIFC)
+include ./config.h
 ifeq ($(wildcard $(INST_DIR)),)
 	mkdir $(INST_DIR)
 endif
-	$(FC) $(FFLAGS) $(OBJS) $(LIBS) -o $(INST_DIR)/$(BIN)
+
+define BUILD
+$(MAKE) -C $(1) all
+endef
+define CLEAN
+$(MAKE) -C $(1) clean
+endef
+define CLEANALL
+$(MAKE) -C $(1) cleanall
+endef
+
+
+build:
+	$(foreach dir, $(SUBDIRS), $(call BUILD,$(dir));)
 
 clean:
-	rm -rf $(OBJS) *.mod *__genmod.f90
+	$(foreach dir, $(SUBDIRS), $(call CLEAN,$(dir));)
 
-cleanall:
-	rm -rf $(INST_DIR)/$(BIN)
+cleanall: clean
+	$(foreach dir, $(SUBDIRS), $(call CLEANALL,$(dir));)
