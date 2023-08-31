@@ -70,7 +70,7 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
     int nsq, num, ioffset;
 
     float s, mean;
-	float two_PIsq, freq;
+	float a, freq;
     //float two_PIsq, freq, scale;
 
     float *g;
@@ -170,7 +170,7 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
     /* Subsequent rows contain the inverse FFT of the spectrum
        multiplied with the FFT of scaled gaussians. */
 
-    two_PIsq = 2.0*M_PI*M_PI;
+    a = 2.0*M_PI*M_PI * sigma_sq;
     //#pragma omp parallel for private(i, j, k, ioffset, n, nsqd, s, cG, g) //num_threads(4)
     #pragma omp parallel for private(i, j, k, ioffset, n, nsqd, s, G, h, g) //num_threads(4)
     for (n = lo; n <= hi; n++)
@@ -226,7 +226,7 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
             for (i = 1; i <= nq; i++)
             {
                 //g[i] = exp(-two_PIsq * i * i * scale / nsq);
-                g[i] = exp(-two_PIsq * i * i * sigma_sq / nsq);
+                g[i] = exp(-a * i * i / nsq);
             }
             for (i = nq + 1; i < len; i++)
             {
@@ -448,101 +448,101 @@ void iStrans(int len, int lo, int hi, float *data, float *result)
 
 
 /* This does just the Hilbert transform. */
-/*void hilbert(int len, float *data, float *result)
-{
-    int i, l2, nq;
-
-    float *p;
-
-    FILE *wisdom;
-
-    static int planlen = 0;
-    static fftwf_plan p1, p2;
-    static fftwf_complex *h, *H;
-
-
-    nq = (int)(len / 2);
-    /* Keep the arrays and plans around from last time, since this
-       is a very common case. Reallocate them if they change. */
-    if ((len != planlen) && (planlen > 0)) {
-        fftwf_destroy_plan(p1);
-        fftwf_destroy_plan(p2);
-        fftwf_free(h);
-        fftwf_free(H);
-        planlen = 0;
-    }
-
-
-    if (0 == planlen) {
-
-        planlen = len;
-
-        h = fftwf_malloc(sizeof(fftwf_complex) * len);
-        H = fftwf_malloc(sizeof(fftwf_complex) * len);
-
-        /* Get any accumulated wisdom. */
-        set_wisfile();
-        wisdom = fopen(Wisfile, "r");
-        if (wisdom) {
-            fftwf_import_wisdom_from_file(wisdom);
-            fclose(wisdom);
-        }
-
-        /* Set up the fftw plans. */
-        p1 = fftwf_plan_dft_1d(len, h, H, FFTW_FORWARD, FFTW_MEASURE);
-        p2 = fftwf_plan_dft_1d(len, H, h, FFTW_BACKWARD, FFTW_MEASURE);
-
-        /* Save the wisdom. */
-        wisdom = fopen(Wisfile, "w");
-        if (wisdom) {
-            fftwf_export_wisdom_to_file(wisdom);
-            fclose(wisdom);
-        }
-
-    }
-
-
-    /* Convert the input to complex. */
-    memset(h, 0, sizeof(fftwf_complex) * len);
-    for (i = 0; i < len; i++) {
-        h[i][0] = data[i];
-    }
-
-
-    /* FFT. */
-    //fftwf_execute(p1); /* h -> H */
-    fftwf_execute_dft(p1, h, H); /* h -> H */
-
-
-    /* Hilbert transform. The upper half-circle gets multiplied by
-       two, and the lower half-circle gets set to zero.
-       The real axisis left alone. */
-
-    l2 = (len + 1) / 2;
-    for (i = 1; i < l2; i++) {
-        H[i][0] *= 2.;
-        H[i][1] *= 2.;
-    }
-    l2 = nq + 1;
-    for (i = l2; i < len; i++) {
-        H[i][0] = 0.;
-        H[i][1] = 0.;
-    }
-
-
-    /* Inverse FFT. */
-    //fftwf_execute(p2); /* H -> h */
-    fftwf_execute_dft(p2, H, h); /* H -> h */
-
-
-    /* Fill in the rows of the result. */
-    p = result;
-    for (i = 0; i < len; i++) {
-        *p++ = h[i][0] / (float)len;
-        *p++ = h[i][1] / (float)len;
-    }
-
-}*/
+//void hilbert(int len, float *data, float *result)
+//{
+//    int i, l2, nq;
+//
+//    float *p;
+//
+//    FILE *wisdom;
+//
+//    static int planlen = 0;
+//    static fftwf_plan p1, p2;
+//    static fftwf_complex *h, *H;
+//
+//
+//    nq = (int)(len / 2);
+//    /* Keep the arrays and plans around from last time, since this
+//       is a very common case. Reallocate them if they change. */
+//    if ((len != planlen) && (planlen > 0)) {
+//        fftwf_destroy_plan(p1);
+//        fftwf_destroy_plan(p2);
+//        fftwf_free(h);
+//        fftwf_free(H);
+//        planlen = 0;
+//    }
+//
+//
+//    if (0 == planlen) {
+//
+//        planlen = len;
+//
+//        h = fftwf_malloc(sizeof(fftwf_complex) * len);
+//        H = fftwf_malloc(sizeof(fftwf_complex) * len);
+//
+//        /* Get any accumulated wisdom. */
+//        set_wisfile();
+//        wisdom = fopen(Wisfile, "r");
+//        if (wisdom) {
+//            fftwf_import_wisdom_from_file(wisdom);
+//            fclose(wisdom);
+//        }
+//
+//        /* Set up the fftw plans. */
+//        p1 = fftwf_plan_dft_1d(len, h, H, FFTW_FORWARD, FFTW_MEASURE);
+//        p2 = fftwf_plan_dft_1d(len, H, h, FFTW_BACKWARD, FFTW_MEASURE);
+//
+//        /* Save the wisdom. */
+//        wisdom = fopen(Wisfile, "w");
+//        if (wisdom) {
+//            fftwf_export_wisdom_to_file(wisdom);
+//            fclose(wisdom);
+//        }
+//
+//    }
+//
+//
+//    /* Convert the input to complex. */
+//    memset(h, 0, sizeof(fftwf_complex) * len);
+//    for (i = 0; i < len; i++) {
+//        h[i][0] = data[i];
+//    }
+//
+//
+//    /* FFT. */
+//    //fftwf_execute(p1); /* h -> H */
+//    fftwf_execute_dft(p1, h, H); /* h -> H */
+//
+//
+//    /* Hilbert transform. The upper half-circle gets multiplied by
+//       two, and the lower half-circle gets set to zero.
+//       The real axisis left alone. */
+//
+//    l2 = (len + 1) / 2;
+//    for (i = 1; i < l2; i++) {
+//        H[i][0] *= 2.;
+//        H[i][1] *= 2.;
+//    }
+//    l2 = nq + 1;
+//    for (i = l2; i < len; i++) {
+//        H[i][0] = 0.;
+//        H[i][1] = 0.;
+//    }
+//
+//
+//    /* Inverse FFT. */
+//    //fftwf_execute(p2); /* H -> h */
+//    fftwf_execute_dft(p2, H, h); /* H -> h */
+//
+//
+//    /* Fill in the rows of the result. */
+//    p = result;
+//    for (i = 0; i < len; i++) {
+//        *p++ = h[i][0] / (float)len;
+//        *p++ = h[i][1] / (float)len;
+//    }
+//
+//}*/
 
 
 /* Inverse Stockwell transform, this inverse algorithm is based on Schimmel et al. 2005,
