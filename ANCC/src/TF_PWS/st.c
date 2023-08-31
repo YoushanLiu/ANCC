@@ -25,10 +25,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 char *Wisfile = NULL;
 char *Wistemplate = "%s/.fftwis";
 
-#define sigma 1.0
-#define sigma2 sigma*sigma
 #define WISLEN 8
 
+// Generalized Stockwell Transform
+#define sigma 1.0
+#define sigma_sq sigma*sigma
 
 void set_wisfile(void)
 {
@@ -220,12 +221,12 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
             //l2 = nq + 1;
             //for (i = 1; i < l2; i++)
             //{
-            //    g[i] = g[len - i] = exp(-two_PIsq * i * i * scale / nsq);
+            //    g[i] = g[len - i] = exp(-two_PIsq * i * i * sigma_sq / nsq);
             //}
             for (i = 1; i <= nq; i++)
             {
                 //g[i] = exp(-two_PIsq * i * i * scale / nsq);
-                g[i] = exp(-two_PIsq * i * i * sigma2 / nsq);
+                g[i] = exp(-two_PIsq * i * i * sigma_sq / nsq);
             }
             for (i = nq + 1; i < len; i++)
             {
