@@ -13,22 +13,22 @@ BIN = TF_PWS
 OBJS = sacrw.o st.o tf_pws.o
 
 
-
-all: $(OBJS)
-%.o: %.c
-	$(CC) $(CFLAGS) $(LIBS) -c $< -o $@
+# dependencies
+tf_pws.o: sacrw.o st.o
 
 
-install:
-ifeq ($(wildcard $(INST_DIR)),)
-	mkdir $(INST_DIR)
-endif
+all: $(BIN)
+$(BIN): $(OBJS)
+	-rm -rf $(INST_DIR)/$(BIN)
 	$(CC) $(CFLAGS) $(OBJS) $(LIBS) -o $(INST_DIR)/$(BIN)
 
 
 clean:
 	rm -rf *.o
 
-
 cleanall: clean
 	rm -rf $(INST_DIR)/$(BIN)
+
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
