@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+
+MPIFC=$1
+
+rm -rf config.h
+
+# configure config.h using the flags in guess.flags
+source ./guess.flags
+guess_flags $MPIFC
+if [[ $? != 1 ]]; then
+	exit -1
+fi
