@@ -31,7 +31,8 @@ in computer memory. Further performance is obtained.
 In version 7.0, data overlap is allowed.
 
 
-##Change Log
+# Change Log
 · 31th Aug. 2023: Redesigned Makefile. The config.h used in the old versions can be automake by two bash scripts, you just need to select the MPIFC in the Makefile.
 				  Now, it support Intel, GNU, and PGI Compilers. If you want to modify the guess.flags or anything else to adapt it to other compilers or system, let me know so that we can make your modifications available to others.
+                  Fix some errors in ./src/TF_PWS/st.c
 
