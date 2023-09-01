@@ -17,7 +17,7 @@ bindata_io.o: db_m.o sac_io.o
 xcc.o: db_m.o math.o sac_io.o string.o date_time.o bindata_io.o
 
 
-all: $(BIN)
+build: $(BIN)
 $(BIN): $(OBJS)
 	-rm -rf $(INST_DIR)/$(BIN)
 	$(MPIFC) $(FFLAGS) $(OBJS) $(LIBS) -o $(INST_DIR)/$(BIN)
