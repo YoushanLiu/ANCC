@@ -38,7 +38,9 @@
 #=======================================================================================
 
 import os
+import re
 import glob
+import linecache
 import multiprocessing
 from obspy.core import UTCDateTime
 from multiprocessing.dummy import Pool as ThreadPool
@@ -54,11 +56,11 @@ SACfolder = "../DATA_cut"
 PZfolder  = "../PZs_all"
 tarfolder = "./Result_10Hz"
 
-# whether compute auto-correlation
-is_auto_correlation = False
-
 nprocs = multiprocessing.cpu_count()
 
+
+# whether compute auto-correlation
+#is_auto_correlation = False
 
 ###########################################################
 
@@ -122,6 +124,19 @@ os.system('rm -rf stations.junk events.lst')
 #os.system("sort stations.junk | uniq > stations.lst")
 #os.system("rm -rf stations.junk")
 
+
+
+def check_autocorrelation(filename):
+	line = linecache.getline(filename, 46)
+	regexp = re.compile("r[^#]+[ \t\w{,3}]+")
+	ans = regexp.search(line).strip()
+	if (ans.upper() in "YES"):
+		is_auocorrelation = True
+	else:
+		is_auocorrelation = False
+	return is_auocorrelation
+
+is_auto_correlation = check_autocorrelation(filename)
 
 
 print("\n")
