@@ -93,7 +93,7 @@ os.system('find %s -name "*" -type f -size 0c | xargs -n 1 rm -f' % (SACfolder))
 
 # Parse the station and event informations.
 ###########################################################
-os.system('rm -rf stations.junk events.lst')
+os.system('rm -rf stations.tmp events.lst')
 
 
 
@@ -104,7 +104,7 @@ os.system('rm -rf stations.junk events.lst')
 #    if (len(file_list) <= 1):
 #        print("skip %s because of single station folder\n"%(day_folder))
 #        return
-#    os.system("saclst knetwk kstnm stlo stla delta f %s | awk '{print $2,$3,$4,$5,$6}' >> stations.junk"%(sacfiles))
+#    os.system("saclst knetwk kstnm stlo stla delta f %s | awk '{print $2,$3,$4,$5,$6}' >> stations.tmp"%(sacfiles))
 #    os.system("ls %s -d >> events.lst"%(day_folder))
 
 
@@ -121,8 +121,8 @@ os.system('rm -rf stations.junk events.lst')
 #        pool.close()
 #        pool.join()
 
-#os.system("sort stations.junk | uniq > stations.lst")
-#os.system("rm -rf stations.junk")
+#os.system("sort stations.tmp | uniq > stations.lst")
+#os.system("rm -rf stations.tmp")
 
 
 
@@ -131,15 +131,16 @@ def check_autocorrelation(filename):
 	regexp = re.compile("r[^#]+[ \t\w{,3}]+")
 	ans = regexp.search(line).strip()
 	if (ans.upper() in "YES"):
-		is_auocorrelation = True
+		is_auto_correlation = True
 	else:
-		is_auocorrelation = False
-	return is_auocorrelation
+		is_auto_correlation = False
+	return is_auto_correlation
 
 is_auto_correlation = check_autocorrelation(filename)
 
 
 print("\n")
+awkstr = " | awk '{printf \"%s  %s %.5f %.5f %.5f\",$2,$3,$4,$5,$6}' >> stations.tmp"
 for year in os.listdir(SACfolder):
     year_folder = SACfolder + '/' + year
     for month in os.listdir(year_folder):
@@ -151,10 +152,11 @@ for year in os.listdir(SACfolder):
             if (not(is_auto_correlation) and (len(file_list) <= 1)):
                 print("skip %s because of single station folder\n"%(day_folder))
                 continue
-            os.system("saclst knetwk kstnm stla stlo delta f %s | awk '{print $2,$3,$4,$5,$6}' >> stations.junk"%(sacfiles))
+            #os.system("saclst knetwk kstnm stla stlo delta f %s | awk '{print $2,$3,$4,$5,$6}' >> stations.junk"%(sacfiles))
+			os.system("saclst knetwk kstnm stla stlo delta f %s"%(sacfiles) + awkstr)
             os.system("ls %s -d >> events.lst"%(day_folder))
-os.system("sort stations.junk | uniq > stations.lst")
-os.system("rm -rf stations.junk")
+os.system("sort stations.tmp | uniq > stations.lst")
+os.system("rm -rf stations.tmp")
 
 
 # Return if stations.lst contains duplicate stations
