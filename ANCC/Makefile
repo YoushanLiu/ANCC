@@ -28,23 +28,18 @@ SUBDIRS := $(addprefix ./src/,$(SUBDIRS))
 
 all: config build clean
 
-config:
-	@./config.guess $(MPIFC)
-include ./config.h
-ifeq ($(wildcard $(INST_DIR)),)
-	mkdir $(INST_DIR)
-endif
-
-
-define COMPILE
+define COMMAND
 $(MAKE) -C $(1) $(2)
+endef
+define COMPILE
+$(foreach dir, $(1), $(call COMMAND,$(dir),$(2));)
 endef
 
 build:
-	$(foreach dir, $(SUBDIRS), $(call COMPILE,$(dir),$@);)
+	$(call COMPILE,$(SUBDIRS),$@)
 
 clean:
-	$(foreach dir, $(SUBDIRS), $(call COMPILE,$(dir),$@);)
+	$(call COMPILE,$(SUBDIRS),$@)
 
 cleanall: clean
-	$(foreach dir, $(SUBDIRS), $(call COMPILE,$(dir),$@);)
+	$(call COMPILE,$(SUBDIRS),$@)
