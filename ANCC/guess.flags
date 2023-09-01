@@ -47,8 +47,8 @@ elif [[ "$COMPILER" == "INTEL" ]]; then
 	echo "Build ANCC using the Intel compilers"
 	CC=icc
 	FC=ifort
-	CFLAGS="-O3 -xHost -unroll -ftz -fma -I./"
-	FFLAGS="-O3 -xHost -unroll -ftz -fma -fpp -fpe0 -assume buffered_io -assume byterecl -align sequence -diag-disable 6477 -implicitnone -gen-interfaces -mcmodel=large -shared-intel"
+	CFLAGS="-O3 -xHost -unroll -ftz -fma -axAVX -I./"
+	FFLAGS="-O3 -xHost -unroll -ftz -fma -fpp -fpe0 -assume buffered_io -assume byterecl -align sequence -diag-disable 6477 -implicitnone -gen-interfaces -mcmodel=large -shared-intel -arch AVX"
 	#echo "compiler is GNU"
 	echo "# Build ANCC using the $COMPILER compiler" > config.h
 	echo "" >> config.h
