@@ -35,6 +35,17 @@ define COMPILE
 $(foreach dir, $(1), $(call COMMAND,$(dir),$(2));)
 endef
 
+# or
+#define COMMAND
+#$(MAKE) -C $(1) $(2)
+#
+#endef
+#define COMPILE
+#$(foreach dir, $(1), $(call COMMAND,$(dir),$(2)))
+#endef
+
+
+
 build:
 	$(call COMPILE,$(SUBDIRS),$@)
 
