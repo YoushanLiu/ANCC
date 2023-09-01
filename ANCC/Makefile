@@ -26,7 +26,7 @@ SUBDIRS = \
 SUBDIRS := $(addprefix ./src/,$(SUBDIRS))
 
 
-。PHONY: config build
+all: config build clean
 
 config:
 	@./config.guess $(MPIFC)
@@ -35,22 +35,16 @@ ifeq ($(wildcard $(INST_DIR)),)
 	mkdir $(INST_DIR)
 endif
 
-define BUILD
-$(MAKE) -C $(1) all
-endef
-define CLEAN
-$(MAKE) -C $(1) clean
-endef
-define CLEANALL
-$(MAKE) -C $(1) cleanall
-endef
 
+define COMPILE
+$(MAKE) -C $(1) $(2)
+endef
 
 build:
-	$(foreach dir, $(SUBDIRS), $(call BUILD,$(dir));)
+	$(foreach dir, $(SUBDIRS), $(call COMPILE,$(dir),$@);)
 
 clean:
-	$(foreach dir, $(SUBDIRS), $(call CLEAN,$(dir));)
+	$(foreach dir, $(SUBDIRS), $(call COMPILE,$(dir),$@);)
 
 cleanall: clean
-	$(foreach dir, $(SUBDIRS), $(call CLEANALL,$(dir));)
+	$(foreach dir, $(SUBDIRS), $(call COMPILE,$(dir),$@);)
