@@ -146,7 +146,7 @@ is_auto_correlation = check_autocorrelation(filename)
 
 print("\n")
 ##awkstr = " | awk '{printf \"%8s  %8s %8.4f %8.4f %5.3f\",$2,$3,$4,$5,$6}' >> stations.tmp"
-awkstr = " | awk '{printf " + r'"%8s  %8s %8.4f %8.4f %5.3f\n",$2,$3,$4,$5,$6}' + "' >> stations.tmp"
+awkstr = " | awk '{printf " + r'"%-8s  %-8s  %7.4f  %8.4f  %5.3f\n",$2,$3,$4,$5,$6}' + "' >> stations.tmp"
 for year in os.listdir(SACfolder):
     year_folder = SACfolder + '/' + year
     for month in os.listdir(year_folder):
@@ -158,7 +158,7 @@ for year in os.listdir(SACfolder):
             if (not(is_auto_correlation) and (len(file_list) <= 1)):
                 print("skip %s because of single station folder\n"%(day_folder))
                 continue
-            #os.system("saclst knetwk kstnm stla stlo delta f %s | awk '{print $2,$3,$4,$5,$6}' >> stations.junk"%(sacfiles))
+            #os.system("saclst knetwk kstnm stla stlo delta f %s | awk '{print $2,$3,$4,$5,$6}' >> stations.tmp"%(sacfiles))
 			os.system("saclst knetwk kstnm stla stlo delta f %s"%(sacfiles) + awkstr)
             os.system("ls %s -d >> events.lst"%(day_folder))
 os.system("sort stations.tmp | uniq > stations.lst")
