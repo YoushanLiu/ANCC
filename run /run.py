@@ -127,10 +127,15 @@ os.system('rm -rf stations.tmp events.lst')
 
 
 def check_autocorrelation(filename):
-	line = linecache.getline(filename, 46)
+	try:
+		line = linecache.getline(filename, 46)
+	except:
+		return False
 	regexp = re.compile("r[^#]+[ \t\w{,3}]+")
-	ans = regexp.search(line).strip()
-	if (ans.upper() in "YES"):
+	ans = regexp.search(line)
+	if (ans is None):
+		return False
+	if (ans.strip().upper() in "YES"):
 		is_auto_correlation = True
 	else:
 		is_auto_correlation = False
