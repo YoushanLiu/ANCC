@@ -12,7 +12,7 @@ misc.o: swapn.o
 dispio.o: misc.o
 
 
-all: $(BIN)
+build: $(BIN)
 $(BIN): $(OBJS)
 	-rm -rf $(INST_DIR)/$(BIN)
 ifeq ($(wildcard $(INST_DIR)),)
