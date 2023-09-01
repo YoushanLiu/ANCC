@@ -17,7 +17,7 @@ OBJS = sacrw.o st.o tf_pws.o
 tf_pws.o: sacrw.o st.o
 
 
-all: $(BIN)
+build: $(BIN)
 $(BIN): $(OBJS)
 	-rm -rf $(INST_DIR)/$(BIN)
 	$(CC) $(CFLAGS) $(OBJS) $(LIBS) -o $(INST_DIR)/$(BIN)
