@@ -140,7 +140,7 @@ is_auto_correlation = check_autocorrelation(filename)
 
 
 print("\n")
-awkstr = " | awk '{printf \"%s  %s %.5f %.5f %.5f\",$2,$3,$4,$5,$6}' >> stations.tmp"
+awkstr = " | awk '{printf \"%8s  %8s %8.4f %8.4f %5.3f\",$2,$3,$4,$5,$6}' >> stations.tmp"
 for year in os.listdir(SACfolder):
     year_folder = SACfolder + '/' + year
     for month in os.listdir(year_folder):
