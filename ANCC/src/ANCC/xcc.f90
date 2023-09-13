@@ -497,7 +497,7 @@ real(SGL) df, dfft, coeff, wtr
 real(DBL) dt, frac, tend
 real(DBL) time, trb, tre, sec
 
-type(c_ptr) planf, planb
+integer(8) planf, planb
 
 type(sachead) shd
 
@@ -1902,7 +1902,7 @@ integer k, ier
 
 real(SGL) denom, wtr
 
-type(c_ptr) plan
+integer(8) plan
 
 complex(SGL), allocatable, dimension(:) :: scorr, sfcorr
 
