@@ -62,13 +62,13 @@ segment_length = 3600*24
 
 # component list to be cut
 # three-components
-#component_list = ['Z', 'N', 'E']
+#component_list = ['BHZ', 'BHN', 'BHE']
 # only Z-component
-component_list = ['Z']
+component_list = ['BHZ']
 # only N-component
-#component_list = ['N']
+#component_list = ['BHN']
 # only E-component
-#component_list = ['E']
+#component_list = ['BHE']
 
 
 seconds_daily = 24*3600
