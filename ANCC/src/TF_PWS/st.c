@@ -420,7 +420,7 @@ void iStrans(int len, int lo, int hi, float *data, float *result)
 
 
     //fftwf_execute(p2); /* H -> h */
-    fftwf_execute(p2, H, h); /* H -> h */
+    fftwf_execute_dft(p2, H, h); /* H -> h */
     fftwf_destroy_plan(p2);
 
     p = result;
