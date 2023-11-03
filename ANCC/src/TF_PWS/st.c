@@ -441,7 +441,7 @@ void iStrans(int len, int lo, int hi, float *data, float *result)
 
     if (0 != planlen) {
     	fftwf_free(h);
-    	fftwf_free(G);
+    	fftwf_free(H);
 	}
 
 }
