@@ -667,7 +667,7 @@ void iStrans2(int len, int lo, int hi, double df, float *data, float *result)
         }
 
         //fftwf_execute(p2); /* H -> h */
-        fftwf_execute(p2, H, h); /* H -> h */
+        fftwf_execute_dft(p2, H, h); /* H -> h */
 
         /*out = 0.0;
         for (l2 = 0; l2 < len; l2++)
