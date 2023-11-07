@@ -693,7 +693,9 @@ else
       !wtr = 1.e-6*maxval(abs(wgt_data))
       !seis_data(1:n) = seis_data(1:n) / max(wgt_data(1:n), wtr)
       !seis_data(1:n) = min(seis_data(1:n)/wgt_data(1:n), hugeval)
-      seis_data(1:n) = abs(tan(atan2(seis_data(1:n), wgt_data(1:n))))
+      !seis_data(1:n) = tan(atan2(seis_data(1:n), wgt_data(1:n)))
+      wgt_data(1:n) = abs(tan(atan2(1.0, wgt_data(1:n))))
+	  seis_data(1:n) = seis_data(1:n) * wgt_data(1:n)
 
       deallocate(abs_data, wgt_data)
 
