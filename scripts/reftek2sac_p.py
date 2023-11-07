@@ -214,7 +214,7 @@ def convert_hourly(hour_files_path, day_path):
 		starts = [each.start() for each in re.finditer(sac_suffix, hour_file.upper())]
 		ends = [start+len(sac_suffix) - 1 for start in starts]
 		span = [(start, end) for start,end in zip(starts, ends)]
-		is_sac = is_sacfile and (len(span) >= 1)
+		is_sacfile = is_sacfile and (len(span) >= 1)
 
 		if (is_sacfile):
 			continue
@@ -257,7 +257,7 @@ def convert_hourly(hour_files_path, day_path):
 			try:
 				tr = st[i]
 				# remove round error
-				tr.stats.delta = round(tr.stats.delta*1e6)*1.e-6
+				tr.stats.delta = round(tr.stats.delta*1e3)*1.e-3
 			except:
 				continue
 
@@ -287,7 +287,7 @@ def convert_hourly(hour_files_path, day_path):
 					print("Error: decimate factor can only be integer !")
 				if (decimate_factor > 1):
 					# Nyquist frequency of downsampling rate
-					freq_lowpass = 0.499 * downsampling_rate
+					freq_lowpass = 0.49 * downsampling_rate
 					if (not(is_bandpass and (fhigh <= freq_lowpass))):
 						tr.filter('lowpass', freq=freq_lowpass, corners=2, zerophase=True)
 					tr.decimate(factor=decimate_factor, strict_length=False, no_filter=True)
