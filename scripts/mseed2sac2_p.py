@@ -212,6 +212,8 @@ def convert_hourly(hour_files_path):
 	hour_files_list = os.listdir(hour_files_path)
 	#hour_files_list = glob.glob(hour_files_path + 'E*.*')
 
+	idx = findstr(hour_files_path, '/')
+
 	for hour_file in hour_files_list:
 
 		#if ('EE' != hour_file[-4:-2]):
@@ -266,7 +268,7 @@ def convert_hourly(hour_files_path):
 			try:
 				tr = st[i]
 				# remove round error
-				tr.stats.delta = round(tr.stats.delta*1e6)*1.e-6
+				tr.stats.delta = round(tr.stats.delta*1e3)*1.e-3
 			except:
 				continue
 
@@ -296,7 +298,7 @@ def convert_hourly(hour_files_path):
 					print("Error: decimate factor can only be integer !")
 				if (decimate_factor > 1):
 					# Nyquist frequency of the downsampling rate
-					freq_lowpass = 0.499 * downsampling_rate
+					freq_lowpass = 0.49 * downsampling_rate
 					if (not(is_bandpass and (fhigh <= freq_lowpass))):
 						tr.filter('lowpass', freq=freq_lowpass, corners=2, zerophase=True)
 					tr.decimate(factor=decimate_factor, strict_length=False, no_filter=True)
@@ -328,7 +330,7 @@ def convert_hourly(hour_files_path):
 
 			ipos = -1
 			for j in range(len(sta.name)):
-				res = findstr(hour_files_path[nrootdir:-1], sta.name[j])
+				res = findstr(hour_files_path[nrootdir:idx[-2]], sta.name[j])
 				if ([] != res):
 					ipos = j
 					break
