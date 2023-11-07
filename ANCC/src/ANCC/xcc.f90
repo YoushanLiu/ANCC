@@ -673,8 +673,6 @@ else
 
       allocate(abs_data(1:n), wgt_data(1:n), stat=ier)
 
-      abs_data(1:n) = abs(seis_data(1:n))
-
       if (is_bandpass_earthquake) then
          norder = 2
          norder = 2*norder
@@ -682,10 +680,11 @@ else
          call buttbp(norder, dt, fr1, fr2, a, b)
          tr(1:n) = seis_data(1:n)
          call filtfilt(norder, n-1, a, b, tr)
-         abs_data(1:n) = abs(tr(1:n))
+         seis_data(1:n) = abs(tr(1:n))
          deallocate(a, b, tr)
       end if
 
+      abs_data(1:n) = abs(seis_data(1:n))
       do k = 1, n, 1
          n1 = max(1, k-nwt)
          n2 = min(n, k+nwt)
@@ -694,7 +693,7 @@ else
       !wtr = 1.e-6*maxval(abs(wgt_data))
       !seis_data(1:n) = seis_data(1:n) / max(wgt_data(1:n), wtr)
       !seis_data(1:n) = min(seis_data(1:n)/wgt_data(1:n), hugeval)
-      seis_data(1:n) = tan(atan2(seis_data(1:n), wgt_data(1:n)))
+      seis_data(1:n) = abs(tan(atan2(seis_data(1:n), wgt_data(1:n))))
 
       deallocate(abs_data, wgt_data)
 
@@ -829,7 +828,7 @@ if (is_specwhitenning) then
    ! ***************************************************************
    ! Apply spectra whitening.
    ! ***************************************************************
-   call whiten_spectra(f1, f4, df, nq, sf, nwf)
+   call whiten_spectra(f1, f4, df, nq, nwf, sf)
 
 
    ! ***************************************************************
@@ -909,7 +908,7 @@ end subroutine preprocess
 ! sf: FFT values in complex form [input and output]
 ! nwf: half-window length in spectral whitening [input]
 ! =======================================================================================
-subroutine whiten_spectra(f1, f4, df, nq, sf, nwf)
+subroutine whiten_spectra(f1, f4, df, nq, nwf, sf)
 
 implicit none
 
@@ -964,7 +963,7 @@ do k = k1, k2, 1
       rsum = sum(sf_amp(iw1:iw2))
       !sf_weight(k) = dw / max(rsum, wtr)
       !sf_weight(k) = min(dw/rsum, hugeval)
-      sf_weight(k) = tan(atan2(dw, rsum))
+      sf_weight(k) = abs(tan(atan2(dw, rsum)))
    end if
 
 end do
