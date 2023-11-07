@@ -201,12 +201,12 @@ dt = nint(shd%delta*1e6)*1.d-6
 t = datetime2timestamp(shd%nzyear, shd%nzjday, shd%nzhour, shd%nzmin, shd%nzsec+1.d-3*shd%nzmsec+shd%b)
 
 
-! Apply taper
-do k = 1, ntaper, 1
-   coeff = 0.50*(1.0 + cos(PI*(ntaper-k+1)/dble(ntaper)))
-   seis_data(k) = seis_data(k)*coeff
-   seis_data(npts-k+1) = seis_data(npts-k+1)*coeff
-end do
+!! Apply taper
+!do k = 1, ntaper, 1
+!   coeff = 0.50*(1.0 + cos(PI*(ntaper-k+1)/dble(ntaper)))
+!   seis_data(k) = seis_data(k)*coeff
+!   seis_data(npts-k+1) = seis_data(npts-k+1)*coeff
+!end do
 
 
 ! ***************************************************************
@@ -420,7 +420,7 @@ if ((f1 > 0.0) .and. (f2 > f1) .and. (f3 > f2) .and. (f4 > f3)) then
       close(unit=18)
 
       ! ***************************************************************
-      ! Remove the instrument response to obtain the velocity mesurement
+      ! Remove the instrument response to obtain the velocity masurement
       ! using transfer command in SAC with frequency limits [f1,f2,f3,f4].
       ! ***************************************************************
       if (is_verbose) then
@@ -836,7 +836,7 @@ if (is_specwhitenning) then
    ! Reject the spike at the nperiod band [25s 27s].
    ! ***************************************************************
    if (is_suppress_notch) then
-      call bandstop_filter(0.0350, 0.0360, 0.0390, 0.0400, df, nq, sf, npow_costaper, freqmin)
+      call bandstop_filter(0.0350, 0.0360, 0.0390, 0.0400, df, nq, npow_costaper, freqmin, sf)
    end if
 
 
@@ -1078,7 +1078,7 @@ end subroutine bandpass_filter
 ! freqmin: retaining factor for the spectral whitening
 ! freqmin is the percentage (0.5 means 50%) of amplitude we try to retain
 ! =======================================================================================
-subroutine bandstop_filter(f1, f2, f3, f4, df, nq, sf, npow_costaper, freqmin)
+subroutine bandstop_filter(f1, f2, f3, f4, df, nq, npow_costaper, freqmin, sf)
 
 
 implicit none
@@ -1169,11 +1169,13 @@ end subroutine bandstop_filter
 ! is_save_record: if output cross-correlation is_save_records [input]
 ! =======================================================================================
 subroutine cc_and_aftan(sdb, ist1, ist2, nlag, N_bs, is_pws, str_pws, &
-                   str_weight, str_per1, str_per2, bs_type, tarfolder)
+                    str_weight, str_per1, str_per2, bs_type, tarfolder)
 
 implicit none
 
-integer, intent(in) :: ist1, ist2, N_bs, nlag
+integer, intent(in) :: ist1, ist2
+integer, intent(in) :: N_bs, nlag
+
 logical, intent(in) :: is_pws
 
 type(sac_db), intent(in) :: sdb
