@@ -62,13 +62,13 @@ segment_length = 3600*24
 
 # component list to be cut
 # three-components
-#component_list = ['BHZ', 'BHN', 'BHE']
+#component_list = ['HZ', 'HN', 'HE']
 # only Z-component
-component_list = ['BHZ']
+component_list = ['HZ']
 # only N-component
-#component_list = ['BHN']
+#component_list = ['HN']
 # only E-component
-#component_list = ['BHE']
+#component_list = ['HE']
 
 
 seconds_daily = 24*3600
@@ -220,7 +220,7 @@ def cutdata_daily(station_path):
 
 		for C in component_list:
 
-			hour_files_list = glob.glob(day_path + '*' + C + sac_suffix)
+			hour_files_list = glob.glob(day_path + '*' + C + '*' + sac_suffix)
 
 			if ([] == hour_files_list):
 				continue
@@ -231,7 +231,7 @@ def cutdata_daily(station_path):
 				if ([] == tr):
 					continue
 				# remove round error
-				tr.stats.delta = round(tr.stats.delta*1e6)*1.e-6
+				tr.stats.delta = round(tr.stats.delta*1e3)*1.e-3
 				dt = tr.stats.delta
 				df = tr.stats.sampling_rate
 				starttime_daily = tr.stats.starttime
