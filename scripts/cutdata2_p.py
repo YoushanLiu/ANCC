@@ -208,8 +208,8 @@ def merge_data(hour_files_list):
 def cutdata_daily(day_folder):
 
 	day_path = station_path + day_folder + '/'
-	print('Entering directory ' + day_path[len_rootdir:-1])
-	print('\n')
+	print('\t\tEntering directory ' + day_path[len_rootdir:-1])
+	#print('\n')
 
 	if (not os.path.isdir(day_path)):
 		return
@@ -258,7 +258,7 @@ def cutdata_daily(day_folder):
 
 			tr_out = tr.copy()
 			tr_out.data = tr.data[ibeg:iend+1]
-			tr_out.stats.starttime = starttime_daily + tbeg
+			tr_out.stats.starttime = starttime_daily + starttime
 
 
 			# remove invalid data
@@ -317,10 +317,10 @@ def cutdata_daily(day_folder):
 
 
 		del tr, hour_files_list
-		print('%s is done ... \n' % date2str(starttime_daily))
+		print('\t\t\t%s is done ... \n' % date2str(starttime_daily))
 
-	print('Leaving directory ' + day_path[len_rootdir:-1])
-	print('\n')
+	print('\t\tLeaving directory ' + day_path[len_rootdir:-1])
+	#print('\n')
 
 	return
 
@@ -347,7 +347,7 @@ def cutdata(current_path):
 
 		stage_path = rootdir + stage_folder + '/'
 		print('Entering directory ' + stage_path[len_rootdir:-1])
-		print('\n')
+		#print('\n')
 
 		if (not os.path.isdir(stage_path)):
 			continue
@@ -357,8 +357,8 @@ def cutdata(current_path):
 		for station_folder in station_folder_list:
 
 			station_path = stage_path + station_folder + '/'
-			print('Entering directory ' + station_path[len_rootdir:-1])
-			print('\n')
+			print('\tEntering directory ' + station_path[len_rootdir:-1])
+			#print('\n')
 
 			if (not os.path.isdir(station_path)):
 				continue
@@ -371,12 +371,12 @@ def cutdata(current_path):
 			pool.join()
 
 			del day_folders_list
-			print('Leaving directory ' + station_path[len_rootdir:-1])
-			print('\n')
+			print('\tLeaving directory ' + station_path[len_rootdir:-1])
+			#print('\n')
 
 		del station_folder_list
 		print('Leaving directory ' + stage_path[len_rootdir:-1])
-		print('\n')
+		#print('\n')
 
 	del stage_folders_list
 

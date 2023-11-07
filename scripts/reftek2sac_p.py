@@ -51,6 +51,7 @@ Reftek 130 Disk Directory Structure
 
 import os
 import re
+from math import *
 from obspy import read
 from obspy.core import UTCDateTime
 from obspy.io.sac import SACTrace
@@ -264,6 +265,37 @@ def convert_hourly(hour_files_path, day_path):
 				continue
 
 
+
+
+			#starttime = tr.stats.starttime
+			#endtime = tr.stats.endtime
+			#min2hour = int((starttime.hour + (starttime.second + starttime.microsecond*1.e-6)/60.0 + 40)/60.0)
+			#if (0 == min2hour):
+			#	dtinus = 1e6 / downsampling_rate
+			#	#microsecond = ceil(microsecond / dtinus) * dtinus
+			#	#starttime_first = starttime
+			#	#starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour, starttime.minute, starttime.second, microsecond, strict=False)
+			#	sec = round(starttime.second*1e6 + starttime.microsecond)
+			#	sec = ceil(sec / dtinus) * dtinus
+			#	second = int(sec * 1.e-6)
+			#	microsecond = int(sec - second*1e6)
+			#	starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour, starttime.minute, second, microsecond, strict=False)
+			#else:
+			#	starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour + min2hour, 0, 0, 0)
+			#	starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour, 0, 0, 0) + 3600
+			#if ((starttime.minute + (starttime.second + starttime.microsecond*1.e-6)/60.0) > 40.0):
+			#	endtime_last = endtime
+			#else:
+			#	endtime_last = UTCDateTime(endtime.year, endtime.month, endtime.day, endtime.hour, 0, 0, 0)
+			#if (starttime_first < endtime_last):
+			#	tr = tr.slice(starttime=starttime_first, endtime=endtime_last, nearest_sample=False)
+			#else:
+			#	del tr
+			#	continue
+
+
+
+
 			# some preprocesses
 			if (is_demean):
 				tr.detrend(type='demean')
@@ -288,8 +320,9 @@ def convert_hourly(hour_files_path, day_path):
 				if (abs(df - (decimate_factor*downsampling_rate)) > 0.0):
 					print("Error: decimate factor can only be integer !")
 				if (decimate_factor > 1):
-					# Nyquist frequency of downsampling rate
+					# N*-iyquist frequency of downsampling rate
 					freq_lowpass = 0.49 * downsampling_rate
+					#freq_lowpass = 0.49 * tr.stats.sampling_rate / decimate_factor
 					if (not(is_bandpass and (fhigh <= freq_lowpass))):
 						tr.filter('lowpass', freq=freq_lowpass, corners=2, zerophase=True)
 					tr.decimate(factor=decimate_factor, strict_length=False, no_filter=True)
@@ -315,19 +348,20 @@ def convert_hourly(hour_files_path, day_path):
 			#			ipos = j
 			#			break
 			#	if (-1 == ipos):
-			#		print("Error: station %s is not in the station list or filed 'staion' in reftek header is NULL" % station_name)
+			#		print("Error: station %s is not in the station list or field 'station' in reftek header is NULL" % station_name)
 			#		return
 
 
 			ipos = -1
+			station_name = hour_files_path[idx[-5]+1:idx[-4]]
 			for j in range(len(sta.name)):
+				res = findstr(station_name, sta.name[j])
 				#res = findstr(hour_files_path[len_rootdir:-1], sta.name[j])
-				res = findstr(hour_files_path[idx[-5]+1:idx[-4]], sta.name[j])
 				if ([] != res):
 					ipos = j
 					break
 			if (-1 == ipos):
-				print("Error: station %s is not in the station list or filed 'staion' in reftek header is NULL" % station_name)
+				print("Error: station folder %s does not include the name of this station or this station is missing in the stainfo.lst" % station_name)
 				return
 
 
@@ -396,8 +430,8 @@ def convert_hourly(hour_files_path, day_path):
 def convert_daily(day_folder):
 
 	day_path = station_stage_path + day_folder + '/'
-	print('Entering directory ' + day_path[len_rootdir:-1])
-	print('\n')
+	print('\tEntering directory ' + day_path[len_rootdir:-1])
+	#print('\n')
 
 	if (not os.path.isdir(day_path)):
 		return
@@ -411,28 +445,28 @@ def convert_daily(day_folder):
 		if (not os.path.isdir(UnitID_path)):
 			continue
 
-		print('Entering directory ' + UnitID_path[len_rootdir:-1])
-		print('\n')
+		print('\t\tEntering directory ' + UnitID_path[len_rootdir:-1])
+		#print('\n')
 
 		hour_files_path = UnitID_path + '1/'
 
 		if (not os.path.exists(hour_files_path)):
 			continue
 
-		print('Entering directory ' + hour_files_path[len_rootdir:-1])
-		print('\n')
+		print('\t\t\tEntering directory ' + hour_files_path[len_rootdir:-1])
+		#print('\n')
 
 		convert_hourly(hour_files_path, day_path)
 
-		print('Leaving directory ' + hour_files_path[len_rootdir:-1])
-		print('\n')
+		print('\t\t\tLeaving directory ' + hour_files_path[len_rootdir:-1])
+		#print('\n')
 
-		print('Leaving directory ' + UnitID_path[len_rootdir:-1])
-		print('\n')
+		print('\t\tLeaving directory ' + UnitID_path[len_rootdir:-1])
+		#print('\n')
 
 	del UnitID_folders_list
-	print('Leaving directory ' + day_path[len_rootdir:-1])
-	print('\n')
+	print('\tLeaving directory ' + day_path[len_rootdir:-1])
+	#print('\n')
 
 	return
 
@@ -459,7 +493,7 @@ def reftek2sac(current_path):
 
 		station_stage_path = rootdir + station_stage_folder + '/'
 		print('Entering directory ' + station_stage_path[len_rootdir:-1])
-		print('\n')
+		#print('\n')
 
 		if (not os.path.isdir(station_stage_path)):
 			continue
@@ -473,7 +507,7 @@ def reftek2sac(current_path):
 
 		del day_folders_list
 		print('Leaving directory ' + station_stage_path[len_rootdir:-1])
-		print('\n')
+		#print('\n')
 
 	del stage_folders_list
 
@@ -483,7 +517,7 @@ def reftek2sac(current_path):
 
 if __name__ == '__main__':
 
-	print('\n')
+	#print('\n')
 	print('reftek2sac: ')
 	print('This program converts files from reftek to sac format using the ObsPy (parallel version)')
 	print('Youshan Liu at Institute of Geology and Geophysics, Chinese Academy of Sciences')

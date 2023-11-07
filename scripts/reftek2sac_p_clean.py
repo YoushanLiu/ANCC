@@ -79,13 +79,13 @@ data_folder = './DATA_4'
 def convert_daily(day_folder):
 
 	day_path = station_stage_path + day_folder + '/'
-	print('Entering directory ' + day_path[len_rootdir:-1])
-	print('\n')
+	print('\tEntering directory ' + day_path[len_rootdir:-1])
+	#print('\n')
 
 	os.system("rm -rf " + day_path + "./*" + sac_suffix)
 
-	print('Leaving directory ' + day_path[len_rootdir:-1])
-	print('\n')
+	print('\tLeaving directory ' + day_path[len_rootdir:-1])
+	#print('\n')
 
 	return
 
@@ -112,7 +112,7 @@ def reftek2sac(current_path):
 
 		station_stage_path = rootdir + station_stage_folder + '/'
 		print('Entering directory ' + station_stage_path[len_rootdir:-1])
-		print('\n')
+		#print('\n')
 
 		if (not os.path.isdir(station_stage_path)):
 			continue
@@ -126,7 +126,7 @@ def reftek2sac(current_path):
 
 		del day_folders_list
 		print('Leaving directory ' + station_stage_path[len_rootdir:-1])
-		print('\n')
+		#print('\n')
 
 	del stage_folders_list
 
@@ -136,7 +136,7 @@ def reftek2sac(current_path):
 
 if __name__ == '__main__':
 
-	print('\n')
+	#print('\n')
 	print('reftek2sac: ')
 	print('This program convert files from reftek to sac format using the ObsPy (parallel version)')
 	print('Youshan Liu at Institute of Geology and Geophysics, Chinese Academy of Sciences')
