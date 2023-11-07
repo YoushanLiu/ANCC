@@ -420,7 +420,7 @@ if ((f1 > 0.0) .and. (f2 > f1) .and. (f3 > f2) .and. (f4 > f3)) then
       close(unit=18)
 
       ! ***************************************************************
-      ! Remove the instrument response to obtain the velocity masurement
+      ! Remove the instrument response to obtain the velocity measurement
       ! using transfer command in SAC with frequency limits [f1,f2,f3,f4].
       ! ***************************************************************
       if (is_verbose) then
