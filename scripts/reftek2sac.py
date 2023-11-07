@@ -201,6 +201,8 @@ def convert_hourly(hour_files_path, day_path):
 
 	hour_files_list = os.listdir(hour_files_path)
 
+	idx = findstr(hour_files_path, '/')
+
 	for hour_file in hour_files_list:
 
 		#if ('EE' != hour_file[-4:-2]):
@@ -305,7 +307,7 @@ def convert_hourly(hour_files_path, day_path):
 			#	# try to extract station name based on folder name
 			#	ipos = -1
 			#	for j in range(len(sta.name)):
-			#		res = findstr(hour_files_path[len_rootdir:-1], sta.name[j])
+			#		res = findstr(hour_files_path[idx[-5]+1:idx[-4]], sta.name[j])
 			#		if ([] != res):
 			#			ipos = j
 			#			break
@@ -316,7 +318,8 @@ def convert_hourly(hour_files_path, day_path):
 
 			ipos = -1
 			for j in range(len(sta.name)):
-				res = findstr(hour_files_path[len_rootdir:-1], sta.name[j])
+				#res = findstr(hour_files_path[len_rootdir:-1], sta.name[j])
+				res = findstr(hour_files_path[idx[-5]+1:idx[-4]], sta.name[j])
 				if ([] != res):
 					ipos = j
 					break
