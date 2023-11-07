@@ -320,7 +320,7 @@ def convert_hourly(hour_files_path):
 			#	# try to extract station name based on folder name
 			#	ipos = -1
 			#	for j in range(len(sta.name)):
-			#		res = findstr(hour_files_path[nrootdir:-1], sta.name[j])
+			#		res = findstr(hour_files_path[nrootdir:idx[-2]], sta.name[j])
 			#		if ([] != res):
 			#			ipos = j
 			#			break
