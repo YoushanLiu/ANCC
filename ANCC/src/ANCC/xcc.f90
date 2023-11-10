@@ -680,11 +680,12 @@ else
          call buttbp(norder, dt, fr1, fr2, a, b)
          tr(1:n) = seis_data(1:n)
          call filtfilt(norder, n-1, a, b, tr)
-         seis_data(1:n) = abs(tr(1:n))
+         abs_data(1:n) = abs(tr(1:n))
          deallocate(a, b, tr)
+	  else
+         abs_data(1:n) = abs(seis_data(1:n))
       end if
 
-      abs_data(1:n) = abs(seis_data(1:n))
       do k = 1, n, 1
          n1 = max(1, k-nwt)
          n2 = min(n, k+nwt)
@@ -833,14 +834,6 @@ if (is_specwhitenning) then
    call whiten_spectra(f1, f4, df, nq, nwf, sf)
 
 
-   ! ***************************************************************
-   ! Reject the spike at the nperiod band [25s 27s].
-   ! ***************************************************************
-   if (is_suppress_notch) then
-      call bandstop_filter(0.0350, 0.0360, 0.0390, 0.0400, df, nq, npow_costaper, freqmin, sf)
-   end if
-
-
    if (is_verbose) then
       write(*,"(A)") trim(adjustl(sacname))//' spectral whitenning is done ... '
       call flush(6)
@@ -849,6 +842,14 @@ if (is_specwhitenning) then
 end if
 
 
+
+
+! ***************************************************************
+! Reject the spike at the nperiod band [25s 27s].
+! ***************************************************************
+if (is_suppress_notch) then
+   call bandstop_filter(0.0350, 0.0360, 0.0390, 0.0400, df, nq, npow_costaper, freqmin, sf)
+end if
 
 
 ! ***************************************************************
