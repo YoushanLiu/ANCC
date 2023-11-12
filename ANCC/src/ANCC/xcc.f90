@@ -18,7 +18,7 @@ module xcc_m
 
 use, intrinsic :: iso_c_binding     ! Allow to define the equivalents of C data types (e.g. c_ptr, C_INT)
 
-use db_m                 ! imported module containing data type and variable definitions.
+use db_m                            ! import module containing data type and variable definitions.
 use math_m
 use sac_io_m
 use string_m
@@ -501,8 +501,6 @@ integer(8) planf, planb
 
 type(sachead) shd
 
-character(len=128) str_myrank
-
 character(len=512) sacname
 
 real(SGL), allocatable, dimension(:) :: seis_data, abs_data, wgt_data
@@ -519,10 +517,6 @@ complex(SGL), allocatable, dimension(:) :: s, sf
 !if (0 == sdb%rec(ist,iev)%npts) return
 inquire(file=trim(adjustl(sdb%rec(ist,iev)%name)), exist=is_existed)
 if (.not.(is_existed)) return
-
-
-! Each process has its own sac script
-write(str_myrank, '(A, I6.6)') './tmp/', myrank
 
 
 ! read the sac file
@@ -932,7 +926,7 @@ real(SGL), dimension(:), allocatable :: sf_amp, sf_weight ! temporary arrays
 
 
 ! Return if 0 == nwf
-if (0 == nwf) then
+if (nwf < 0) then
    write(*,"(A)") 'Error: nwf should be a positive integer !'
    call flush(6)
    return
