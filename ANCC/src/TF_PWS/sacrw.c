@@ -1,17 +1,3 @@
-/*
-This file is part of ANCC.
-TF_PWS is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-TF_PWS is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
 #define MAIN
 #include <unistd.h>
 #include <stdio.h>
@@ -36,7 +22,7 @@ void read_sac(char *fname, float *wf, SACHead *shd, long Nmax)
 
     if (!fsac)
     {
-        printf("The %s does not exit ! \n", fname);
+        printf("The %s does not exist ! \n", fname);
         exit(0);
     }
 
@@ -67,7 +53,7 @@ void write_sac(char *fname, float *wf, SACHead *shd)
 
     if ((fsac = fopen(fname, "wb")) == NULL)
     {
-        printf("Could not open sac file to write \n");
+        printf("Could not open SAC file to write \n");
         exit(1);
     }
 
@@ -85,7 +71,6 @@ void write_sac(char *fname, float *wf, SACHead *shd)
 
 
 
-
     shd->depmin = wf[0];
     shd->depmax = wf[0];
 
@@ -97,7 +82,7 @@ void write_sac(char *fname, float *wf, SACHead *shd)
 
     // compute distance
     //geodist(shd);
-	shd->dist = geodist(shd->evla, shd->evlo, shd->stla, shd->stlo);
+    shd->dist = geodist(shd->evla, shd->evlo, shd->stla, shd->stlo);
 
 
     fwrite(shd, sizeof(SACHead), 1, fsac);
@@ -124,20 +109,20 @@ float geodist(float evlaf, float evlof, float stlaf, float stlof)
     stla = stlaf * deg2rad;
     stlo = stlof * deg2rad;
 
-	c = sin(stla)*sin(evla) + cos(stla)*cos(evla)*cos(stlo - evlo);
+    c = sin(stla) * sin(evla) + cos(stla) * cos(evla) * cos(stlo - evlo);
 
-	if (fabs(c - 1.0) < TINYVAL)
-	{
-		theta = 0.0;
-	}
-	else if (fabs(c + 1.0) < TINYVAL)
-	{
-		theta = PI;
-	}
-	else
-	{
-		theta = acos(c);
-	}
+    if (fabs(c - 1.0) < TINYVAL)
+    {
+        theta = 0.0;
+    }
+    else if (fabs(c + 1.0) < TINYVAL)
+    {
+        theta = PI;
+    }
+    else
+    {
+        theta = acos(c);
+    }
 
     return (float)(R * theta);
 
@@ -155,21 +140,21 @@ float geodist(float evlaf, float evlof, float stlaf, float stlof)
     stla = shd->stla * deg2rad;
     stlo = shd->stlo * deg2rad;
 
-	c = sin(stla)*sin(evla) + cos(stla)*cos(evla)*cos(stlo - evlo);
+    c = sin(stla) * sin(evla) + cos(stla) * cos(evla) * cos(stlo - evlo);
 
-	if (fabs(c - 1.0) < TINYVAL)
-	{
-		theta = 0.0;
-	}
-	else if (fabs(c + 1.0) < TINYVAL)
-	{
-		theta = PI;
-	}
-	else
-	{
-		theta = acos(c);
-	}
+    if (abs(c - 1.0) < TINYVAL)
+    {
+        theta = 0.0;
+    }
+    else if (abs(c + 1.0) < TINYVAL)
+    {
+        theta = PI;
+    }
+    else
+    {
+        theta = acos(c);
+    }
 
-    return (float)(R * theta);
+    shd->dist = (float)(R * theta);
 
 }*/

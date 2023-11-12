@@ -1,20 +1,3 @@
-/*
-This file is part of ANCC.
-
-TF_PWS is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-TF_PWS is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,9 +10,11 @@ char *Wistemplate = "%s/.fftwis";
 
 #define WISLEN 8
 
+
 // Generalized Stockwell Transform
 #define sigma 1.0
 #define sigma_sq sigma*sigma
+
 
 void set_wisfile(void)
 {
@@ -47,10 +32,10 @@ void set_wisfile(void)
 
 /* Convert frequencies in Hz into rows of the ST, given sampling rate and
    length. */
-/*int st_freq(double f, int len, double srate)
-{
-    return floor(f * len / srate + .5);
-}*/
+//int st_freq(double f, int len, double srate)
+//{
+//    return floor(f * len / srate + .5);
+//}
 
 
 //static double gauss(int n, int m);
@@ -70,8 +55,7 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
     int nsq, num, ioffset;
 
     float s, mean;
-	float a, freq;
-    //float two_PIsq, freq, scale;
+    float a, freq;
 
     float *g;
 
@@ -81,7 +65,7 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
 
 
     // fftwf_plan p1, p2;
-    //fftwf_complex *cG;
+    fftwf_complex *cG;
     static fftwf_plan p1, p2;
     static fftwf_complex *h, *H, *G;
 
@@ -152,7 +136,7 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
     /* Hilbert transform. The upper half-circle gets multiplied by
        two, and the lower half-circle gets set to zero.
        The real axis is left alone. */
-    /*l2 = (len + 1) / 2;
+    l2 = (len + 1) / 2;
     for (i = 1; i < l2; i++) {
         H[i][0] *= 2.;
         H[i][1] *= 2.;
@@ -161,7 +145,7 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
     for (i = l2; i < len; i++) {
         H[i][0] = 0.;
         H[i][1] = 0.;
-    }*/
+    }
 
 
     /* Fill in rows of the result. */
@@ -171,7 +155,6 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
        multiplied with the FFT of scaled gaussians. */
 
     a = 2.0*M_PI*M_PI * sigma_sq;
-    //#pragma omp parallel for private(i, j, k, ioffset, n, nsqd, s, cG, g) //num_threads(4)
     #pragma omp parallel for private(i, j, k, ioffset, n, nsqd, s, G, h, g) //num_threads(4)
     for (n = lo; n <= hi; n++)
     {
@@ -198,9 +181,9 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
           increase the frequency resolution but decrease the time resolution, and vice versa
         */
 
-        //scale = 1.0; // sigma*sigma
+        //scale = 1.0;
         g = (float *)malloc(sizeof(float)*len);
-        //cG = (fftwf_complex*)malloc(sizeof(fftwf_complex)*len);
+        cG = (fftwf_complex*)malloc(sizeof(fftwf_complex)*len);
         memset(G, 0, sizeof(fftwf_complex) * len);
         if (n == 0)
         {
@@ -221,11 +204,10 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
             //l2 = nq + 1;
             //for (i = 1; i < l2; i++)
             //{
-            //    g[i] = g[len - i] = exp(-two_PIsq * i * i * sigma_sq / nsq);
+            //    g[i] = g[len - i] = exp(-a * i * i / nsq);
             //}
             for (i = 1; i <= nq; i++)
             {
-                //g[i] = exp(-two_PIsq * i * i * scale / nsq);
                 g[i] = exp(-a * i * i / nsq);
             }
             for (i = nq + 1; i < len; i++)
@@ -238,22 +220,19 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
                 s = g[i];
                 k = n + i;
                 if (k >= len) k -= len;
-                //cG[i][0] = s * H[k][0];
-                //cG[i][1] = s * H[k][1];
-                G[i][0] = s * H[k][0];
-                G[i][1] = s * H[k][1];
+                cG[i][0] = s * H[k][0];
+                cG[i][1] = s * H[k][1];
             }
 
             /* Inverse FFT the result to get the next row. */
             //#pragma omp critical (setction1)
             {
 
-				/*
                 for (i = 0; i < len; i++)
                 {
                     G[i][0] = cG[i][0];
                     G[i][1] = cG[i][1];
-                }*/
+                }
                 //fftwf_execute(p2); /* G -> h */
                 fftwf_execute_dft(p2, G, h); /* G -> h */
 
@@ -272,23 +251,17 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
         }
 
         free(g);
-        //fftwf_free(cG);
+        fftwf_free(cG);
 
     }
 
-    if (0 != planlen) {
-    	fftwf_free(h);
-    	fftwf_free(G);
-    	fftwf_free(H);
-	}
-
 }
 
-/* This is the Fourier Transform of a Gaussian. */
-/*static double gauss(int n, int m)
-{
-    return exp(-2.0 * M_PI * M_PI * m * m / (n * n));
-}*/
+///* This is the Fourier Transform of a Gaussian. */
+//static double gauss(int n, int m)
+//{
+//    return exp(-2.0 * M_PI * M_PI * m * m / (n * n));
+//}
 
 
 
@@ -439,15 +412,10 @@ void iStrans(int len, int lo, int hi, float *data, float *result)
     fclose(fp1);
 #endif*/
 
-    if (0 != planlen) {
-    	fftwf_free(h);
-    	fftwf_free(H);
-	}
-
 }
 
 
-/* This does just the Hilbert transform. */
+///* This does just the Hilbert transform. */
 //void hilbert(int len, float *data, float *result)
 //{
 //    int i, l2, nq;
@@ -510,8 +478,7 @@ void iStrans(int len, int lo, int hi, float *data, float *result)
 //
 //
 //    /* FFT. */
-//    //fftwf_execute(p1); /* h -> H */
-//    fftwf_execute_dft(p1, h, H); /* h -> H */
+//    fftwf_execute(p1); /* h -> H */
 //
 //
 //    /* Hilbert transform. The upper half-circle gets multiplied by
@@ -531,8 +498,7 @@ void iStrans(int len, int lo, int hi, float *data, float *result)
 //
 //
 //    /* Inverse FFT. */
-//    //fftwf_execute(p2); /* H -> h */
-//    fftwf_execute_dft(p2, H, h); /* H -> h */
+//    fftwf_execute(p2); /* H -> h */
 //
 //
 //    /* Fill in the rows of the result. */
@@ -542,7 +508,7 @@ void iStrans(int len, int lo, int hi, float *data, float *result)
 //        *p++ = h[i][1] / (float)len;
 //    }
 //
-//}*/
+//}
 
 
 /* Inverse Stockwell transform, this inverse algorithm is based on Schimmel et al. 2005,
@@ -715,11 +681,6 @@ void iStrans2(int len, int lo, int hi, double df, float *data, float *result)
     fclose(fp);
     fclose(fp1);
 #endif*/
-
-    if (0 != planlen) {
-    	fftwf_free(h);
-    	fftwf_free(H);
-	}
 
 }
 
