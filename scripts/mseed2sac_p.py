@@ -70,8 +70,6 @@ from multiprocessing.dummy import Pool as ThreadPool
 dryrun = False
 
 # direction of the mseed data
-#data_folder = 'JD5'
-#output_folder = 'Group5_EPS'
 data_folder = 'JD.Group5.EPS.Raw'
 output_folder = 'Group5_EPS'
 
