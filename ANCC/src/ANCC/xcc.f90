@@ -1,19 +1,3 @@
-! This file is part of ANCC.
-!
-! ANCC is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! ANCC is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <https://www.gnu.org/licenses/>.
-!
-!
 module xcc_m
 
 use, intrinsic :: iso_c_binding     ! Allow to define the equivalents of C data types (e.g. c_ptr, C_INT)
@@ -49,7 +33,7 @@ contains
 ! channel: channel name [input]
 ! is_verbose: verbose indicator [input]
 ! =======================================================================================
-subroutine mk_one_rec(sdb, iev, ist, npow_costaper, f1, f2, f3, f4, channel, evtpath, sdb_loc)
+subroutine mk_one_rec(sdb, iev, ist, npow_costaper, f1, f2, f3, f4, channel, evtpath, npts, dt, sdb_loc)
 
 implicit none
 
@@ -64,15 +48,17 @@ character(len=*), intent(in) :: evtpath
 type(sac_db), intent(in) :: sdb
 
 
+integer, intent(out) :: npts
+real(DBL), intent(out) :: dt
+
 type(sac_db), intent(inout) :: sdb_loc
 
 
-integer npts
 integer nstrArray, ier
 
 logical is_existing
 
-real(DBL) dt, t0
+real(DBL) t0
 
 character(len=512) str_date, sacname
 character(len=512) sacinfile, sacoutfile
@@ -129,8 +115,6 @@ end if
 ! ***************************************************************
 ! Fill the elements in this is_save_record.
 ! ***************************************************************
-sdb_loc%rec(ist,iev)%npts = npts
-sdb_loc%rec(ist,iev)%dt = dt
 sdb_loc%rec(ist,iev)%t0 = t0
 sdb_loc%rec(ist,iev)%sacfile = ''
 if (is_overwrite_data) then
@@ -178,6 +162,7 @@ real(DBL) frac, tf, sec
 type(sachead) shd
 
 real(SGL), allocatable, dimension(:) :: seis_data
+
 
 
 ier = -1
@@ -447,13 +432,14 @@ open(unit=17, file=filename, status='replace', action='write', iostat=ier)
 
          write(17,"(A20,$)") trim(adjustl(str_date))
 
-         if (0 == sdb%rec(ist,iev)%npts) then    ! Write "NO DATA" if rec[ist][iev] == 0
+         !if (0 == sdb%rec(ist,iev)%npts) then    ! Write "NO DATA" if rec[ist][iev]%npts == 0
+         if (sdb%rec(ist,iev)%t0 < 0.0) then    ! Write "NO DATA" if rec[ist][iev]%t0 < 0
 
             write(17,"(A)") 'NO DATA at '//trim(adjustl(sdb%st(ist)%ns_name))
 
          else
 
-            sacfile = trim(adjustl(sdb%rec(ist,iev)%sacfile))
+			sacfile = trim(adjustl(sdb%rec(ist,iev)%sacfile))
             ! Read the SAC file to retrive its header information into shd struct.
             call sacio_readhead(sacfile, shd, ier)
 
@@ -540,7 +526,8 @@ if (.not.(is_existing)) return
 ! ***************************************************************
 if ((f1 > 0.0) .and. (f2 > f1) .and. (f3 > f2) .and. (f4 > f3)) then
 
-   if (sdb%rec(ist,iev)%npts > 0) then
+   !if (sdb%rec(ist,iev)%npts > 0) then
+   if (sdb%rec(ist,iev)%t0 > 0.0) then
 
       ! Each processor has its own SAC script
 
@@ -665,6 +652,7 @@ inquire(file=sacfile, exist=is_existing)
 if (.not.(is_existing)) return
 
 
+
 ! Read the SAC file
 call sacio_readsac(sacfile, shd, seis_data, ier)
 
@@ -678,6 +666,7 @@ sacname = trim(adjustl(strArray(nstrArray-1)))//'/'//trim(adjustl(strArray(nstrA
 n = shd%npts
 ! Remove round error
 dt = nint(shd%delta*1e6)*1.d-6
+
 
 
 ! =================================================================================================
@@ -1279,7 +1268,7 @@ end subroutine hilbert
 ! is_save_record: if output cross-correlation is_save_records [input]
 ! =======================================================================================
 subroutine cc_and_aftan(sdb, ist1, ist2, nlag, num_bootstrap, is_pws, str_pws, &
-                        str_npow_pws, str_per1, str_per2, bootstrap_type, tarfolder)
+                    str_npow_pws, str_per1, str_per2, bootstrap_type, tarfolder)
 
 implicit none
 
@@ -1346,6 +1335,7 @@ complex(SGL), allocatable, dimension(:) :: fftdata1, fftdata2
 
 ! Initialize stacking number and cross-correlation function.
 nev = sdb%nev
+dt = sdb%dt
 if (nev <= 0) return
 
 
@@ -1406,6 +1396,9 @@ shd%iztype = 11               ! IO=11
 shd%iftype = 1                ! ITIME=1
 shd%leven = 1                 ! TRUE=1
 shd%npts = 2*nlag + 1
+shd%delta = dt
+shd%b = -nlag*dt
+shd%e =  nlag*dt
 shd%o = 0.0
 shd%evla = sdb%st(ist1)%lat
 shd%evlo = sdb%st(ist1)%lon
@@ -1470,25 +1463,23 @@ do iev = 1, nev, 1
 
 
 
-      if (1 == nstack) then
-         ! Get the time interval.
-         dt = nint(sdb%rec(ist1,iev)%dt*1e6)*1.d-6
-         shd%delta = dt
-         shd%b = -nlag*dt
-         shd%e =  nlag*dt
-         !! Get the time interval.
-         !dt = nint(sdb%rec(ist1,iev)%dt*1e6)*1.d-6
-         !call sacio_newhead(shd, dt, 2*nlag+1, -nlag*dt)
-         !shd%evla = sdb%st(ist1)%lat
-         !shd%evlo = sdb%st(ist1)%lon
-         !shd%stla = sdb%st(ist2)%lat
-         !shd%stlo = sdb%st(ist2)%lon
-         !shd%kevnm = trim(adjustl(sdb%st(ist1)%staname))
-         !shd%kstnm = trim(adjustl(sdb%st(ist2)%staname))
-         !shd%kuser1 = trim(adjustl(sdb%st(ist1)%ns_name))
-         !shd%kuser2 = trim(adjustl(sdb%st(ist2)%ns_name))
-         !call geodist(shd)
-      end if
+      !if (1 == nstack) then
+      !   ! Get the time interval.
+      !   !dt = nint(sdb%rec(ist1,iev)%dt*1e6)*1.d-6
+      !   shd%delta = dt
+      !   shd%b = -nlag*dt
+      !   shd%e =  nlag*dt
+      !   !! Get the time interval.
+      !   !dt = nint(sdb%rec(ist1,iev)%dt*1e6)*1.d-6
+      !   !call sacio_newhead(shd, dt, 2*nlag+1, -nlag*dt)
+      !   !shd%evla = sdb%st(ist1)%lat
+      !   !shd%evlo = sdb%st(ist1)%lon
+      !   !shd%stla = sdb%st(ist2)%lat
+      !   !shd%stlo = sdb%st(ist2)%lon
+      !   !shd%kevnm = trim(adjustl(sdb%st(ist1)%staname))
+      !   !shd%kstnm = trim(adjustl(sdb%st(ist2)%staname))
+      !   !call geodist(shd)
+      !end if
 
 
 
@@ -1511,6 +1502,7 @@ do iev = 1, nev, 1
    end if
 
 end do
+
 
 
 

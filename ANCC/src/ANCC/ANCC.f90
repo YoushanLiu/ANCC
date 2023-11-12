@@ -1,19 +1,3 @@
-! This file is part of ANCC.
-!
-! ANCC is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! ANCC is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <https://www.gnu.org/licenses/>.
-!
-!
 program ANCC
 
 use mpi
@@ -28,30 +12,30 @@ implicit none
 ! ***********************************************************************
 ! Variable declaration section.
 ! ***********************************************************************
-character(64) :: version = ' (v6.5)'
+character(64) :: version = ' (v6.6)'
 
 integer i, j, k, n
+integer jmax, nlag
 integer iunit, ipws
-integer jmax, nlag, npts
 integer nargin, myroot, ier
 integer iev, ist, ist1, ist2
 integer nstrArray, num_bootstrap
 integer nev, nst, nev_loc, nev_gathered
 integer npow_costaper, nwt, nwf, npow_pws
+integer npts, npts_read, npts_min, npts_max
 integer event_type, station_type, record_type
+
+integer(2) errcode
 
 
 integer(8) ndim, ndim1, ndim2, idim1, iproc
 integer(4) nstxnev, nstxnev_loc, nstxnev_gathered
 
 
-logical flag
-
-
 real(SGL) lat, lon, freqmin, tlag
 real(SGL) f1, f2, f3, f4, fr1, fr2
 
-real(DBL) dt, t0, tlen
+real(DBL) dt, dt_read, dt_min, dt_max, t0, tlen
 
 
 character(len=3) str_specwhitenning
@@ -68,6 +52,7 @@ character(len=8) netname, staname, channel
 character(len=32) str_npow_pws
 character(len=32) str_per1, str_per4
 
+character(len=512) sacfile, msg
 character(len=512) evtpath, str_date, path
 character(len=512) sacfolder, pzfolder, tarfolder
 
@@ -138,19 +123,14 @@ deallocate(base, disp, blocklen, types)
 ! ***********************************************************************
 ! Construct new record data type for later data sharing.
 ! ***********************************************************************
-n = 4
+n = 2
 allocate(base(n), disp(n), blocklen(n), types(n))
-blocklen = (/ 192, 1, 1, 1 /)
-types =(/ MPI_CHARACTER, MPI_DOUBLE_PRECISION, &
-          MPI_DOUBLE_PRECISION, MPI_INTEGER /)
+blocklen = (/ 192, 1 /)
+types =(/ MPI_CHARACTER, MPI_DOUBLE_PRECISION /)
 call MPI_GET_ADDRESS(rec_node%sacfile, base(1), ier)
 call MPI_GET_ADDRESS(rec_node%t0, base(2), ier)
-call MPI_GET_ADDRESS(rec_node%dt, base(3), ier)
-call MPI_GET_ADDRESS(rec_node%npts, base(4), ier)
 disp(1) = 0
 disp(2) = base(2) - base(1)
-disp(3) = base(3) - base(1)
-disp(4) = base(4) - base(1)
 call MPI_TYPE_CREATE_STRUCT(n, blocklen, disp, types, record_type, ier)
 call MPI_TYPE_COMMIT(record_type, ier)
 deallocate(base, disp, blocklen, types)
@@ -374,7 +354,7 @@ call MPI_BARRIER(MPI_COMM_WORLD, ier)
 ! =====================================================================================
 ! =============================== SECTION 2 BEGINS ====================================
 ! =====================================================================================
-! This section process the SAC files and fill in the elements in the sdb struct.
+! This section processes the SAC files and fill in the elements in the sdb struct.
 if (myrank == myroot) then
    write(*,"(A)") '***********************************************************************'
    write(*,"(A)") '                         SECTION 2 BEGINS'
@@ -514,8 +494,10 @@ close(unit=iunit)
 ! ***********************************************************************
 ! Do the time correction and fill in the sdb.
 ! ***********************************************************************
-flag = .false.
+errcode = 0
 
+npts = 0
+dt = 0.d0
 iunit = 4*nprocs + myrank + 11
 open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
 
@@ -574,39 +556,72 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
       ! Loop the station to processor the SAC files and fill in the sdb elements.
       do ist = 1, nst, 1
 
-         ! ***********************************************************************
-         ! Initialize the sdb.rec.npts and sdb.rec.sacfile elements.
-         ! ***********************************************************************
-         sdb_loc%rec(ist,iev)%npts = 0
-         sdb_loc%rec(ist,iev)%sacfile = ''
 
+         ! ***********************************************************************
+         ! Initialize the sdb.rec.t0 and sdb.rec.sacfile elements.
+         ! ***********************************************************************
+         sdb_loc%rec(ist,iev)%t0 = -1.d0
+         sdb_loc%rec(ist,iev)%sacfile = ''
+   
          ! ***********************************************************************
          ! Process the SAC file for one record and fill in the sdb.rec info.
          ! ***********************************************************************
-         call mk_one_rec(sdb, iev, ist, npow_costaper, f1, f2, f3, f4, channel, evtpath, sdb_loc)
+         call mk_one_rec(sdb, iev, ist, npow_costaper, f1, f2, f3, f4, channel, evtpath, npts_read, dt_read, sdb_loc)
 
 
-         dt = sdb_loc%rec(ist,iev)%dt
-         npts = sdb_loc%rec(ist,iev)%npts
-         if ((0 /= npts) .and. ((t0 + tlen) > (npts-1)*dt)) then
+         sacfile = trim(adjustl(sdb_loc%rec(ist,iev)%sacfile))
+         ! Check consistence in sampling points
+         if (0 /= npts_read) then
+         	if (0 == npts) then
+         	   npts = npts_read
+         	else if (npts /= npts_read) then
+         	   errcode = -1
+               call MPI_ABORT(MPI_COMM_WORLD, -1, ier)
+               write(msg, "(A,I0,A)") 'Error: Inconsistence of sampling points (npts_read=', npts_read, ') in '//trim(sacfile)
+               !stop trim(adjustl(msg))
+               write(*,*) trim(adjustl(msg))
+               call flush(6)
+               stop
+         	end if
+         end if
+
+
+         ! Check consistence in sampling interval
+         if (dt_read > 0.0) then
+         	if (abs(dt) < 1.e-15) then
+         	   dt = dt_read
+         	else if ((abs(dt - dt_read) > 1.e-15) .or. (dt_read < 0.0)) then
+         	   errcode = -2
+               call MPI_ABORT(MPI_COMM_WORLD, -2, ier)
+               write(msg, "(A,I0,A)") 'Error: Inconsistence of sampling interval (dt_read=', dt_read, ') in '//trim(sacfile)
+               !stop trim(adjustl(msg))
+               write(*,*) trim(adjustl(msg))
+               call flush(6)
+               stop
+         	end if
+         end if
+
+         ! Check the correctness of tlen
+         if ((0 /= npts_read) .and. ((t0 + tlen) > (npts_read-1)*dt_read)) then
             write(*,"(A)") "Error: t0 + tlen > (npts-1)*dt !"
             write(*,"(A, F12.6)") "t0 + tlen   = ", t0 + tlen
-            write(*,"(A, F12.6)") "(npts-1)*dt = ", (npts-1)*dt
-            write(*,"(A)") "Error: parameters t0 and tlen must be set wrongly, please reset !"
+            write(*,"(A, F12.6)") "(npts-1)*dt = ", (npts_read-1)*dt_read
+            write(*,"(A)") "Error: Parameters t0 and tlen must be set wrongly, please reset !"
             call flush(6)
-            flag = .true.
-            call MPI_ABORT(MPI_COMM_WORLD, -1, ier)
+            errcode = -3
+            call MPI_ABORT(MPI_COMM_WORLD, -3, ier)
             stop
          end if
 
-         if ((0 /= npts) .and. (tlen < 0.80*(npts-1)*dt)) then
+         ! Check the correctness of tlen
+         if ((0 /= npts_read) .and. (tlen < 0.80*(npts_read-1)*dt_read)) then
             write(*,"(A)") "Error: tlen < 0.80*(npts-1)*dt !"
             write(*,"(A, F12.6)") "tlen             = ", tlen
-            write(*,"(A, F12.6)") "0.80*(npts-1)*dt = ", (npts-1)*dt
-            write(*,"(A)") "Error: parameters t0 and tlen must be set wrongly, please reset !"
+            write(*,"(A, F12.6)") "0.80*(npts-1)*dt = ", (npts_read-1)*dt_read
+            write(*,"(A)") "Error: Parameters t0 and tlen must be set wrongly, please reset !"
             call flush(6)
-            flag = .true.
-            call MPI_ABORT(MPI_COMM_WORLD, -1, ier)
+            errcode = -4
+            call MPI_ABORT(MPI_COMM_WORLD, -4, ier)
             stop
          end if
 
@@ -625,18 +640,79 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
 
 close(unit=iunit)
 
+call MPI_BARRIER(MPI_COMM_WORLD, ier)
 
 
 ! =======================================================================
-if (flag) then
-   write(*,"(A)") "Error: parameters t0 and tlen must be set wrongly, please reset !"
-   call flush(6)
-   call MPI_ABORT(MPI_COMM_WORLD, -1, ier)
+if (0 /= errcode) then
+   select case(errcode)
+   case(-1)
+      write(msg,"(A)") "Error: Inconsistence of sampling points, please check your data !"
+   case(-2)
+      write(msg,"(A)") "Error: Inconsistence of sampling interval, please chech your data !"
+   case(-3,-4)
+      write(msg,"(A)") "Error: Parameters t0 and tlen must be set wrongly, please reset !"
+   end select
+   !call flush(6)
+   call MPI_ABORT(MPI_COMM_WORLD, -100, ier)
    call MPI_FINALIZE(ier)
+   !stop trim(adjustl(msg))
+   write(*,*) trim(adjustl(msg))
+   call flush(6)
    stop
 end if
 ! =======================================================================
 
+
+
+
+call MPI_ALLREDUCE(npts, npts_max, 1, MPI_INTEGER, MPI_MAX, MPI_COMM_WORLD, ier)
+call MPI_ALLREDUCE(npts, npts_min, 1, MPI_INTEGER, MPI_MIN, MPI_COMM_WORLD, ier)
+if (npts_min /= npts_max) then
+   write(msg,"(A)") "Error: Inconsistence of sampling points across processors !"
+   call MPI_ABORT(MPI_COMM_WORLD, -100, ier)
+   call MPI_FINALIZE(ier)
+   !stop trim(adjustl(msg))
+   write(*,*) trim(adjustl(msg))
+   call flush(6)
+   stop
+end if
+call MPI_ALLREDUCE(dt, dt_max, 1, MPI_DOUBLE_PRECISION, MPI_MAX, MPI_COMM_WORLD, ier)
+call MPI_ALLREDUCE(dt, dt_min, 1, MPI_DOUBLE_PRECISION, MPI_MIN, MPI_COMM_WORLD, ier)
+if (abs(dt_max - dt_min) > 1.e-15) then
+   write(msg,"(A)") "Error: Inconsistence of sampling intervals across processors !"
+   call MPI_ABORT(MPI_COMM_WORLD, -100, ier)
+   call MPI_FINALIZE(ier)
+   !stop trim(adjustl(msg))
+   write(*,*) trim(adjustl(msg))
+   call flush(6)
+   stop
+end if
+
+
+! =======================================================================
+! Check parameter validation
+if (dt < 0.0) then
+   !write(*,"(A)") 'Error: dt < 0, please check your data !'
+   !call flush(6)
+   call MPI_ABORT(MPI_COMM_WORLD, -100, ier)
+   call MPI_FINALIZE(ier)
+   stop 'Error: dt < 0, please check your data !'
+end if
+
+if (f4 > 0.5/dt) then
+   !write(*,"(A)") 'Error: 1/f4 < 0.5/dt should be satisfied !'
+   !call flush(6)
+   call MPI_ABORT(MPI_COMM_WORLD, -1, ier)
+   call MPI_FINALIZE(ier)
+   stop 'Error: 1/f4 < 0.5/dt should be satisfied !'
+end if
+! =======================================================================
+! Pass parameter validity test
+! Save the sampling interval and sampling points in sdb%dt and sdb%npts, respectively.
+sdb%dt = dt
+sdb%npts = npts
+! =======================================================================
 
 
 
@@ -711,43 +787,8 @@ end if
 
 !end if ! if (myrank == myroot) then
 
-
-
-! =======================================================================
-! Check consistence of dt
-dt = -1.0
-flag = .false.
-do iev = 1, nev, 1
-   if (flag) exit
-   do ist = 1, nst, 1
-      if ((sdb%rec(ist,iev)%npts) > 0) then
-         dt = sdb%rec(ist,iev)%dt
-         flag = .true.
-         exit
-      endif
-   end do
-end do
-
-! Check parameter validation
-if (dt < 0.0) then
-   write(*,"(A)") 'Error: input data is wrongly set, please check !'
-   call flush(6)
-   call MPI_ABORT(MPI_COMM_WORLD, -1, ier)
-   call MPI_FINALIZE(ier)
-   stop
-end if
-
-if (f4 > 0.5/dt) then
-   write(*,"(A)") 'Error: 1/f4 < 0.5/dt should be satisfied !'
-   call flush(6)
-   call MPI_ABORT(MPI_COMM_WORLD, -1, ier)
-   call MPI_FINALIZE(ier)
-   stop
-end if
-! =======================================================================
-
 call MPI_BARRIER(MPI_COMM_WORLD, ier)
-
+! =======================================================================
 
 
 
