@@ -1,19 +1,3 @@
-! This file is part of ANCC.
-!
-! ANCC is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! ANCC is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <https://www.gnu.org/licenses/>.
-!
-!
 module bindata_io_m
 
 use db_m
@@ -133,20 +117,18 @@ implicit none
 character(len=*), intent(in) :: filename
 
 
-logical :: is_existed
+integer iunit
+integer k, n, n0, ier
 
-integer :: ier, n, k, n0
+logical is_existing
 
-real :: dt, stlo, stla, evlo, evla
+real dt, stlo, stla, evlo, evla
 
-type(sachead) :: sachd
+type(sachead) shd
 
-character(len=512) :: infile, outfile
+character(len=512) infile, outfile
 
 real, allocatable, dimension(:) :: sacdata
-
-
-integer iunit
 
 
 
@@ -154,19 +136,19 @@ iunit = 11 + nprocs + myrank
 
 
 
-inquire(file=filename, exist=is_existed)
-if (.not.(is_existed)) return
+inquire(file=filename, exist=is_existing)
+if (.not.(is_existing)) return
 
 
-call sacio_readsac(filename, sachd, sacdata, ier)
+call sacio_readsac(filename, shd, sacdata, ier)
 
 
-n = sachd%npts
-dt = sachd%delta
-stlo = sachd%stlo
-stla = sachd%stla
-evlo = sachd%evlo
-evla = sachd%evla
+n = shd%npts
+dt = shd%delta
+stlo = shd%stlo
+stla = shd%stla
+evlo = shd%evlo
+evla = shd%evla
 
 n0 = n/2 + 1
 
@@ -180,6 +162,7 @@ open(unit=iunit, file=trim(adjustl(outfile)), action='write', &
 
    if (0 /= ier) then
       write(*,"(A,A)") "Error: Cannot open: ", trim(adjustl(outfile))
+      call flush(6)
       return
    end if
 
@@ -189,8 +172,6 @@ open(unit=iunit, file=trim(adjustl(outfile)), action='write', &
    do k = 1, n0, 1
       write(iunit,"(F15.5,4x,2ES25.10)") (k-1)*dt, sacdata(n0+k-1), sacdata(n0-k+1)
    end do
-
-   call flush(iunit)
 
 close(unit=iunit)
 

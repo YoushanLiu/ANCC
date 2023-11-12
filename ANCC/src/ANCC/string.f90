@@ -1,19 +1,3 @@
-! This file is part of ANCC.
-!
-! ANCC is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! ANCC is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <https://www.gnu.org/licenses/>.
-!
-!
 module string_m
 
 
@@ -31,22 +15,22 @@ subroutine delspace(str)
 
 implicit none
 
-integer :: str_len
-
 character(len=*), intent(inout) :: str
+
+
+integer nstr
+
 character(len=512) :: str_tmp, str_result
 
 
-
 str_result = ''
-
 
 do
     str = trim(adjustl(str))
     if (str == '') exit
     read(str, *) str_tmp
-    str_len = len(trim(str_tmp))
-    str(1:str_len) = ''
+    nstr = len_trim(str_tmp)
+    str(1:nstr) = ''
     str_result = trim(str_result) // trim(str_tmp)
 end do
 
@@ -60,39 +44,40 @@ end subroutine delspace
 ! Split a string by the given delimiter(s)
 ! InStr: input string [input]
 ! delimiter: string containing the delimiter(s) (e.g. '/.') [input]
-! strArray: output string array (allocatable) [output]
-! nsize: number of output string array [output]
+! OutStr: output string array (allocatable) [output]
+! n: number of output string array [output]
 ! =============================================================================
-subroutine split_string(InStr, delimiter, strArray, nsize)
+subroutine split_string(InStr, delimiter, nout, OutStr)
 
 implicit none
 
 character(len=*), intent(in) :: InStr, delimiter
-character(len=*), allocatable, dimension(:), intent(out) :: strArray
-integer, intent(out) :: nsize
+
+integer, intent(out) :: nout
+character(len=*), allocatable, dimension(:), intent(out) :: OutStr
 
 
-integer i, j, istart
+integer i, j, istart, n
 integer nstr, ndelim, ncount
 
 
-nsize = 1
+n = 1
 istart = 1
 
-nstr = len(trim(InStr))
-ndelim = len(trim(delimiter))
+nstr = len_trim(InStr)
+ndelim = len_trim(delimiter)
 
 ! Count how many segements the input string has
 do i = 1, nstr, 1
    do j = 1, ndelim, 1
       if (InStr(i:i) == delimiter(j:j)) then
-         nsize = nsize + 1
+         n = n + 1
       end if
    end do
 end do
 
 
-allocate(strArray(nsize))
+allocate(OutStr(n))
 
 ! Split the input string
 ncount = 0
@@ -101,12 +86,12 @@ do i = 1, nstr, 1
 
       if (InStr(i:i) == delimiter(j:j)) then
          if (i == 1) then        ! the first element of the string is the delimiter
-            strArray(1) = ''
+            OutStr(1) = ''
             ncount = ncount + 1
             istart = 2
          else
             ncount = ncount + 1
-            strArray(ncount) = InStr(istart:i-1)
+            OutStr(ncount) = trim(adjustl(InStr(istart:i-1)))
             istart = i+1
          end if
       end if
@@ -115,14 +100,15 @@ do i = 1, nstr, 1
 end do
 
 
-if (nsize > 1) then
+nout = n
+if (n > 1) then
    if (istart <= nstr) then
-      strArray(nsize) = InStr(istart:nstr)
+      OutStr(n) = InStr(istart:nstr)
    else        ! the last element of the string is the delimiter
-      strArray(nsize) = ''
+      OutStr(n) = ''
    end if
 else            ! no spliting occured
-    strArray(1) = InStr
+    OutStr(1) = InStr
 end if
 
 
@@ -169,6 +155,60 @@ return
 
 end function padzero
 
+
+
+function tolower(string) result(tolower_result)
+
+implicit none
+
+character(len=*), intent(in) :: string
+character(len=len(string)) :: tolower_result
+
+
+integer i, ii
+
+do i = 1, len(string), 1
+
+   ii = iachar(string(i:i))
+
+   select case (ii)
+      case (65:90)
+         tolower_result(i:i) = achar(ii+32)
+      case default
+         tolower_result(i:i) = string(i:i)
+   end select
+
+end do
+
+end function tolower
+
+
+
+
+function toupper(string) result(toupper_result)
+
+implicit none
+
+character(len=*), intent(in) :: string
+character(len=len(string)) :: toupper_result
+
+
+integer i, ii
+
+do i = 1, len(string), 1
+
+   ii = iachar(string(i:i))
+
+   select case (ii)
+      case (97:122)
+         toupper_result(i:i)=achar(ii-32)
+      case default
+         toupper_result(i:i)=string(i:i)
+   end select
+
+end do
+
+end function toupper
 
 
 end module string_m
