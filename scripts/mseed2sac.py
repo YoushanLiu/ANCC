@@ -69,9 +69,6 @@ from obspy.io.sac import SACTrace
 dryrun = False
 
 # direction of the mseed data
-#data_folder = 'test2'
-#data_folder = 'JD5'
-#output_folder = 'Group5_EPS'
 data_folder = 'JD.Group5.EPS.Raw'
 output_folder = 'SAC.Group5.EPS'
 
