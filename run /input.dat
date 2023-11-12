@@ -36,7 +36,7 @@ N                                                    # whether output all the pr
 
 
 ##############################################################################
-# INPUT PARAMETERS FOR OUTPUT SETTINGS AND OTHER CONTROLING FLOW PARAMETERS
+# INPUT PARAMETERS FOR OUTPUT AND CONTROL FLOW SETTINGS
 ##############################################################################
 Y                                                    # whether output the SAC file record and cross-correlation record
 Y                                                    # whether verbose all the processing details
