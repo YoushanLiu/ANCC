@@ -73,7 +73,6 @@ dryrun = False
 
 # direction of the reftek data
 data_folder = 'DATA_Raw'
-#data_folder = 'DATA_test2'
 output_folder = 'Group5_EPS'
 
 # station information file
