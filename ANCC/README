@@ -1,5 +1,5 @@
-In default, the intel compiler (such as ifort and mpiifort) is recommended. If you use a gnu compiler, you can comment flags for intel compiler 
-and uncomments those for gnu compiler.
+In default, the intel compiler (such as ifort and mpiifort) is recommended. If you use a gnu compiler, you can comment flags for the intel compiler 
+and uncomments those for the gnu compiler.
 
 This program includes three parts, i.e. AFTAN (original author, Colorado School of Mines), ANCC (original author [v2.0], Xingli Fan), TF_PWS (original author, Guoliang Li).
 The first part implements time-frequency analysis to extract dispersion curves for ambient noise tomography.
@@ -8,7 +8,7 @@ The third part implements a phase-weighted stack of cross-correlation.
 
 After v3.0, all parts are single precision, which leads to a significant performance improvement.
 Any goto syntaxes are removed. All arrays are dynamically allocated based on the length of data instead of 32768 in the original version.
-In this version, a lot of errors had been corrected.
+In this version, a lot of errors have been corrected.
 
 In the original version, all FFT operations are directly applied to time-domain signals. Because FFT requires a periodic signal, 
 thus it will lead to some spurious oscillations at zero lag. A cosine taper is applied before FFT in the time domain, which can suppress
@@ -33,6 +33,7 @@ In version 7.0, data overlap is allowed.
 
 # Change Log
 · 31th Aug. 2023: Redesigned Makefile. The config.h used in the old versions can be automake by two bash scripts, you just need to select the MPIFC in the Makefile.
-				  Now, it support Intel, GNU, and PGI Compilers. If you want to modify the guess.flags or anything else to adapt it to other compilers or system, let me know so that we can make your modifications available to others.
+				  Now, it support Intel, GNU, and PGI Compilers. If you want to modify the guess.flags or anything else to adapt it to other compilers or systems, let me know so that we can make your modifications available to others.
                   Fix some errors in ./src/TF_PWS/st.c
 
+- 12th Nov. 2023: Redesigned database structs to save memory and improve MPI communications.
