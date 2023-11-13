@@ -82,13 +82,13 @@ def check_autocorrelation(filename):
 is_auto_correlation = check_autocorrelation(filename)
 
 ###########################################################
-
 # Reomve empty folder(s) and file(s)
 ###########################################################
 os.system('find %s -depth -type "d" -empty -exec rmdir {} \;' %(SACfolder))
 os.system('find %s -name "*" -type f -size 0c | xargs -n 1 rm -f' % (SACfolder))
 
-# Parse the station and event informations.
+###########################################################
+# Parse the station and event information.
 ###########################################################
 os.system('rm -rf stations.tmp events.lst')
 
@@ -113,6 +113,7 @@ os.system("sort stations.tmp | uniq > stations.lst")
 os.system("rm -rf stations.tmp")
 
 
+###########################################################
 # Return if stations.lst contains duplicate stations
 ###########################################################
 stations = []
@@ -133,6 +134,7 @@ if len(duplicates) > 0:
     exit()
 
 
+###########################################################
 # Execute the main program to process the ambient noise data.
 ###########################################################
 starttime = UTCDateTime()
