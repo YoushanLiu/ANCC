@@ -27,7 +27,7 @@ It can also output prestack cross-correlation functions.
     
     cutdata2_p.py     -> parallel processing of cutdata2.py
 
-3. Cross-correlation and frequency-time analysis (Ambient Noise Cross-Correlation)
+3. Auto- or cross-correlation and frequency-time analysis (Ambient Noise Auto- or Cross-Correlation)
 
     It includes the AFTAN to extract the dispersion curve.
 
