@@ -1,19 +1,3 @@
-! This file is part of ANCC.
-!
-! ANCC is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! ANCC is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <https://www.gnu.org/licenses/>.
-!
-!
 program ANCC
 
 use mpi
@@ -33,9 +17,9 @@ character(64) :: version = ' (v6.6)'
 integer i, j, k, n
 integer jmax, nlag
 integer iunit, ipws
+integer nstr, num_bootstrap
 integer nargin, myroot, ier
 integer iev, ist, ist1, ist2
-integer nstrArray, num_bootstrap
 integer nev, nst, nev_loc, nev_gathered
 integer npow_costaper, nwt, nwf, npow_pws
 integer npts, npts_read, npts_min, npts_max
@@ -45,7 +29,7 @@ integer(2) errcode
 
 
 integer(8) ndim, ndim1, ndim2, idim1, iproc
-integer(4) nstxnev, nstxnev_loc, nstxnev_gathered
+integer(4) nevxnst, nevxnst_loc, nevxnst_gathered
 
 
 real(SGL) lat, lon, freqmin, tlag
@@ -54,7 +38,7 @@ real(SGL) f1, f2, f3, f4, fr1, fr2
 real(DBL) dt, dt_read, dt_min, dt_max, t0, tlen
 
 
-character(len=3) str_specwhitenning
+character(len=3) str_specwhitening
 character(len=3) str_overwrite_data
 character(len=3) str_pws, str_npow_pws
 character(len=3) str_verbose, str_save_record
@@ -83,7 +67,7 @@ integer(MPI_ADDRESS_KIND), allocatable, dimension(:) :: base, disp
 
 integer, allocatable, dimension(:) :: recvns, displs
 
-character(len=128), allocatable, dimension(:) :: strArray
+character(len=128), allocatable, dimension(:) :: strs
 
 
 
@@ -98,7 +82,7 @@ myroot = nprocs - 1
 
 
 ! ***********************************************************************
-! Construct new event data type for later data sharing.
+! Costrsuct new event data type for later data sharing.
 ! ***********************************************************************
 n = 4
 allocate(base(n), disp(n), blocklen(n), types(n))
@@ -118,7 +102,7 @@ deallocate(base, disp, blocklen, types)
 
 
 ! ***********************************************************************
-! Construct new station data type for later data sharing.
+! Costrsuct new station data type for later data sharing.
 ! ***********************************************************************
 n = 3
 allocate(base(n), disp(n), blocklen(n), types(n))
@@ -136,7 +120,7 @@ deallocate(base, disp, blocklen, types)
 
 
 ! ***********************************************************************
-! Construct new record data type for later data sharing.
+! Costrsuct new record data type for later data sharing.
 ! ***********************************************************************
 n = 2
 allocate(base(n), disp(n), blocklen(n), types(n))
@@ -178,7 +162,7 @@ if (myrank == myroot) then
    write(*,"(A)") 'This program computes cross/auto-correlation and/or does AFTAN' // trim(version)
    write(*,"(A)") 'Its efficiency has been improved significantly by removing any unneccessary '
    write(*,"(A)") 'MPI_SEND & MPI_RECV and paralleling all parts by Youshan-Liu'
-   write(*,"(A)") 'All processors are used to compute instead of the master processor only for '
+   write(*,"(A)") 'All processes are used to compute instead of the master process only for '
    write(*,"(A)") 'message passing just as those original version done'
    write(*,"(A)")
    write(*,"(A)") '***********************************************************************'
@@ -225,7 +209,7 @@ open(unit=iunit, file='input.dat', status='old', action='read', iostat=ier)
    read(iunit,*) npow_costaper
    read(iunit,*) str_running_time_average, nwt, str_bandpass_earthquake, fr1, fr2
    read(iunit,*) str_onebit
-   read(iunit,*) str_specwhitenning, nwf
+   read(iunit,*) str_specwhitening, nwf
    read(iunit,*) str_suppress_notch, freqmin
    read(iunit,*) tlag
    read(iunit,*) str_pws, npow_pws
@@ -261,7 +245,7 @@ end if
 if (nwf < 0) then
    call MPI_ABORT(MPI_COMM_WORLD, -1, ier)
    call MPI_FINALIZE(ier)
-   stop 'Error: The half window width [nwf] for spectral whitenning must be nonnegative integer!'
+   stop 'Error: The half window width [nwf] for spectral whitening must be nonnegative integer!'
 end if
 
 if (.not.((f1 > f2) .and. (f2 > f3) .and. (f3 > f4))) then
@@ -294,7 +278,7 @@ fr2 = 1.0/fr2
 is_running_time_average = .false.
 is_bandpass_earthquake = .false.
 is_onebit = .false.
-is_specwhitenning = .false.
+is_specwhitening = .false.
 is_suppress_notch = .false.
 ipws = 0
 is_bootstrap = .false.
@@ -307,7 +291,7 @@ is_ac = .false.
 if ((str_running_time_average == 'Y') .or. (str_running_time_average == 'y')) is_running_time_average = .true.
 if ((str_bandpass_earthquake == 'Y') .or. (str_bandpass_earthquake == 'y')) is_bandpass_earthquake = .true.
 if ((str_onebit == 'Y') .or. (str_onebit == 'y')) is_onebit = .true.
-if ((str_specwhitenning == 'Y') .or. (str_specwhitenning == 'y')) is_specwhitenning = .true.
+if ((str_specwhitening == 'Y') .or. (str_specwhitening == 'y')) is_specwhitening = .true.
 if ((str_suppress_notch == 'Y') .or. (str_suppress_notch == 'y')) is_suppress_notch = .true.
 if ((str_bootstrap == 'Y') .or. (str_bootstrap == 'y')) is_bootstrap = .true.
 if ((str_pws == 'Y') .or. (str_pws == 'y')) ipws = 1
@@ -369,12 +353,12 @@ call MPI_BARRIER(MPI_COMM_WORLD, ier)
 ! =====================================================================================
 ! =============================== SECTION 2 BEGINS ====================================
 ! =====================================================================================
-! This section processes the SAC files and fill in the elements in the sdb struct.
+! This section processeses the SAC files and fill in the elements in the sdb struct.
 if (myrank == myroot) then
    write(*,"(A)") '***********************************************************************'
    write(*,"(A)") '                         SECTION 2 BEGINS'
    write(*,"(A)") '***********************************************************************'
-   write(*,"(A)") 'Constructing sdb struct ...'
+   write(*,"(A)") 'Costrsucting sdb struct ...'
    write(*,"(A)") '***********************************************************************'
    call flush(6)
 end if
@@ -427,7 +411,7 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
 close(unit=iunit)
 
 !end if  ! if (myrank == myroot) then
-nstxnev = nst*nev
+nevxnst = nst*nev
 
 
 
@@ -451,7 +435,7 @@ nstxnev = nst*nev
 !call MPI_BCAST(fr1, 1, MPI_REAL, myroot, MPI_COMM_WORLD, ier)
 !call MPI_BCAST(fr2, 1, MPI_REAL, myroot, MPI_COMM_WORLD, ier)
 !call MPI_BCAST(is_onebit, 1, MPI_LOGICAL, myroot, MPI_COMM_WORLD, ier)
-!call MPI_BCAST(is_specwhitenning, 1, MPI_LOGICAL, myroot, MPI_COMM_WORLD, ier)
+!call MPI_BCAST(is_specwhitening, 1, MPI_LOGICAL, myroot, MPI_COMM_WORLD, ier)
 !call MPI_BCAST(nwf, 1, MPI_INTEGER, myroot, MPI_COMM_WORLD, ier)
 !call MPI_BCAST(is_suppress_notch, 1, MPI_LOGICAL, myroot, MPI_COMM_WORLD, ier)
 !call MPI_BCAST(freqmin, 1, MPI_REAL, myroot, MPI_COMM_WORLD, ier)
@@ -520,7 +504,7 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
 
    do j = myrank, nev-1, nprocs
 
-      ! Skip head myrank lines, because they are processed by other processorsors
+      ! Skip head myrank lines, because they are processed by other processesors
       do k = 1, myrank, 1
          read(iunit,*, iostat=ier)
          if (0 /= ier) exit
@@ -534,8 +518,8 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
 
 
       ! Split the input event path name.
-      call split_string(evtpath, '/', nstrArray, strArray)
-      str_date = strArray(nstrArray)
+      call split_string(evtpath, '/', nstr, strs)
+      str_date = strs(nstr)
 
 
       ! ***********************************************************************
@@ -559,8 +543,8 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
       if (is_overwrite_data) then
          sdb_loc%ev(iev)%evtpath = trim(adjustl(str_date))
       else
-         path = './tmp/DATA/'//trim(adjustl(strArray(nstrArray-2)))//'/'// &
-          trim(adjustl(strArray(nstrArray-1)))//'/'//trim(adjustl(str_date))
+         path = './tmp/DATA/'//trim(adjustl(strs(nstr-2)))//'/'// &
+          trim(adjustl(strs(nstr-1)))//'/'//trim(adjustl(str_date))
          sdb_loc%ev(iev)%evtpath = trim(adjustl(path))
 
          ! Create the target event folder.
@@ -568,7 +552,7 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
       end if
 
 
-      ! Loop the station to process the SAC files and fill in the sdb elements.
+      ! Loop on the station to process the SAC files and fill in the sdb elements.
       do ist = 1, nst, 1
 
 
@@ -642,7 +626,7 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
 
       end do
 
-      ! Skip tail nprocs-(myrank+1) lines, because they are processed by other processes
+      ! Skip tail nprocs-(myrank+1) lines, because they are processed by other processesors
       do k = myrank+2, nprocs, 1
          read(iunit,*, iostat=ier)
          if (0 /= ier) exit
@@ -684,7 +668,7 @@ end if
 call MPI_ALLREDUCE(npts, npts_max, 1, MPI_INTEGER, MPI_MAX, MPI_COMM_WORLD, ier)
 call MPI_ALLREDUCE(npts, npts_min, 1, MPI_INTEGER, MPI_MIN, MPI_COMM_WORLD, ier)
 if (npts_min /= npts_max) then
-   write(msg,"(A)") "Error: Inconsistence of sampling points across processors !"
+   write(msg,"(A)") "Error: Inconsistence of sampling points across processes !"
    call MPI_ABORT(MPI_COMM_WORLD, -100, ier)
    call MPI_FINALIZE(ier)
    !stop trim(adjustl(msg))
@@ -695,7 +679,7 @@ end if
 call MPI_ALLREDUCE(dt, dt_max, 1, MPI_DOUBLE_PRECISION, MPI_MAX, MPI_COMM_WORLD, ier)
 call MPI_ALLREDUCE(dt, dt_min, 1, MPI_DOUBLE_PRECISION, MPI_MIN, MPI_COMM_WORLD, ier)
 if (abs(dt_max - dt_min) > 1.e-15) then
-   write(msg,"(A)") "Error: Inconsistence of sampling intervals across processors !"
+   write(msg,"(A)") "Error: Inconsistence of sampling intervals across processes !"
    call MPI_ABORT(MPI_COMM_WORLD, -100, ier)
    call MPI_FINALIZE(ier)
    !stop trim(adjustl(msg))
@@ -769,16 +753,16 @@ displs(1) = 0
 do iproc = 2, nprocs, 1
    displs(iproc) = displs(iproc-1) + recvns(iproc-1)
 end do
-nstxnev_loc = nst*iev
-nstxnev_gathered = sum(recvns)
-if ((nstxnev /= nstxnev_gathered) .and. (myrank == myroot)) then
-   write(*,*) 'Error: nstxnev is not equal to nstxnev_gathered !'
+nevxnst_loc = nst*iev
+nevxnst_gathered = sum(recvns)
+if ((nevxnst /= nevxnst_gathered) .and. (myrank == myroot)) then
+   write(*,*) 'Error: nevxnst is not equal to nevxnst_gathered !'
    call flush(6)
 end if
-!call MPI_GATHERV(sdb_loc%rec, nstxnev_loc, record_type, sdb%rec, &
+!call MPI_GATHERV(sdb_loc%rec, nevxnst_loc, record_type, sdb%rec, &
 !         recvns, displs, record_type, myroot, MPI_COMM_WORLD, ier)
-!call MPI_BCAST(sdb%rec, nstxnev, record_type, myroot, MPI_COMM_WORLD, ier)
-call MPI_ALLGATHERV(sdb_loc%rec, nstxnev_loc, record_type, sdb%rec, &
+!call MPI_BCAST(sdb%rec, nevxnst, record_type, myroot, MPI_COMM_WORLD, ier)
+call MPI_ALLGATHERV(sdb_loc%rec, nevxnst_loc, record_type, sdb%rec, &
                     recvns, displs, record_type, MPI_COMM_WORLD, ier)
 
 
@@ -787,7 +771,7 @@ deallocate(sdb_loc%ev, sdb_loc%rec, recvns, displs)
 
 
 ! ***********************************************************************
-! Write the info database into a ascii file if is_save_record is true.
+! Write the info database into a ASCII file if is_save_record is true.
 ! ***********************************************************************
 if (is_save_record .and. (myrank == myroot)) then
    call sacdb_to_asc(sdb, 'DataRecord.lst')
@@ -796,7 +780,7 @@ if (is_save_record .and. (myrank == myroot)) then
 end if
 
 if (myrank == myroot) then
-   write(*,"(A,/)") 'Constructing sdb struct is done ... '
+   write(*,"(A,/)") 'Costrsucting sdb struct is done ... '
    call flush(6)
 end if
 
@@ -807,13 +791,13 @@ call MPI_BARRIER(MPI_COMM_WORLD, ier)
 
 
 
-!nstxnev = nst*nev
+!nevxnst = nst*nev
 ! ***********************************************************************
 ! Broadcast all the elements in sdb to all other processes.
 ! ***********************************************************************
 !call MPI_BCAST(sdb%ev, nev, event_type, myroot, MPI_COMM_WORLD, ier)
 !call MPI_BCAST(sdb%st, nst, station_type, myroot, MPI_COMM_WORLD, ier)
-!call MPI_BCAST(sdb%rec, nstxnev, record_type, myroot, MPI_COMM_WORLD, ier)
+!call MPI_BCAST(sdb%rec, nevxnst, record_type, myroot, MPI_COMM_WORLD, ier)
 !call MPI_BCAST(sdb%nev, 1, MPI_INTEGER, myroot, MPI_COMM_WORLD, ier)
 !call MPI_BCAST(sdb%nst, 1, MPI_INTEGER, myroot, MPI_COMM_WORLD, ier)
 
@@ -833,7 +817,7 @@ call MPI_BARRIER(MPI_COMM_WORLD, ier)
 ! ***********************************************************************
 
 ! ***********************************************************************
-! Preprocess data, including remove instrument response, fractional time correction,
+! Preprocess data, including remove istrsument response, fractional time correction,
 ! temporal normalization, spectral whitening, cutting data, computing Fourier spectrum, etc.
 ! ***********************************************************************
 if (myrank == myroot) then
@@ -841,8 +825,8 @@ if (myrank == myroot) then
    ! =====================================================================================
    ! =============================== SECTION 3 BEGINS ====================================
    ! =====================================================================================
-   ! This section removes the instrument response, cut the data, do the bandpass filtering,
-   ! correct the time fraction, do the time-domain normalization and spectral whitenning.
+   ! This section removes the istrsument response, cuts the data, does the bandpass filtering,
+   ! corrects the time fraction, does the time-domain normalization and spectral whitening.
    ! All the tasks are done using the so-called self-scheduling mode.
 
    write(*,"(A)") '***********************************************************************'
@@ -869,8 +853,8 @@ Nlen = nint(tlen/dt)
 
 
 
-! Determine corresponding half-window width for time domain normalization
-! Maximum allowed half-window length is 128 in SAC for smooth command
+! Determine corresponding half-window width for time-domain normalization
+! Maximum allowed half-window width is 128 in SAC for the smooth command
 if (nwt > 0) then
    !nwt = min(int(nwt/dt), 128)
    nwt = min(nwt, Nlen/2)
@@ -880,7 +864,7 @@ end if
 
 ndim1 = nev
 ndim2 = nst
-ndim = nstxnev - 1
+ndim = nevxnst - 1
 
 do iproc = myrank, ndim, nprocs
 
@@ -1006,11 +990,11 @@ call MPI_BARRIER(MPI_COMM_WORLD, ier)
 
 
 ! ***********************************************************************
-! Deallocate memory for the elements in sdb and strArray.
+! Deallocate memory for the elements in sdb and strs.
 ! ***********************************************************************
 deallocate(sdb%st, sdb%ev, sdb%rec)
-if (allocated(strArray)) then
-   deallocate(strArray)
+if (allocated(strs)) then
+   deallocate(strs)
 end if
 
 

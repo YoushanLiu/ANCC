@@ -1,19 +1,3 @@
-! This file is part of ANCC.
-!
-! ANCC is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! ANCC is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <https://www.gnu.org/licenses/>.
-!
-!
 module xcc_m
 
 use, intrinsic :: iso_c_binding     ! Allow to define the equivalents of C data types (e.g. c_ptr, C_INT)
@@ -70,7 +54,7 @@ real(DBL), intent(out) :: dt
 type(sac_db), intent(inout) :: sdb_loc
 
 
-integer nstrArray, ier
+integer nstr, ier
 
 logical is_existing
 
@@ -79,7 +63,7 @@ real(DBL) t0
 character(len=512) str_date, sacname
 character(len=512) sacinfile, sacoutfile
 
-character(len=128), allocatable, dimension(:) :: strArray
+character(len=128), allocatable, dimension(:) :: strs
 
 
 
@@ -105,13 +89,13 @@ if (.not.(is_existing)) return
 
 ! ***************************************************************
 if (is_verbose) then
-   call split_string(evtpath, '/', nstrArray, strArray)
-   str_date = strArray(nstrArray)
+   call split_string(evtpath, '/', nstr, strs)
+   str_date = strs(nstr)
    write(*,"('Event: ',A,'   Station: ',A)") trim(adjustl(str_date)), &
                                      trim(adjustl(sdb%st(ist)%ns_name))
    call flush(6)
-   if (allocated(strArray)) then
-      deallocate(strArray)
+   if (allocated(strs)) then
+      deallocate(strs)
    end if
 end if
 
@@ -412,13 +396,13 @@ type(sac_db), intent(in) :: sdb
 
 
 integer iev, ist
-integer nstrArray, ier
+integer nstr, ier
 
 type(sachead) shd
 
 character(len=512) str_date, sacname, sacfile
 
-character(len=128), allocatable, dimension(:) :: strArray
+character(len=128), allocatable, dimension(:) :: strs
 
 
 
@@ -443,8 +427,8 @@ open(unit=17, file=filename, status='replace', action='write', iostat=ier)
    do iev = 1, sdb%nev, 1
       do ist = 1, sdb%nst, 1
 
-         call split_string(sdb%ev(iev)%evtpath, '/', nstrArray, strArray)
-         str_date = strArray(nstrArray)
+         call split_string(sdb%ev(iev)%evtpath, '/', nstr, strs)
+         str_date = strs(nstr)
 
          write(17,"(A20,$)") trim(adjustl(str_date))
 
@@ -461,11 +445,11 @@ open(unit=17, file=filename, status='replace', action='write', iostat=ier)
 
             ! Write SAC file name, t0 (reference time), frac(time fraction),
             ! data length (npts*delta)
-            call split_string(sacfile, '/', nstrArray, strArray)
-            sacname = strArray(nstrArray)
+            call split_string(sacfile, '/', nstr, strs)
+            sacname = strs(nstr)
 
-            if (allocated(strArray)) then
-               deallocate(strArray)
+            if (allocated(strs)) then
+               deallocate(strs)
             end if
 
             !write(17,"(A30,3X,'t0: ',I4,'/',I3.3,'/',I2.2,':',I2.2,':',A,4X,'Frac:', &
@@ -489,8 +473,8 @@ open(unit=17, file=filename, status='replace', action='write', iostat=ier)
       end do
    end do
 
-   if (allocated(strArray)) then
-      deallocate(strArray)
+   if (allocated(strs)) then
+      deallocate(strs)
    end if
 
 close(unit=17)
@@ -504,7 +488,7 @@ end subroutine sacdb_to_asc
 ! sdb: sac_db struct [input]
 ! iev: event struct [input]
 ! ist: station struct [input]
-! myrank: processor ID number [input]
+! myrank: process ID number [input]
 ! f1, f2, f3, f4: freqency limits [input]
 ! is_verbose: verbose indicator [input]
 ! =======================================================================================
@@ -591,12 +575,12 @@ end subroutine remove_RESP
 
 
 ! =======================================================================================
-! Apply fractional time correction, temporal domain normalization, spectra whitenning,
+! Apply fractional time correction, temporal domain normalization, spectra whitening,
 ! band-rejection filtering [optional], Bandpass filtering, cut data, and forward FFT
 ! sdb: sac_db struct [input]
 ! iev: event struct [input]
 ! ist: station struct [input]
-! myrank: processor ID number [input]
+! myrank: process ID number [input]
 ! is_running_time_average: time normalization indicator [input]
 ! is_onebit: is_onebit normalization indicator [input]
 ! is_suppress_notch: is_suppress_notch indicator [input]
@@ -604,7 +588,7 @@ end subroutine remove_RESP
 ! is_bandpass_earthquake: if earthquake band_pass filtering at [fr1 fr2] [input]
 ! fr1, fr2: period limits for earthquake Bandpass filtering in time normalization [input]
 ! npow_costaper: power of cosine tapering function [input]
-! nwt, nwf: half-window length time normalization and spectral whitenning [input]
+! nwt, nwf: half-window length time normalization and spectral whitening [input]
 ! freqmin: retaining factor for is_suppress_notch repressing [input]
 ! t0: starting time [input]
 ! tlen: data length [input]
@@ -634,7 +618,7 @@ type(sac_db), intent(in) :: sdb
 
 integer n, nfft, nq
 integer k, nskip, norder
-integer nstrArray, n1, n2, ier
+integer nstr, n1, n2, ier
 
 logical is_existing
 
@@ -655,7 +639,7 @@ real(SGL), allocatable, dimension(:) :: abs_data, wgt_data
 
 real(DBL), allocatable, dimension(:) :: a, b, tr
 
-character(len=128), allocatable, dimension(:) :: strArray
+character(len=128), allocatable, dimension(:) :: strs
 
 complex(SGL), allocatable, dimension(:) :: s, sf
 
@@ -673,8 +657,8 @@ if (.not.(is_existing)) return
 call sacio_readsac(sacfile, shd, seis_data, ier)
 
 
-call split_string(sacfile, '/', nstrArray, strArray)
-sacname = trim(adjustl(strArray(nstrArray-1)))//'/'//trim(adjustl(strArray(nstrArray)))
+call split_string(sacfile, '/', nstr, strs)
+sacname = trim(adjustl(strs(nstr-1)))//'/'//trim(adjustl(strs(nstr)))
 
 
 
@@ -740,6 +724,10 @@ else
       !seis_data(1:n) = tan(atan2(seis_data(1:n), wgt_data(1:n)))
       wgt_data(1:n) = abs(tan(atan2(1.0, wgt_data(1:n))))
       seis_data(1:n) = seis_data(1:n) * wgt_data(1:n)
+
+      !call hilbert(n, seis_data, wgt_data)
+      !wgt_data(1:n) = abs(tan(atan2(1.0, wgt_data(1:n))))
+      !seis_data(1:n) = seis_data(1:n) * wgt_data(1:n)
 
       deallocate(abs_data, wgt_data)
 
@@ -868,7 +856,7 @@ sf(1) = 0.50*sf(1)
 ! ======================================= Spectral whitening ======================================
 ! =================================================================================================
 
-if (is_specwhitenning) then
+if (is_specwhitening) then
 
    ! ***************************************************************
    ! Apply spectral whitening.
@@ -877,7 +865,7 @@ if (is_specwhitenning) then
 
 
    if (is_verbose) then
-      write(*,"(A)") trim(adjustl(sacname))//' spectral whitenning is done ... '
+      write(*,"(A)") trim(adjustl(sacname))//' spectral whitening is done ... '
       call flush(6)
    end if
 
@@ -934,8 +922,8 @@ end if
 if (allocated(seis_data)) then
    deallocate(seis_data)
 end if
-if (allocated(strArray)) then
-   deallocate(strArray)
+if (allocated(strs)) then
+   deallocate(strs)
 end if
 
 
@@ -944,13 +932,13 @@ end subroutine preprocess
 
 
 ! =======================================================================================
-! Spectra whitenning algorithm. It works the same as running average amplitude in the
+! Spectra whitening algorithm. It works the same as running average amplitude in the
 ! time domain, and it is equivalent to do 'smooth mean h nwt' and 'divf avg.amp' in SAC.
-! f1, f4: frequency band to do spectral whitenning [input]
+! f1, f4: frequency band to do spectral whitening [input]
 ! df: frequency interval [input]
 ! nk: half-length of the data points in the frequency domain [input]
 ! sf: FFT values in complex form [input and output]
-! nwf: half-window length in spectral whitenning [input]
+! nwf: half-window length in spectral whitening [input]
 ! =======================================================================================
 subroutine whiten_spectra(f1, f4, df, nq, nwf, sf)
 
@@ -1120,7 +1108,7 @@ end subroutine bandpass_filter
 ! nk: half-length of the data points in the frequency domain [input]
 ! sf: FFT values in complex form [input and output]
 ! npow_costaper: power of the cosine tapering function [input]
-! freqmin: retaining factor for the spectral whitenning
+! freqmin: retaining factor for the spectral whitening
 ! freqmin is the percentage (0.5 means 50%) of amplitude we try to retain
 ! =======================================================================================
 subroutine bandstop_filter(f1, f2, f3, f4, df, nq, npow_costaper, freqmin, sf)
@@ -1202,6 +1190,72 @@ end subroutine bandstop_filter
 
 
 ! =======================================================================================
+subroutine hilbert(nt, x, y)
+
+implicit none
+
+include 'fftw3.f'
+
+integer(4), intent(in) :: nt
+
+real(4), intent(in) :: x(1:nt)
+
+real(4), intent(out) :: y(1:nt)
+
+
+integer(4) it
+integer(4) n, n2
+
+integer(8) :: fwd = 0, bwd = 0
+
+real(8) PI, dn
+
+complex, dimension(:), allocatable :: ctrf, ctrb
+
+
+n = 2**(ceiling(log10(dble(nt))/log10(2.d0)))
+n2 = int(n/2)
+dn = dble(n)
+
+
+allocate(ctrf(1:n))
+allocate(ctrb(1:n))
+
+
+call sfftw_plan_dft_1d(fwd, n, ctrf, ctrf, FFTW_FORWARD , FFTW_ESTIMATE)
+call sfftw_plan_dft_1d(bwd, n, ctrb, ctrb, FFTW_BACKWARD, FFTW_ESTIMATE)
+
+ctrf(1:n) = czero
+ctrf(1:nt) = cmplx(x(1:nt), 0.0)
+call sfftw_execute_dft(fwd, ctrf, ctrf)
+
+ctrb(1) = ctrf(1)
+do it = 2, n2+1, 1
+   ctrb(it) = 2.0*ctrf(it)
+end do
+do it = n2+2, n, 1
+   ctrb(it) = czero
+end do
+
+call sfftw_execute(bwd, ctrb, ctrb)
+
+ctrb(1:n) = ctrb(1:n) / dn
+
+y(1:nt) = abs(ctrb(1:nt))
+
+
+call sfftw_destroy_plan(bwd)
+call sfftw_destroy_plan(fwd)
+
+
+deallocate(ctrf, ctrb)
+
+
+end subroutine hilbert
+
+
+
+! =======================================================================================
 ! Do the cross-correlation computation
 ! sdb: sac_db struct [input]
 ! nlag: lat time of the cross-correlation function [input]
@@ -1209,7 +1263,7 @@ end subroutine bandstop_filter
 ! num_bootstrap: number of repeating times of the BOOTSTRAP method (e.g., 500)
 ! bootstrap_type: which type does the BOOTSTRAP method apply to (e.g., 2_2)
 ! ist1, ist2: station indicies [input]
-! myrank: processor ID number [input]
+! myrank: process ID number [input]
 ! is_verbose: verbose indicator [input]
 ! is_save_record: if output cross-correlation is_save_records [input]
 ! =======================================================================================
@@ -1317,7 +1371,7 @@ end if
 
 !! ======================================================================
 if (is_stack) then
-   ! Each process has its own processor ID
+   ! Each process has its own process ID
    str_myrank = ''
    write(str_myrank, '(I6.6)') myrank
 
