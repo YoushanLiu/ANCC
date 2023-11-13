@@ -1,19 +1,3 @@
-! This file is part of ANCC.
-!
-! ANCC is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! ANCC is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <https://www.gnu.org/licenses/>.
-!
-!
 module xcc_m
 
 use, intrinsic :: iso_c_binding     ! Allow to define the equivalents of C data types (e.g. c_ptr, C_INT)
@@ -525,7 +509,7 @@ type(sac_db), intent(in) :: sdb
 
 logical is_existing
 
-character(len=128) str_myrank
+character(len=8) str_myrank
 
 character(len=512) pzfile
 
@@ -1321,7 +1305,7 @@ real(DBL) dt, sec
 
 type(sachead) shd
 
-character(len=128) str_myrank, str_stack
+character(len=8) str_myrank, str_stack
 
 character(len=512) binfile1, binfile2
 character(len=512) path, path_ls, path_pws

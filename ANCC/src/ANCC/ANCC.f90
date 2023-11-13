@@ -1,19 +1,3 @@
-! This file is part of ANCC.
-!
-! ANCC is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! ANCC is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <https://www.gnu.org/licenses/>.
-!
-!
 program ANCC
 
 use mpi
@@ -56,17 +40,16 @@ real(DBL) dt, dt_read, dt_min, dt_max, t0, tlen
 
 character(len=3) str_specwhitenning
 character(len=3) str_overwrite_data
-character(len=3) str_stack, str_pws
-character(len=3) str_only_cf, str_ac
+character(len=3) str_pws, str_npow_pws
 character(len=3) str_verbose, str_save_record
 character(len=3) str_bootstrap, bootstrap_type
+character(len=3) str_stack, str_only_cf, str_ac
 character(len=3) str_onebit, str_running_time_average
 character(len=3) str_bandpass_earthquake, str_suppress_notch
 
 character(len=8) netname, staname, channel
 
-character(len=32) str_npow_pws
-character(len=32) str_per1, str_per4
+character(len=16) str_per1, str_per4
 
 character(len=512) sacfile, msg
 character(len=512) evtpath, str_date, path
@@ -279,8 +262,8 @@ end if
 ! ***********************************************************************
 ! Convert the periods to frequencies.
 ! ***********************************************************************
-write(str_per1,'(F8.2)') f1
-write(str_per4,'(F8.2)') f4
+write(str_per1,'(ES16.8)') f1
+write(str_per2,'(ES16.8)') f4
 f1 = 1.0/f1
 f2 = 1.0/f2
 f3 = 1.0/f3
@@ -948,7 +931,7 @@ else
    is_pws = .true.
 end if
 write(str_pws,'(I3)') ipws
-write(str_npow_pws,'(I6)') npow_pws
+write(str_npow_pws,'(I3)') npow_pws
 
 
 if (is_ac) then
