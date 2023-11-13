@@ -432,7 +432,7 @@ nstxnev = nst*nev
 
 
 !! ***********************************************************************
-!! Broadcast input parameters from the master processor to all other processors.
+!! Broadcast input parameters from the master process to all other processes.
 !! ***********************************************************************
 !call MPI_BCAST(sacfolder, 512, MPI_CHARACTER, myroot, MPI_COMM_WORLD, ier)
 !call MPI_BCAST(pzfolder, 512, MPI_CHARACTER, myroot, MPI_COMM_WORLD, ier)
@@ -477,7 +477,7 @@ allocate(sdb_loc%ev(nev_loc), sdb_loc%rec(nst,nev_loc))
 
 
 ! ***********************************************************************
-! sdb elements are filled in the master processor.
+! sdb elements are filled in the master process.
 ! ***********************************************************************
 !if (myrank == myroot) then
 
@@ -568,7 +568,7 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
       end if
 
 
-      ! Loop the station to processor the SAC files and fill in the sdb elements.
+      ! Loop the station to process the SAC files and fill in the sdb elements.
       do ist = 1, nst, 1
 
 
@@ -642,7 +642,7 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
 
       end do
 
-      ! Skip tail nprocs-(myrank+1) lines, because they are processed by other processorsors
+      ! Skip tail nprocs-(myrank+1) lines, because they are processed by other processes
       do k = myrank+2, nprocs, 1
          read(iunit,*, iostat=ier)
          if (0 /= ier) exit
@@ -664,7 +664,7 @@ if (0 /= errcode) then
    case(-1)
       write(msg,"(A)") "Error: Inconsistence of sampling points, please check your data !"
    case(-2)
-      write(msg,"(A)") "Error: Inconsistence of sampling interval, please chech your data !"
+      write(msg,"(A)") "Error: Inconsistence of sampling interval, please check your data !"
    case(-3,-4)
       write(msg,"(A)") "Error: Parameters t0 and tlen must be set wrongly, please reset !"
    end select
@@ -809,7 +809,7 @@ call MPI_BARRIER(MPI_COMM_WORLD, ier)
 
 !nstxnev = nst*nev
 ! ***********************************************************************
-! Broadcast all the elements in sdb to all other processors.
+! Broadcast all the elements in sdb to all other processes.
 ! ***********************************************************************
 !call MPI_BCAST(sdb%ev, nev, event_type, myroot, MPI_COMM_WORLD, ier)
 !call MPI_BCAST(sdb%st, nst, station_type, myroot, MPI_COMM_WORLD, ier)
@@ -819,7 +819,7 @@ call MPI_BARRIER(MPI_COMM_WORLD, ier)
 
 
 ! ***********************************************************************
-! Broadcast dt and nwt to all other processors.
+! Broadcast dt and nwt to all other processes.
 ! ***********************************************************************
 !call MPI_BCAST(dt, 1, MPI_DOUBLE_PRECISION, myroot, MPI_COMM_WORLD, ier)
 !call MPI_BCAST(nwt, 1, MPI_INTEGER, myroot, MPI_COMM_WORLD, ier)
@@ -828,22 +828,22 @@ call MPI_BARRIER(MPI_COMM_WORLD, ier)
 
 
 ! ***********************************************************************
-! Note: In the following version, all processors will be used for computation instead of
-! the master processor used for message passing just as those done in the original version.
+! Note: In the following version, all processes will be used for computation instead of
+! the master process used for message passing just as those done in the original version.
 ! ***********************************************************************
 
 ! ***********************************************************************
 ! Preprocess data, including remove instrument response, fractional time correction,
-! temporal normalization, spectral whitening, cuting data, computing Fourier spectrum, etc.
+! temporal normalization, spectral whitening, cutting data, computing Fourier spectrum, etc.
 ! ***********************************************************************
 if (myrank == myroot) then
 
    ! =====================================================================================
    ! =============================== SECTION 3 BEGINS ====================================
    ! =====================================================================================
-   ! This section removes the instrument response, cut the data, do the band-pass filtering,
-   ! correct the time fraction, do the time domain normalization and spectra whitening.
-   ! All the tasks are done using the so called self-scheduling mode.
+   ! This section removes the instrument response, cut the data, do the bandpass filtering,
+   ! correct the time fraction, do the time-domain normalization and spectral whitenning.
+   ! All the tasks are done using the so-called self-scheduling mode.
 
    write(*,"(A)") '***********************************************************************'
    write(*,"(A)") '                         SECTION 3 BEGINS'
@@ -869,7 +869,7 @@ Nlen = nint(tlen/dt)
 
 
 
-! Determine corresponding half-window length for time domain normalization
+! Determine corresponding half-window width for time domain normalization
 ! Maximum allowed half-window length is 128 in SAC for smooth command
 if (nwt > 0) then
    !nwt = min(int(nwt/dt), 128)
