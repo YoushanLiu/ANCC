@@ -279,7 +279,7 @@ end if
 ! Convert the periods to frequencies.
 ! ***********************************************************************
 write(str_per1,'(ES16.8)') f1
-write(str_per2,'(ES16.8)') f4
+write(str_per4,'(ES16.8)') f4
 f1 = 1.0/f1
 f2 = 1.0/f2
 f3 = 1.0/f3
