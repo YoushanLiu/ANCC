@@ -7,7 +7,7 @@ BHZ                                                  # channel name
 1                                                    # power of cosine tapering function
 Y  50  N  10  0.5                                    # whether use running-absolute-average time average temporal normalization, half-window width, whether bandpass filter earthquake, period bands
 N                                                    # whether use one-bit temporal normalization
-Y  20                                                # whether apply spectral whitenning, half-window width in spectral whitening
+Y  20                                                # whether apply spectral whitening, half-window width in spectral whitening
 N  0.5                                               # whether suppressing the notch at 26s and the retaining factor
 100.0                                                # lag time (in second) for the cross-correlation
 N  1                                                 # whether output phase weighted stacking (pws) results, pws weight
