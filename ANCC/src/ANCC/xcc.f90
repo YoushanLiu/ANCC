@@ -545,7 +545,7 @@ if ((f1 > 0.0) .and. (f2 > f1) .and. (f3 > f2) .and. (f4 > f3)) then
    !if (sdb%rec(ist,iev)%npts > 0) then
    if (sdb%rec(ist,iev)%t0 > 0.0) then
 
-      ! Each processor has its own SAC script
+      ! Each process has its own SAC script
 
       str_myrank = ''
       write(str_myrank, "(A, I6.6)") './tmp/', myrank
@@ -741,10 +741,6 @@ else
       wgt_data(1:n) = abs(tan(atan2(1.0, wgt_data(1:n))))
       seis_data(1:n) = seis_data(1:n) * wgt_data(1:n)
 
-      !call hilbert(n, seis_data, wgt_data)
-      !wgt_data(1:n) = abs(tan(atan2(1.0, wgt_data(1:n))))
-      !seis_data(1:n) = seis_data(1:n) * wgt_data(1:n)
-
       deallocate(abs_data, wgt_data)
 
       if (is_verbose) then
@@ -869,13 +865,13 @@ sf(1) = 0.50*sf(1)
 
 
 ! =================================================================================================
-! ======================================= Spectral whitenning ======================================
+! ======================================= Spectral whitening ======================================
 ! =================================================================================================
 
 if (is_specwhitenning) then
 
    ! ***************************************************************
-   ! Apply spectral whitenning.
+   ! Apply spectral whitening.
    ! ***************************************************************
    call whiten_spectra(f1, f4, df, nq, nwf, sf)
 
@@ -1206,72 +1202,6 @@ end subroutine bandstop_filter
 
 
 ! =======================================================================================
-subroutine hilbert(nt, x, y)
-
-implicit none
-
-include 'fftw3.f'
-
-integer(4), intent(in) :: nt
-
-real(4), intent(in) :: x(1:nt)
-
-real(4), intent(out) :: y(1:nt)
-
-
-integer(4) it
-integer(4) n, n2
-
-integer(8) :: fwd = 0, bwd = 0
-
-real(8) PI, dn
-
-complex, dimension(:), allocatable :: ctrf, ctrb
-
-
-n = 2**(ceiling(log10(dble(nt))/log10(2.d0)))
-n2 = int(n/2)
-dn = dble(n)
-
-
-allocate(ctrf(1:n))
-allocate(ctrb(1:n))
-
-
-call sfftw_plan_dft_1d(fwd, n, ctrf, ctrf, FFTW_FORWARD , FFTW_ESTIMATE)
-call sfftw_plan_dft_1d(bwd, n, ctrb, ctrb, FFTW_BACKWARD, FFTW_ESTIMATE)
-
-ctrf(1:n) = czero
-ctrf(1:nt) = cmplx(x(1:nt), 0.0)
-call sfftw_execute_dft(fwd, ctrf, ctrf)
-
-ctrb(1) = ctrf(1)
-do it = 2, n2+1, 1
-   ctrb(it) = 2.0*ctrf(it)
-end do
-do it = n2+2, n, 1
-   ctrb(it) = czero
-end do
-
-call sfftw_execute(bwd, ctrb, ctrb)
-
-ctrb(1:n) = ctrb(1:n) / dn
-
-y(1:nt) = abs(ctrb(1:nt))
-
-
-call sfftw_destroy_plan(bwd)
-call sfftw_destroy_plan(fwd)
-
-
-deallocate(ctrf, ctrb)
-
-
-end subroutine hilbert
-
-
-
-! =======================================================================================
 ! Do the cross-correlation computation
 ! sdb: sac_db struct [input]
 ! nlag: lat time of the cross-correlation function [input]
@@ -1387,7 +1317,7 @@ end if
 
 !! ======================================================================
 if (is_stack) then
-   ! Each processor has its own processor ID
+   ! Each process has its own processor ID
    str_myrank = ''
    write(str_myrank, '(I6.6)') myrank
 
