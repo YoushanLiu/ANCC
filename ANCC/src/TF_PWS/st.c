@@ -169,7 +169,7 @@ void Strans(int len, int lo, int hi, double df, float *data, float *result)
        multiplied with the FFT of scaled gaussians. */
 
     a = 2.0*M_PI*M_PI * sigma_sq;
-    #pragma omp parallel for private(i, j, k, ioffset, n, nsqd, s, G, h, g) //num_threads(4)
+    //#pragma omp parallel for private(i, j, k, ioffset, n, nsq, s, G, h, g) //num_threads(4)
     for (n = lo; n <= hi; n++)
     {
 
