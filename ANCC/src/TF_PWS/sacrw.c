@@ -37,7 +37,7 @@ void read_sac(char *fname, float *wf, SACHead *shd, long Nmax)
 
     if (!fsac)
     {
-        printf("The %s does not exist ! \n", fname);
+        printf("The %s does not exist !\n", fname);
         exit(0);
     }
 
