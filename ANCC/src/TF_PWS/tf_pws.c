@@ -450,7 +450,7 @@ int main(int arg, char *arv[])
 
 
     // calculate the weights
-    #pragma omp parallel for private(i, n, m, fmax, realpart, imagpart) //num_threads(4)
+    //#pragma omp parallel for private(i, n, m, fmax, realpart, imagpart) //num_threads(4)
     for (i = 0; i < nfreq; i++)
     {
 
@@ -488,7 +488,7 @@ int main(int arg, char *arv[])
 
         //smooth = 5;
 
-        #pragma omp parallel for private(i, n, m, ampl, lag) //num_threads(4)
+        //#pragma omp parallel for private(i, n, m, ampl, lag) //num_threads(4)
         for (n = 0; n < nfreq; n++)
         {
 
