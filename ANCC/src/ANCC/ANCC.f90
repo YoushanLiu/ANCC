@@ -1008,6 +1008,19 @@ call MPI_BARRIER(MPI_COMM_WORLD, ier)
 ! ***********************************************************************
 ! Deallocate memory for the elements in sdb and strs.
 ! ***********************************************************************
+do iev = myrank+1, nev, nprocs
+   evtpath = trim(sdb%ev(iev)%evtpath)
+   !call system('rm -rf '//trim(evtpath))
+   call system("perl -e 'for(<"//trim(evtpath)//"/*>){unlink}'")
+end do
+if (is_overwrite_data) then
+   do iev = myrank+1, nev, nprocs
+      evtpath = trim(sdb%ev(iev)%evtpath)
+      evtpath = trim(sacfolder)//trim(evtpath(11:len_trim(evtpath)))
+      !call system('rm -rf '//trim(evtpath))
+      call system("perl -e 'for(<"//trim(evtpath)//"/*>){unlink}'")
+   end do
+end if
 deallocate(sdb%st, sdb%ev, sdb%rec)
 if (allocated(strs)) then
    deallocate(strs)
