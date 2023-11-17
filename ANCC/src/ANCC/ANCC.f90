@@ -253,23 +253,30 @@ close(unit=iunit)
 ! =======================================================================
 ! Check parameter validation
 if (nwt < 0) then
+   write(*,"(A)") 'Error: The half window width [nwt] for temporal normalization must be nonnegative integer!'
+   call flush(6)
    call MPI_ABORT(MPI_COMM_WORLD, -1, ier)
    call MPI_FINALIZE(ier)
-   stop 'Error: The half window width [nwt] for temporal normalization must be nonnegative integer!'
+   !stop 'Error: The half window width [nwt] for temporal normalization must be nonnegative integer!'
+   stop
 end if
 
 if (nwf < 0) then
+   write(*,"(A)") 'Error: The half window width [nwf] for spectral whitening must be nonnegative integer!'
+   call flush(6)
    call MPI_ABORT(MPI_COMM_WORLD, -1, ier)
    call MPI_FINALIZE(ier)
-   stop 'Error: The half window width [nwf] for spectral whitening must be nonnegative integer!'
+   !stop 'Error: The half window width [nwf] for spectral whitening must be nonnegative integer!'
+   stop
 end if
 
 if (.not.((f1 > f2) .and. (f2 > f3) .and. (f3 > f4))) then
-   !write(*,"(A)") 'Error: periods f1 > f2 > f3 > f4 [sec.] should be satisfied !'
-   !call flush(6)
+   write(*,"(A)") 'Error: periods f1 > f2 > f3 > f4 [sec.] should be satisfied !'
+   call flush(6)
    call MPI_ABORT(MPI_COMM_WORLD, -1, ier)
    call MPI_FINALIZE(ier)
-   stop 'Error: periods f1 > f2 > f3 > f4 [sec.] should be satisfied !'
+   !stop 'Error: periods f1 > f2 > f3 > f4 [sec.] should be satisfied !'
+   stop
 end if
 ! =======================================================================
 
