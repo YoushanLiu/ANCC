@@ -525,7 +525,7 @@ type(sac_db), intent(in) :: sdb
 
 logical is_existing
 
-character(len=8) str_myrank
+character(len=16) str_myrank
 
 character(len=512) pzfile
 
