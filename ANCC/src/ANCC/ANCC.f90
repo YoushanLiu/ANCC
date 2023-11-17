@@ -1,19 +1,3 @@
-! This file is part of ANCC.
-!
-! ANCC is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! ANCC is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <https://www.gnu.org/licenses/>.
-!
-!
 program ANCC
 
 use mpi
@@ -357,16 +341,16 @@ end if
 ! ***********************************************************************
 !!call system('rm -rf '//trim(adjustl(tarfolder)))
 if (.not.(is_overwrite_data)) then
-   call system('rm -rf '//'./tmp/DATA')
+   call system('rm -rf ./tmp/DATA')
 end if
 ! ***********************************************************************
 ! Clear the [tmp] folder in current folder.
 ! ***********************************************************************
-call system('rm -rf '//'./tmp')
+call system('rm -rf ./tmp')
 ! ***********************************************************************
 ! Create the [tmp] folder in current folder.
 ! ***********************************************************************
-call system('mkdir -p '//'./tmp')
+call system('mkdir -p ./tmp')
 
 call MPI_BARRIER(MPI_COMM_WORLD, ier)
 
@@ -598,11 +582,11 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
          	   npts = npts_read
          	else if (npts /= npts_read) then
          	   errcode = -1
-               call MPI_ABORT(MPI_COMM_WORLD, -1, ier)
                write(msg, "(A,I0,A)") 'Error: Inconsistence of sampling points (npts_read=', npts_read, ') in '//trim(sacfile)
                !stop trim(adjustl(msg))
                write(*,*) trim(adjustl(msg))
                call flush(6)
+               call MPI_ABORT(MPI_COMM_WORLD, -1, ier)
                stop
          	end if
          end if
@@ -614,11 +598,11 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
          	   dt = dt_read
          	else if ((abs(dt - dt_read) > 1.e-15) .or. (dt_read < 0.0)) then
          	   errcode = -2
-               call MPI_ABORT(MPI_COMM_WORLD, -2, ier)
                write(msg, "(A,I0,A)") 'Error: Inconsistence of sampling interval (dt_read=', dt_read, ') in '//trim(sacfile)
                !stop trim(adjustl(msg))
                write(*,*) trim(adjustl(msg))
                call flush(6)
+               call MPI_ABORT(MPI_COMM_WORLD, -2, ier)
                stop
          	end if
          end if
@@ -676,11 +660,11 @@ if (0 /= errcode) then
       write(msg,"(A)") "Error: Parameters t0 and tlen must be set wrongly, please reset !"
    end select
    !call flush(6)
-   call MPI_ABORT(MPI_COMM_WORLD, -100, ier)
-   call MPI_FINALIZE(ier)
    !stop trim(adjustl(msg))
    write(*,*) trim(adjustl(msg))
    call flush(6)
+   call MPI_ABORT(MPI_COMM_WORLD, -100, ier)
+   call MPI_FINALIZE(ier)
    stop
 end if
 ! =======================================================================
@@ -715,19 +699,21 @@ end if
 ! =======================================================================
 ! Check parameter validation
 if (dt < 0.0) then
-   !write(*,"(A)") 'Error: dt < 0, please check your data !'
-   !call flush(6)
+   write(*,"(A)") 'Error: dt < 0, please check your data !'
+   call flush(6)
    call MPI_ABORT(MPI_COMM_WORLD, -100, ier)
    call MPI_FINALIZE(ier)
-   stop 'Error: dt < 0, please check your data !'
+   !stop 'Error: dt < 0, please check your data !'
+   stop
 end if
 
 if (f4 > 0.5/dt) then
-   !write(*,"(A)") 'Error: 1/f4 < 0.5/dt should be satisfied !'
-   !call flush(6)
+   write(*,"(A)") 'Error: 1/f4 < 0.5/dt should be satisfied !'
+   call flush(6)
    call MPI_ABORT(MPI_COMM_WORLD, -1, ier)
    call MPI_FINALIZE(ier)
-   stop 'Error: 1/f4 < 0.5/dt should be satisfied !'
+   !stop 'Error: 1/f4 < 0.5/dt should be satisfied !'
+   stop
 end if
 ! =======================================================================
 ! Pass parameter validity test
@@ -748,7 +734,7 @@ call MPI_ALLGATHER(iev, 1, MPI_INTEGER, recvns, 1, &
                    MPI_INTEGER, MPI_COMM_WORLD, ier)
 nev_gathered = sum(recvns)
 if ((nev /= nev_gathered) .and. (myrank == myroot)) then
-   write(*,*) 'Error: nev is not equal to nev_gathered !'
+   write(*,"(A)") 'Error: nev is not equal to nev_gathered !'
    call flush(6)
 end if
 
@@ -779,7 +765,7 @@ end do
 nevxnst_loc = nst*iev
 nevxnst_gathered = sum(recvns)
 if ((nevxnst /= nevxnst_gathered) .and. (myrank == myroot)) then
-   write(*,*) 'Error: nevxnst is not equal to nevxnst_gathered !'
+   write(*,"(A)") 'Error: nevxnst is not equal to nevxnst_gathered !'
    call flush(6)
 end if
 !call MPI_GATHERV(sdb_loc%rec, nevxnst_loc, record_type, sdb%rec, &
@@ -1016,15 +1002,15 @@ call MPI_BARRIER(MPI_COMM_WORLD, ier)
 ! Deallocate memory for the elements in sdb and strs.
 ! ***********************************************************************
 do iev = myrank+1, nev, nprocs
-   evtpath = trim(sdb%ev(iev)%evtpath)
-   !call system('rm -rf '//trim(evtpath))
+   evtpath = trim(adjustl(sdb%ev(iev)%evtpath))
+   !call system('rm -rf '//trim(adjustl(evtpath)))
    call system("perl -e 'for(<"//trim(evtpath)//"/*>){unlink}'")
 end do
 if (is_overwrite_data) then
    do iev = myrank+1, nev, nprocs
-      evtpath = trim(sdb%ev(iev)%evtpath)
-      evtpath = trim(sacfolder)//trim(evtpath(11:len_trim(evtpath)))
-      !call system('rm -rf '//trim(evtpath))
+      evtpath = trim(adjustl(sdb%ev(iev)%evtpath))
+      evtpath = trim(adjustl(sacfolder))//trim(adjustl(evtpath(11:len_trim(evtpath))))
+      !call system('rm -rf '//trim(adjustl(evtpath)))
       call system("perl -e 'for(<"//trim(evtpath)//"/*>){unlink}'")
    end do
 end if
