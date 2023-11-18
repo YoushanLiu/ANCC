@@ -1,19 +1,3 @@
-! This file is part of ANCC.
-!
-! ANCC is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! ANCC is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <https://www.gnu.org/licenses/>.
-!
-!
 program ANCC
 
 use mpi
@@ -844,7 +828,7 @@ call MPI_BARRIER(MPI_COMM_WORLD, ier)
 ! ***********************************************************************
 
 ! ***********************************************************************
-! Preprocess data, including remove istrsument response, fractional time correction,
+! Preprocess data, including remove instrument response, fractional time correction,
 ! temporal normalization, spectral whitening, cutting data, computing Fourier spectrum, etc.
 ! ***********************************************************************
 if (myrank == myroot) then
@@ -852,7 +836,7 @@ if (myrank == myroot) then
    ! =====================================================================================
    ! =============================== SECTION 3 BEGINS ====================================
    ! =====================================================================================
-   ! This section removes the istrsument response, cuts the data, does the bandpass filtering,
+   ! This section removes the instrument response, cuts the data, does the bandpass filtering,
    ! corrects the time fraction, does the time-domain normalization and spectral whitening.
    ! All the tasks are done using the so-called self-scheduling mode.
 
