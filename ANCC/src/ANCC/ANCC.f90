@@ -1,19 +1,3 @@
-! This file is part of ANCC.
-!
-! ANCC is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! ANCC is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <https://www.gnu.org/licenses/>.
-!
-!
 program ANCC
 
 use mpi
@@ -98,7 +82,7 @@ myroot = nprocs - 1
 
 
 ! ***********************************************************************
-! Costrsuct new event data type for later data sharing.
+! Construct new event data type for later data sharing.
 ! ***********************************************************************
 n = 4
 allocate(base(n), disp(n), blocklen(n), types(n))
@@ -118,7 +102,7 @@ deallocate(base, disp, blocklen, types)
 
 
 ! ***********************************************************************
-! Costrsuct new station data type for later data sharing.
+! Construct new station data type for later data sharing.
 ! ***********************************************************************
 n = 3
 allocate(base(n), disp(n), blocklen(n), types(n))
@@ -136,7 +120,7 @@ deallocate(base, disp, blocklen, types)
 
 
 ! ***********************************************************************
-! Costrsuct new record data type for later data sharing.
+! Construct new record data type for later data sharing.
 ! ***********************************************************************
 n = 2
 allocate(base(n), disp(n), blocklen(n), types(n))
@@ -172,7 +156,7 @@ end if
 ! =====================================================================================
 ! =============================== SECTION 1 BEGINS ====================================
 ! =====================================================================================
-! This section parse the input parameters.
+! This section parses the input parameters.
 if (myrank == myroot) then
    write(*,"(A)")
    write(*,"(A)") 'This program computes cross/auto-correlation and/or does AFTAN' // trim(version)
@@ -351,6 +335,7 @@ end if
 ! =======================================================================
 
 
+
 if (myrank == myroot) then
    ! ***********************************************************************
    ! Clear the [DATA] folder inside the target folder.
@@ -377,12 +362,12 @@ call MPI_BARRIER(MPI_COMM_WORLD, ier)
 ! =====================================================================================
 ! =============================== SECTION 2 BEGINS ====================================
 ! =====================================================================================
-! This section processeses the SAC files and fill in the elements in the sdb struct.
+! This section processes the SAC files and fill in the elements in the sdb struct.
 if (myrank == myroot) then
    write(*,"(A)") '***********************************************************************'
    write(*,"(A)") '                         SECTION 2 BEGINS'
    write(*,"(A)") '***********************************************************************'
-   write(*,"(A)") 'Costructing sdb struct ...'
+   write(*,"(A)") 'Constructing sdb struct ...'
    write(*,"(A)") '***********************************************************************'
    call flush(6)
 end if
@@ -806,7 +791,7 @@ if (is_save_record .and. (myrank == myroot)) then
 end if
 
 if (myrank == myroot) then
-   write(*,"(A,/)") 'Costrsucting sdb struct is done ... '
+   write(*,"(A,/)") 'Constructing sdb struct is done ... '
    call flush(6)
 end if
 
