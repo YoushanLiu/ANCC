@@ -351,22 +351,23 @@ end if
 ! =======================================================================
 
 
-
-! ***********************************************************************
-! Clear the [DATA] folder inside the target folder.
-! ***********************************************************************
-!!call system('rm -rf '//trim(adjustl(tarfolder)))
-if (.not.(is_overwrite_data)) then
-   call system('rm -rf ./tmp/DATA')
+if (myrank == myroot) then
+   ! ***********************************************************************
+   ! Clear the [DATA] folder inside the target folder.
+   ! ***********************************************************************
+   !!call system('rm -rf '//trim(adjustl(tarfolder)))
+   if (.not.(is_overwrite_data)) then
+      call system('rm -rf ./tmp/DATA')
+   end if
+   ! ***********************************************************************
+   ! Clear the [tmp] folder in current folder.
+   ! ***********************************************************************
+   call system('rm -rf ./tmp')
+   ! ***********************************************************************
+   ! Create the [tmp] folder in current folder.
+   ! ***********************************************************************
+   call system('mkdir -p ./tmp')
 end if
-! ***********************************************************************
-! Clear the [tmp] folder in current folder.
-! ***********************************************************************
-call system('rm -rf ./tmp')
-! ***********************************************************************
-! Create the [tmp] folder in current folder.
-! ***********************************************************************
-call system('mkdir -p ./tmp')
 
 call MPI_BARRIER(MPI_COMM_WORLD, ier)
 
@@ -381,7 +382,7 @@ if (myrank == myroot) then
    write(*,"(A)") '***********************************************************************'
    write(*,"(A)") '                         SECTION 2 BEGINS'
    write(*,"(A)") '***********************************************************************'
-   write(*,"(A)") 'Costrsucting sdb struct ...'
+   write(*,"(A)") 'Costructing sdb struct ...'
    write(*,"(A)") '***********************************************************************'
    call flush(6)
 end if
