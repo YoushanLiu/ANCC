@@ -84,8 +84,8 @@ is_auto_correlation = check_autocorrelation(filename)
 ###########################################################
 # Reomve empty folder(s) and file(s)
 ###########################################################
-os.system('find %s -depth -type "d" -empty -exec rmdir {} \;' %(SACfolder))
-os.system('find %s -name "*" -type f -size 0c | xargs -n 1 rm -f' % (SACfolder))
+#os.system('find %s -depth -type "d" -empty -exec rmdir {} \;' %(SACfolder))
+#os.system('find %s -name "*" -type f -size 0c | xargs -n 1 rm -f' % (SACfolder))
 
 ###########################################################
 # Parse the station and event information.
