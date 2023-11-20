@@ -1592,8 +1592,10 @@ if ((nstack > 0) .and. is_stack) then
    call sac2asc(trim(adjustl(sacname)))
 
 
-   sacname = trim(adjustl(sacfile_prefix))//'_pws.SAC'
-   call sac2asc(trim(adjustl(sacname)))
+   if (is_pws) then
+      sacname = trim(adjustl(sacfile_prefix))//'_pws.SAC'
+      call sac2asc(trim(adjustl(sacname)))
+   end if
 
 
 
