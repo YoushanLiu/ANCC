@@ -1,19 +1,3 @@
-! This file is part of ANCC.
-!
-! ANCC is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! ANCC is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <https://www.gnu.org/licenses/>.
-!
-!
 program ANCC
 
 use mpi
@@ -65,10 +49,11 @@ character(len=3) str_bandpass_earthquake, str_suppress_notch
 
 character(len=8) netname, staname, channel
 
+character(len=16) str_myrank
 character(len=16) str_per1, str_per4
 
 character(len=512) sacfile, msg
-character(len=512) evtpath, str_date, path
+character(len=512) evtpath, path, str_date
 character(len=512) sacfolder, pzfolder, tarfolder
 
 
@@ -566,7 +551,7 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
       ! ***********************************************************************
       call system('mkdir -p '//trim(adjustl(tarfolder)))
       if (is_overwrite_data) then
-         sdb_loc%ev(iev)%evtpath = trim(adjustl(str_date))
+         sdb_loc%ev(iev)%evtpath = trim(adjustl(evtpath))
       else
          path = './tmp/DATA/'//trim(adjustl(strs(nstr-2)))//'/'// &
           trim(adjustl(strs(nstr-1)))//'/'//trim(adjustl(str_date))
@@ -575,6 +560,7 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
          ! Create the target event folder.
          call system('mkdir -p '//trim(adjustl(path)))
       end if
+      deallocate(strs)
 
 
       ! Loop on the station to process the SAC files and fill in the sdb elements.
@@ -649,7 +635,7 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
             stop
          end if
 
-      end do
+      end do ! end of do ist = 1, nst, 1
 
       ! Skip tail nprocs-(myrank+1) lines, because they are processed by other processesors
       do k = myrank+2, nprocs, 1
@@ -663,8 +649,12 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
    !sdb%nev = nev
 
 close(unit=iunit)
+if (allocated(strs)) then
+   deallocate(strs)
+end if
 
 call MPI_BARRIER(MPI_COMM_WORLD, ier)
+
 
 
 ! =======================================================================
@@ -1017,25 +1007,17 @@ call MPI_BARRIER(MPI_COMM_WORLD, ier)
 
 
 ! ***********************************************************************
-! Deallocate memory for the elements in sdb and strs.
+! Deallocate memory for the elements in sdb.
 ! ***********************************************************************
 do iev = myrank+1, nev, nprocs
    evtpath = trim(adjustl(sdb%ev(iev)%evtpath))
-   !call system('rm -rf '//trim(adjustl(evtpath)))
-   call system("perl -e 'for(<"//trim(evtpath)//"/*>){unlink}'")
+   call system("perl -e 'for(<"//trim(adjustl(evtpath))//"/*>){unlink}'")
+   call system('rm -rf '//trim(adjustl(evtpath)))
 end do
-if (is_overwrite_data) then
-   do iev = myrank+1, nev, nprocs
-      evtpath = trim(adjustl(sdb%ev(iev)%evtpath))
-      evtpath = trim(adjustl(sacfolder))//trim(adjustl(evtpath(11:len_trim(evtpath))))
-      !call system('rm -rf '//trim(adjustl(evtpath)))
-      call system("perl -e 'for(<"//trim(evtpath)//"/*>){unlink}'")
-   end do
-end if
+write(str_myrank, "(A,I6.6)") './tmp/', myrank
+call system("perl -e 'for(<"//trim(adjustl(str_myrank))//"/*>){unlink}'")
+call system('rm -rf '//trim(adjustl(str_myrank)))
 deallocate(sdb%st, sdb%ev, sdb%rec)
-if (allocated(strs)) then
-   deallocate(strs)
-end if
 
 
 ! ***********************************************************************

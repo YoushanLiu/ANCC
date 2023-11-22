@@ -1,19 +1,3 @@
-! This file is part of ANCC.
-!
-! ANCC is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! ANCC is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <https://www.gnu.org/licenses/>.
-!
-!
 module xcc_m
 
 use, intrinsic :: iso_c_binding     ! Allow to define the equivalents of C data types (e.g. c_ptr, C_INT)
@@ -1393,14 +1377,14 @@ if (is_stack) then
 
    ! Create tmp directory to save single cross-correlation data.
    path = './tmp/'//trim(adjustl(str_myrank))
-   !call system('rm -rf '//trim(adjustl(path)))
    call system("perl -e 'for(<"//trim(adjustl(path))//"/*>){unlink}'")
-   call system('mkdir '//trim(adjustl(path)))
+   !call system('rm -rf '//trim(adjustl(path)))
+   call system('mkdir -p '//trim(adjustl(path)))
 else
    path = trim(adjustl(tarfolder))//'/CC_AFTAN/'//trim(adjustl(stapair_path))//'/prestack'
    !path = trim(adjustl(tarfolder))//'/CC_AFTAN/'//trim(adjustl(stapair_path))
-   !call system('rm -rf '//trim(adjustl(path)))
    call system("perl -e 'for(<"//trim(adjustl(path))//"/*>){unlink}'")
+   !call system('rm -rf '//trim(adjustl(path)))
    call system('mkdir -p '//trim(adjustl(path)))
 end if
 sacfile_prefix = trim(adjustl(path))//'/'//trim(adjustl(stapair_name))//'_'
