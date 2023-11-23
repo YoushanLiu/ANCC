@@ -2,10 +2,10 @@
 # INPUT PARAMETERS FOR AMBIENT NOISE CROSS-CORRELATION
 ##############################################################################
 BHZ                                                  # channel name
-120.0 80.0 0.25 0.125                                # frequency limits (used in removal of instrument response and bandpass filter)
-5.0  3590.0                                          # tBegin, tLen (used in data cut for each event)
+120.0 80.0 0.5 0.25                                  # frequency limits (used in removal of instrument response and bandpass filter)
+5.0  86380.0                                         # tBegin, tLen (used in data cut for each event)
 1                                                    # power of cosine tapering function
-Y  50  N  10  0.5                                    # whether use running-absolute-average time average temporal normalization, half-window width, whether bandpass filter earthquake, period bands
+Y  100  N  10  0.5                                   # whether use running-absolute-average time average temporal normalization, half-window width, whether bandpass filter earthquake, period bands
 N                                                    # whether use one-bit temporal normalization
 Y  20                                                # whether apply spectral whitening, half-window width in spectral whitening
 N  0.5                                               # whether suppressing the notch at 26s and the retaining factor
