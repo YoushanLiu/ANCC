@@ -468,7 +468,7 @@ open(unit=17, file=filename, status='replace', action='write', iostat=ier)
                deallocate(strs)
             end if
 
-            write(17,"(12X,A,3X,'t0: ',I4,'-',I3.3,'T',I2.2,':',I2.2,':',I3.3,4X,'Frac:', &
+            write(17,"(12X,A,4X,'t0: ',I4,'-',I3.3,'T',I2.2,':',I2.2,':',I3.3,4X,'Frac:', &
                         &F6.3,'s',4X,'Record Length:',F8.2,'s')") trim(adjustl(sacname)), &
                                shd%nzyear, shd%nzjday, shd%nzhour, shd%nzmin, shd%nzsec + &
                                shd%nzmsec, shd%user9, shd%delta*shd%npts
