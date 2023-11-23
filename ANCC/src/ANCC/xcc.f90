@@ -446,12 +446,12 @@ open(unit=17, file=filename, status='replace', action='write', iostat=ier)
          call split_string(sdb%ev(iev)%evtpath, '/', nstr, strs)
          str_date = strs(nstr)
 
-         write(17,"(A20,$)") trim(adjustl(str_date))
+         write(17,"(A,$)") trim(adjustl(str_date))
 
          !if (0 == sdb%rec(ist,iev)%npts) then    ! Write "NO DATA" if rec[ist][iev]%npts == 0
          if (sdb%rec(ist,iev)%t0 < 0.0) then    ! Write "NO DATA" if rec[ist][iev]%t0 < 0
 
-            write(17,"(A)") 'NO DATA at '//trim(adjustl(sdb%st(ist)%ns_name))
+            write(17,"(A)") ' NO DATA at '//trim(adjustl(sdb%st(ist)%ns_name))
 
          else
 
@@ -468,19 +468,10 @@ open(unit=17, file=filename, status='replace', action='write', iostat=ier)
                deallocate(strs)
             end if
 
-            !write(17,"(A30,3X,'t0: ',I4,'/',I3.3,'/',I2.2,':',I2.2,':',A,4X,'Frac:', &
-            !     &F10.5,'s',4X,'Record Length:',F10.2,'s')") trim(adjustl(sacname)), &
-            !                          shd%nzyear, shd%nzjday, shd%nzhour, shd%nzmin, &
-            !                 trim(adjustl(padzero(shd%nzsec+0.001*shd%nzmsec,2,3))), &
-            !                                 sdb%rec(ist,iev)%frac, shd%delta*shd%npts
-            !write(17,"(A30,3X,'t0: ',I4,'/',I3.3,'/',I2.2,':',I2.2,':',F10.5,4X,'Frac:', &
-            !         &F10.5,'s',4X,'Record Length:',F10.2,'s')") trim(adjustl(sacname)), &
-            !                  shd%nzyear, shd%nzjday, shd%nzhour, shd%nzmin, shd%nzsec + &
-            !               0.001d0*shd%nzmsec, sdb%rec(ist,iev)%frac, shd%delta*shd%npts
-            write(17,"(A30,3X,'t0: ',I4,'/',I3.3,'/',I2.2,':',I2.2,':',F10.5,4X,'Frac:', &
-                     &F10.5,'s',4X,'Record Length:',F10.2,'s')") trim(adjustl(sacname)), &
-                              shd%nzyear, shd%nzjday, shd%nzhour, shd%nzmin, shd%nzsec + &
-                                         0.001d0*shd%nzmsec, shd%user9, shd%delta*shd%npts
+            write(17,"(12X,A,3X,'t0: ',I4,'-',I3.3,'T',I2.2,':',I2.2,':',I3.3,4X,'Frac:', &
+                        &F6.3,'s',4X,'Record Length:',F8.2,'s')") trim(adjustl(sacname)), &
+                               shd%nzyear, shd%nzjday, shd%nzhour, shd%nzmin, shd%nzsec + &
+                               shd%nzmsec, shd%user9, shd%delta*shd%npts
 
          end if
 
