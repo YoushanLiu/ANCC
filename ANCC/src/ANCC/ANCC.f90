@@ -628,10 +628,10 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
          end if
 
          ! Check the correctness of tlen
-         if ((0 /= npts_read) .and. ((t0 + tlen) > (npts_read-1)*dt_read)) then
-            write(*,"(A)") "Error: t0 + tlen > (npts-1)*dt !"
-            write(*,"(A, F12.6)") "t0 + tlen   = ", t0 + tlen
-            write(*,"(A, F12.6)") "(npts-1)*dt = ", (npts_read-1)*dt_read
+         if ((0 /= npts_read) .and. ((t0 + tlen) > npts_read*dt_read)) then
+            write(*,"(A)") "Error: t0 + tlen > npts*dt !"
+            write(*,"(A, F12.6)") "t0 + tlen = ", t0 + tlen
+            write(*,"(A, F12.6)") "npts*dt   = ", npts_read*dt_read
             write(*,"(A)") "Error: Parameters t0 and tlen must be set wrongly, please reset !"
             call flush(6)
             errcode = -3
@@ -640,10 +640,10 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
          end if
 
          ! Check the correctness of tlen
-         if ((0 /= npts_read) .and. (tlen < 0.80*(npts_read-1)*dt_read)) then
+         if ((0 /= npts_read) .and. (tlen < 0.80*npts_read*dt_read)) then
             write(*,"(A)") "Error: tlen < 0.80*(npts-1)*dt !"
-            write(*,"(A, F12.6)") "tlen             = ", tlen
-            write(*,"(A, F12.6)") "0.80*(npts-1)*dt = ", (npts_read-1)*dt_read
+            write(*,"(A, F12.6)") "tlen         = ", tlen
+            write(*,"(A, F12.6)") "0.80*npts*dt = ", npts_read*dt_read
             write(*,"(A)") "Error: Parameters t0 and tlen must be set wrongly, please reset !"
             call flush(6)
             errcode = -4
