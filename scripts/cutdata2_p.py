@@ -227,7 +227,7 @@ def cutdata_daily(day_folder):
 			if ([] == tr):
 				continue
 			# remove round error
-			tr.stats.delta = round(tr.stats.delta*1e3)*1.e-3
+			tr.stats.delta = round(tr.stats.delta*1e6)*1.e-6
 			dt = tr.stats.delta
 			df = tr.stats.sampling_rate
 			starttime_daily = tr.stats.starttime
