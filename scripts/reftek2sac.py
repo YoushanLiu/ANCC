@@ -310,9 +310,11 @@ def convert_hourly(hour_files_path, day_path):
 				df = tr.stats.sampling_rate
 				if (downsampling_rate > df):
 					print("Error: downsampling sampling rate cannot large than original sampling rate !")
+					continue
 				decimate_factor = int(df / downsampling_rate)
 				if (abs(df - (decimate_factor*downsampling_rate)) > 0.0):
 					print("Error: decimate factor can only be integer !")
+					continue
 				if (decimate_factor > 1):
 					# Nyquist frequency of downsampling rate
 					freq_lowpass = 0.49 * downsampling_rate
