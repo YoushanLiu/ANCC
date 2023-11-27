@@ -238,7 +238,7 @@ def cutdata_daily(day_folder):
 
 
 		# remove invalid data
-		if ((max(tr.data[21:-22]) - min(tr.data[21:-22])) < 1.e-12):
+		if ((len(tr.data) > 42) and ((max(tr.data[21:-22]) - min(tr.data[21:-22])) < 1.e-12)):
 			del tr, hour_files_list
 			continue
 
@@ -262,7 +262,7 @@ def cutdata_daily(day_folder):
 
 
 			# remove invalid data
-			if ((max(tr_out.data[21:-22]) - min(tr_out.data[21:-22])) < 1.e-12):
+			if ((len(tr_out.data) > 42) and ((max(tr_out.data[21:-22]) - min(tr_out.data[21:-22])) < 1.e-12)):
 				del tr_out
 				ibeg = iend + 1
 				tbeg = tend + dt
