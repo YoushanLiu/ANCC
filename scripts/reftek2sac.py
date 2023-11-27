@@ -120,7 +120,7 @@ channel_name = ['BHZ', 'BHN', 'BHE']
 # read station list
 def read_station_list(filename):
 
-	class station:
+	class Station:
 		def __init__(self):
 			self.name = []
 			self.stla = []
@@ -134,7 +134,7 @@ def read_station_list(filename):
 	stlo = ''
 	stel = ''
 	netwk = ''
-	sta = station()
+	sta = Station()
 	with open(filename, 'r') as f:
 		lines = f.readlines()
 	for line in lines[1:]:
@@ -257,7 +257,7 @@ def convert_hourly(hour_files_path, day_path):
 			try:
 				tr = st[i]
 				# remove round error
-				tr.stats.delta = round(tr.stats.delta*1e3)*1.e-3
+				tr.stats.delta = round(tr.stats.delta*1e6)*1.e-6
 			except:
 				continue
 
