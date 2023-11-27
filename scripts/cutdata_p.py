@@ -229,7 +229,7 @@ def cutdata_daily(day_folder):
 			if ([] == tr):
 				continue
 			# remove round error
-			tr.stats.delta = round(tr.stats.delta*1e3)*1.e-3
+			tr.stats.delta = round(tr.stats.delta*1e6)*1.e-6
 			dt = tr.stats.delta
 			df = tr.stats.sampling_rate
 			starttime_daily = tr.stats.starttime
@@ -240,7 +240,7 @@ def cutdata_daily(day_folder):
 
 
 		# remove invalid data
-		if ((max(tr.data[21:-22]) - min(tr.data[21:-22])) < 1.e-12):
+		if ((len(tr.data) > 42) and ((max(tr.data[21:-22]) - min(tr.data[21:-22])) < 1.e-12)):
 			del tr, hour_files_list
 			continue
 
@@ -264,7 +264,7 @@ def cutdata_daily(day_folder):
 
 
 			# remove invalid data
-			if ((max(tr_out.data[21:-22]) - min(tr_out.data[21:-22])) < 1.e-12):
+			if ((len(tr_out.data) > 42) and ((max(tr_out.data[21:-22]) - min(tr_out.data[21:-22])) < 1.e-12)):
 				del tr_out
 				ibeg = iend + 1
 				tbeg = tend + dt
