@@ -54,6 +54,7 @@ otherwise, the components will be fliped, because a sort utilized in obspy
 
 import os
 import re
+from math import *
 from obspy import read
 from obspy import UTCDateTime
 from obspy.io.sac import SACTrace
