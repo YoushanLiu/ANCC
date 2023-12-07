@@ -51,6 +51,7 @@ __
 import os
 import re
 import glob
+from math import *
 from obspy import read
 from obspy import UTCDateTime
 from obspy.io.sac import SACTrace
