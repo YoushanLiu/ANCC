@@ -516,7 +516,7 @@ def write_paz(f, RESP_pool, iresp, network, station_name, C, \
 	f.write('* **************************************************\n')
 	f.write('* NETWORK       : %s\n' % network)
 	f.write('* STATION       : %s\n' % station)
-	f.write('* LOCATION      : %s\n' % '')
+	f.write('* LOCATION      : %s\n' % ' ')
 	f.write('* CHANNEL       : %s\n' % C)
 	f.write('* CREATED       : %s\n' % time2str(UTCDateTime()))
 	f.write('* START         : %s\n' % reformat_time(starttime))
