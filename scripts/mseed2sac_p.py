@@ -1,4 +1,4 @@
-S#!/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 
 '''
@@ -12,10 +12,10 @@ Affiliation: Institute of Geology and Geophysics, Chinese Academy of Sciences
 
 
 folders structure:
-./your_data_folder/stage folder/station folder/mseed UnitID number/day folder/stream/mseed files
+./data folder/stage folder/station folder/mseed UnitID number/day folder/stream/mseed files
 
 for example:
-./Raw/NE00_2007_276_2008_005/NE00/2007276/9F78/1
+./DATA_Raw/NE00_2007_276_2008_005/NE00/2007276/9F78/1
 
 
 
@@ -30,18 +30,18 @@ mseed 130 Disk Directory Structure
 \2003032
 \2003033
 
-        Unit ID number
-        |
-        v
-        __
-       |  |
-      \90F0
-           Datastream
-           |
-           v
-          \0
-          \1
-          \2
+Unit ID number
+|
+v
+__
+   |  |
+  \90F0
+   Datastream
+   |
+   v
+  \0
+  \1
+  \2
 
 '''
 
@@ -52,7 +52,7 @@ import os
 import re
 import glob
 from obspy import read
-from obspy.core import UTCDateTime
+from obspy import UTCDateTime
 from obspy.io.sac import SACTrace
 from multiprocessing.dummy import Pool as ThreadPool
 
@@ -70,11 +70,13 @@ from multiprocessing.dummy import Pool as ThreadPool
 dryrun = False
 
 # direction of the mseed data
-data_folder = 'JD.Group5.EPS.Raw'
-output_folder = 'Group5_EPS'
+#input_path = './JD5'
+#output_path = './Group5_EPS'
+input_path = './JD.Group5.EPS.Raw'
+output_path = './Group5_EPS'
 
 # station information file
-station_list = 'stainfo.lst'
+station_list = './stainfo.lst'
 
 
 # component list to be converted
@@ -148,7 +150,7 @@ def read_station_list(filename):
 				continue
 			netwk, name, stla, stlo, stel = line_splited
 		except:
-			raise Exception('Format error in %s ! ' % filename)
+			raise Exception('Format error in %s !' % filename)
 		sta.name.append(name)
 		sta.netwk.append(netwk)
 		sta.stla.append(float(stla))
@@ -172,9 +174,9 @@ def create_sac_filename(stats, network_name, channel_name, sac_suffix):
 	fff  = '%3.3d' % (0.001*time.microsecond)
 
 	sac_filename = yyyy + '.' + ddd + '.' + hh + '.' + \
-		           mm + '.' + ss + '.' + fff + '.' + \
-		           network_name + '.' + stats.station + '.' + \
-		           channel_name + sac_suffix
+		   mm + '.' + ss + '.' + fff + '.' + \
+		   network_name + '.' + stats.station + '.' + \
+		   channel_name + sac_suffix
 
 	day_path = yyyy + ddd
 
@@ -187,7 +189,7 @@ def findstr(str_src, str_target):
 	'''
 	findstr(str_src, str_target)
 	find the index of a substring in a string
-	str_src    -> source string
+	str_src-> source string
 	str_target -> substring
 	'''
 
@@ -279,35 +281,38 @@ def convert_hourly(hour_files_path):
 			#hour = starttime.hour + ceil((starttime.minute + (starttime.second + starttime.microsecond*1.e-6)/60.0)/60.0)
 			#hour = starttime.hour + int((starttime.minute + (starttime.second + starttime.microsecond*1.e-6)/60.0 + 45)/60.0)
 			#hour = starttime.hour + int((starttime.minute + (starttime.second + starttime.microsecond*1.e-6)/60.0 + 40)/60.0)
-            min2hour = int((starttime.minute + (starttime.second + starttime.microsecond*1.e-6)/60.0 + 40)/60.0)
-            if (0 == min2hour):
-                #if (is_decimate):
-                #    #df = tr.stats.sampling_rate
-                #    #if (downsampling_rate > df):
-                #    #    print("Error: downsampling rate cannot large than original sampling rate !")
-                #    #decimate_factor = int(df / downsampling_rate)
-                #    #if (abs(df - (decimate_factor*downsampling_rate)) > 0.0):
-                #    #    print("Error: decimate factor can only be integer !")
-                #    dtinus = decimate_factor * dt * 1e6
-                #else:
-                #    dtinus = dt * 1e6
-                dtinus = 1e6 / downsampling_rate
-                #microsecond = ceil(starttime.microsecond / dtinus) * dtinus
-                ##starttime_first = starttime
-                #starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour, starttime.minute, starttime.second, microsecond, strict=False)
-                sec = round(starttime.second*1e6 + starttime.microsecond)
-                sec = ceil(sec / dtinus) * dtinus
-                second = int(sec * 1.e-6)
-                microsecond = int(sec - second*1e6)
-                #starttime_first = starttime
-                starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour, starttime.minute, second, microsecond, strict=False)
-            else:
-                starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour + min2hour, 0, 0, 0)
-			endtime_last = UTCDateTime(endtime.year, endtime.month, endtime.day, endtime.hour, 0, 0, 0)
+			min2hour = int((starttime.minute + (starttime.second + starttime.microsecond*1.e-6)/60.0 + 40)/60.0)
+			if (0 == min2hour):
+				#if (is_decimate):
+				##df = tr.stats.sampling_rate
+				##if (downsampling_rate > df):
+				##print("Error: downsampling rate cannot large than original sampling rate !")
+				##decimate_factor = int(df / downsampling_rate)
+				##if (abs(df - (decimate_factor*downsampling_rate)) > 0.0):
+				##print("Error: decimate factor can only be integer !")
+				#dtinus = decimate_factor * dt * 1e6
+				#else:
+				#dtinus = dt * 1e6
+				dtinus = 1e6 / downsampling_rate
+				#microsecond = ceil(starttime.microsecond / dtinus) * dtinus
+				##starttime_first = starttime
+				#starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour, starttime.minute, starttime.second, microsecond, strict=False)
+				sec = round(starttime.second*1e6 + starttime.microsecond)
+				sec = ceil(sec / dtinus) * dtinus
+				second = int(sec * 1.e-6)
+				microsecond = int(sec - second*1e6)
+				#starttime_first = starttime
+				starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour, starttime.minute, second, microsecond, strict=False)
+			else:
+				starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour + min2hour, 0, 0, 0)
+			if ((endtime.minute + (endtime.second + endtime.microsecond*1.e-6)/60.0) > 40):
+				endtime_last = endtime
+			else:
+				endtime_last = UTCDateTime(endtime.year, endtime.month, endtime.day, endtime.hour, 0, 0, 0)
 			if (starttime_first < endtime_last):
 				tr = tr.slice(starttime=starttime_first, endtime=endtime_last, nearest_sample=False)
 			else:
-                del tr
+				del tr
 				continue
 
 
@@ -373,7 +378,7 @@ def convert_hourly(hour_files_path):
 			station_name = hour_files_path[idx[-3]+1:idx[-2]]
 			for j in range(len(sta.name)):
 				res = findstr(station_name, sta.name[j])
-				#res = findstr(hour_files_path[len_rootdir:-1], sta.name[j])
+				#res = findstr(hour_files_path[len_topdir:-1], sta.name[j])
 				if ([] != res):
 					ipos = j
 					break
@@ -408,7 +413,7 @@ def convert_hourly(hour_files_path):
 				#endtime = UTCDateTime(midtime.year, midtime.month, midtime.day, 23, 59, 59, 999999)
 				##endtime = UTCDateTime(starttime.year, starttime.month, starttime.day, 23, 59, 59, 999999)
 				#endtime = UTCDateTime(year=starttime.year, julday=starttime.julday, \
-				#                 hour=23, minute=59, second=59, microsecond=999999)
+				# hour=23, minute=59, second=59, microsecond=999999)
 				#time_duration = endtime - starttime
 
 				iend = min(ibeg + int((endtime-starttime)*df), npts_org)
@@ -487,7 +492,7 @@ def convert_hourly(hour_files_path):
 			del tr
 
 		del st
-		print(hour_file + ' is done ... \n')
+		print('%s is done' % hour_file)
 
 	del hour_files_list
 
@@ -498,8 +503,8 @@ def convert_hourly(hour_files_path):
 def convert_daily(day_folder):
 
 	day_path = station_stage_path + day_folder + '/'
-	print('Entering directory ' + day_path[len_rootdir:-1])
-	print('\n')
+	print('Entering directory ' + day_path[len_topdir:-1])
+	#print('\n')
 
 	if (not os.path.isdir(day_path)):
 		return
@@ -513,47 +518,45 @@ def convert_daily(day_folder):
 		if (not os.path.isdir(UnitID_path)):
 			continue
 
-		print('Entering directory ' + UnitID_path[len_rootdir:-1])
-		print('\n')
+		print('Entering directory ' + UnitID_path[len_topdir:-1])
+		#print('\n')
 
 		#hour_files_path = UnitID_path + '1/'
 
 		#if (not os.path.exists(hour_files_path)):
 		#	continue
 
-		#print('Entering directory ' + hour_files_path[len_rootdir:-1])
+		#print('Entering directory ' + hour_files_path[len_topdir:-1])
 		#print('\n')
 
 		convert_hourly(UnitID_path)
 		#convert_hourly(hour_files_path, day_path)
 
-		#print('Leaving directory ' + hour_files_path[len_rootdir:-1])
+		#print('Leaving directory ' + hour_files_path[len_topdir:-1])
 		#print('\n')
 
-		print('Leaving directory ' + UnitID_path[len_rootdir:-1])
-		print('\n')
+		print('Leaving directory ' + UnitID_path[len_topdir:-1])
+		#print('\n')
 
 	del UnitID_folders_list
-	print('Leaving directory ' + day_path[len_rootdir:-1])
-	print('\n')
+	print('Leaving directory ' + day_path[len_topdir:-1])
+	#print('\n')
 
 	return
 
 
 
-def mseed2sac(current_path):
+def mseed2sac():
 
-	global len_rootdir, station_stage_path, sta, sac_suffix, output_path
+	global len_topdir, station_stage_path, sac_suffix
 
-	rootdir = current_path + '/' + data_folder + '/'
-	len_rootdir = len(rootdir)
+	len_topdir = len(input_path) + 1
 
-	output_path = current_path + '/' + output_folder
 	if (not os.path.exists(output_path)):
 		os.makedirs(output_path)
 
 
-	stage_folders_list = os.listdir(rootdir)
+	stage_folders_list = os.listdir(input_path)
 
 
 	sac_suffix = '.SAC'
@@ -561,9 +564,9 @@ def mseed2sac(current_path):
 	# convert mseed to sac
 	for station_stage_folder in stage_folders_list:
 
-		station_stage_path = rootdir + station_stage_folder + '/'
-		print('Entering directory ' + station_stage_path[len_rootdir:-1])
-		print('\n')
+		station_stage_path = input_path + '/' + station_stage_folder + '/'
+		print('Entering directory ' + station_stage_path[len_topdir:-1])
+		#print('\n')
 
 		if (not os.path.isdir(station_stage_path)):
 			continue
@@ -576,8 +579,8 @@ def mseed2sac(current_path):
 		pool.join()
 
 		del day_folders_list
-		print('Leaving directory ' + station_stage_path[len_rootdir:-1])
-		print('\n')
+		print('Leaving directory ' + station_stage_path[len_topdir:-1])
+		#print('\n')
 
 	del stage_folders_list
 
@@ -596,25 +599,23 @@ if __name__ == '__main__':
 
 	starttime = UTCDateTime()
 
-	# get current path
 	# absolution path
 	#current_path = os.getcwd()
-	# relative path
-	current_path = '.'
 
 	# read station information
-	sta = read_station_list(current_path + '/' + station_list)
+	sta = read_station_list(station_list)
 
 	# convert mseed file to sac format
-	mseed2sac(current_path)
+	mseed2sac()
 
 	endtime = UTCDateTime()
 
 	elapsed_time = (endtime - starttime)
 
+	print("\n\n")
 	print('Start   time : %s' % starttime)
-	print('End     time : %s' % endtime)
-	print('Elapsed time : %f hours \n' % (elapsed_time / 3600.0))
+	print('End time : %s' % endtime)
+	print('Elapsed time : %f hours' % (elapsed_time / 3600.0))
 
 
 

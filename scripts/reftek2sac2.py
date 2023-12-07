@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 
-
 '''
 reftek2sac
 
@@ -13,10 +12,10 @@ Affiliation: Institute of Geology and Geophysics, Chinese Academy of Sciences
 
 
 folders structure:
-./your_data_folder/stage folder/station folder/Reftek UnitID number/day folder/stream/reftek files
+./data folder/period folder/station folder/Reftek UnitID number/day folder/stream/reftek files
 
 for example:
-./Raw2/2007_276_2008_005/NE00/2007276/9F78/1
+./DATA_Raw/2007_276_2008_005/NE00/2007276/9F78/1
 
 
 
@@ -31,18 +30,18 @@ Reftek 130 Disk Directory Structure
 \2003032
 \2003033
 
-        Unit ID number
-        |
-        v
-        __
-       |  |
-      \90F0
-           Datastream
-           |
-           v
-          \0
-          \1
-          \2
+		Unit ID number
+		|
+		v
+		 __
+   		|  |
+  		\90F0
+   		Datastream
+   		|
+   		v
+  		\0
+  		\1
+  		\2
 
 '''
 
@@ -53,7 +52,7 @@ import os
 import re
 from math import *
 from obspy import read
-from obspy.core import UTCDateTime
+from obspy import UTCDateTime
 from obspy.io.sac import SACTrace
 
 
@@ -69,10 +68,10 @@ from obspy.io.sac import SACTrace
 dryrun = False
 
 # direction of the reftek data
-data_folder = './Raw2'
+input_path = './Raw2'
 
 # station information file
-station_list = 'NEsta.lst'
+station_list = './NEsta.lst'
 
 
 # component list to be converted
@@ -103,7 +102,7 @@ fhigh = 5.0
 
 # whether downsampling seismograms
 is_decimate = True
-# the downsampling frequency
+# the downsampling_rate, downsampling frequency
 downsampling_rate = 10.0
 
 ##############################################################
@@ -145,7 +144,7 @@ def read_station_list(filename):
 				continue
 			netwk, name, stla, stlo, stel = line_splited
 		except:
-			raise Exception('Format error in %s ! ' % filename)
+			raise Exception('Format error in %s !' % filename)
 		sta.name.append(name)
 		sta.netwk.append(netwk)
 		sta.stla.append(float(stla))
@@ -169,9 +168,9 @@ def create_sac_filename(stats, network_name, channel_name, sac_suffix):
 	fff  = '%3.3d' % (0.001*time.microsecond)
 
 	sac_filename = yyyy + '.' + ddd + '.' + hh + '.' + \
-		           mm + '.' + ss + '.' + fff + '.' + \
-		           network_name + '.' + stats.station + '.' + \
-		           channel_name + sac_suffix
+		   mm + '.' + ss + '.' + fff + '.' + \
+		   network_name + '.' + stats.station + '.' + \
+		   channel_name + sac_suffix
 
 	return sac_filename
 
@@ -182,7 +181,7 @@ def findstr(str_src, str_target):
 	'''
 	findstr(str_src, str_target)
 	find the index of a substring in a string
-	str_src    -> source string
+	str_src-> source string
 	str_target -> substring
 	'''
 
@@ -241,7 +240,8 @@ def convert_hourly(hour_files_path, day_path):
 			continue
 
 
-		if (len(st) > 3):
+		nstream = len(st)
+		if (nstream > 3):
 			st.sort(['starttime'])
 			if ((st[nstream-1].stats.endtime - st[0].stats.starttime) > 129600):
 				continue
@@ -263,34 +263,28 @@ def convert_hourly(hour_files_path, day_path):
 				continue
 
 
-			# some preprocesses
-			if (is_demean):
-				tr.detrend(type='demean')
-			if (is_detrend):
-				tr.detrend(type='linear')
-			#if (is_denonlinear):
-			#	#tr.detrend('polynomial', order=50)
-			#	tr.detrend('spline', order=3, dspline=5)
-
-
 
 			#starttime = tr.stats.starttime
 			#endtime = tr.stats.endtime
-			#min2hour = int((starttime.hour + (starttime.second + starttime.microsecond*1.e-6)/60.0 + 40)/60.0)
+			##hour = starttime.hour + ceil((starttime.minute + (starttime.second + starttime.microsecond*1.e-6)/60.0)/60.0)
+			##hour = starttime.hour + int((starttime.minute + (starttime.second + starttime.microsecond*1.e-6)/60.0 + 45)/60.0)
+			##hour = starttime.hour + int((starttime.minute + (starttime.second + starttime.microsecond*1.e-6)/60.0 + 40)/60.0)
+			#min2hour = int((starttime.minute + (starttime.second + starttime.microsecond*1.e-6)/60.0 + 40)/60.0)
 			#if (0 == min2hour):
 			#	dtinus = 1e6 / downsampling_rate
-			#	#microsecond = ceil(microsecond / dtinus) * dtinus
-			#	#starttime_first = starttime
+			#	#microsecond = ceil(starttime.microsecond / dtinus) * dtinus
+			#	##starttime_first = starttime
 			#	#starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour, starttime.minute, starttime.second, microsecond, strict=False)
 			#	sec = round(starttime.second*1e6 + starttime.microsecond)
 			#	sec = ceil(sec / dtinus) * dtinus
 			#	second = int(sec * 1.e-6)
 			#	microsecond = int(sec - second*1e6)
+			#	#starttime_first = starttime
 			#	starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour, starttime.minute, second, microsecond, strict=False)
 			#else:
-			#	starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour + min2hour, 0, 0, 0)
+			#	#starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour + min2hour, 0, 0, 0)
 			#	starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour, 0, 0, 0) + 3600
-			#if ((starttime.minute + (starttime.second + starttime.microsecond*1.e-6)/60.0) > 40.0):
+			#if ((endtime.minute + (endtime.second + endtime.microsecond*1.e-6)/60.0) > 40):
 			#	endtime_last = endtime
 			#else:
 			#	endtime_last = UTCDateTime(endtime.year, endtime.month, endtime.day, endtime.hour, 0, 0, 0)
@@ -302,6 +296,16 @@ def convert_hourly(hour_files_path, day_path):
 
 
 
+			# some preprocesses
+			if (is_demean):
+				tr.detrend(type='demean')
+			if (is_detrend):
+				tr.detrend(type='linear')
+			#if (is_denonlinear):
+			#	#tr.detrend('polynomial', order=50)
+			#	tr.detrend('spline', order=3, dspline=5)
+
+
 			# bandpass
 			if (is_bandpass):
 				tr.filter('bandpass', freqmin=flow, freqmax=fhigh, corners=2, zerophase=is_zerophase)
@@ -311,14 +315,14 @@ def convert_hourly(hour_files_path, day_path):
 			if (is_decimate):
 				df = tr.stats.sampling_rate
 				if (downsampling_rate > df):
-					print("Error: downsampling sampling rate cannot large than original sampling rate !")
+					print("Error: downsampling rate cannot large than original sampling rate !")
 					continue
 				decimate_factor = int(df / downsampling_rate)
 				if (abs(df - (decimate_factor*downsampling_rate)) > 0.0):
 					print("Error: decimate factor can only be integer !")
 					continue
 				if (decimate_factor > 1):
-					# Nyquist frequency of downsampling rate
+					# Nyquist frequency of the downsampling rate
 					freq_lowpass = 0.49 * downsampling_rate
 					#freq_lowpass = 0.49 * tr.stats.sampling_rate / decimate_factor
 					if (not(is_bandpass and (fhigh <= freq_lowpass))):
@@ -354,7 +358,7 @@ def convert_hourly(hour_files_path, day_path):
 			station_name = hour_files_path[idx[-5]+1:idx[-4]]
 			for j in range(len(sta.name)):
 				res = findstr(station_name, sta.name[j])
-				#res = findstr(hour_files_path[len_rootdir:-1], sta.name[j])
+				#res = findstr(hour_files_path[len_topdir:-1], sta.name[j])
 				if ([] != res):
 					ipos = j
 					break
@@ -403,8 +407,7 @@ def convert_hourly(hour_files_path, day_path):
 				sac.nzmsec = round(tr.stats.starttime.microsecond*1.e-3)
 				sac.b = 0
 				#sac.reftime += sac.b
-				sac.reftime = tr.stats.starttime
-
+				#sac.reftime = tr.stats.starttime
 
 
 				# write sac
@@ -416,7 +419,7 @@ def convert_hourly(hour_files_path, day_path):
 			del tr
 
 		del st
-		print(hour_file + ' is done ... \n')
+		print('%s is done' % hour_file)
 
 	del hour_files_list
 
@@ -431,7 +434,7 @@ def convert_daily(station_path):
 	for day_folder in day_folders_list:
 
 		day_path = station_path + day_folder + '/'
-		print('\t\tEntering directory ' + day_path[len_rootdir:-1])
+		print('Entering directory ' + day_path[len_topdir:-1])
 		#print('\n')
 
 		UnitID_folders_list = os.listdir(day_path)
@@ -443,7 +446,7 @@ def convert_daily(station_path):
 			if (not os.path.isdir(UnitID_path)):
 				continue
 
-			print('\t\t\tEntering directory ' + UnitID_path[len_rootdir:-1])
+			print('Entering directory ' + UnitID_path[len_topdir:-1])
 			#print('\n')
 
 			hour_files_path = UnitID_path + '1/'
@@ -451,19 +454,19 @@ def convert_daily(station_path):
 			if (not os.path.exists(hour_files_path)):
 				continue
 
-			print('\t\t\t\tEntering directory ' + hour_files_path[len_rootdir:-1])
+			print('Entering directory ' + hour_files_path[len_topdir:-1])
 			#print('\n')
 
 			convert_hourly(hour_files_path, day_path)
 
-			print('\t\t\t\tLeaving directory ' + hour_files_path[len_rootdir:-1])
+			print('Leaving directory ' + hour_files_path[len_topdir:-1])
 			#print('\n')
 
-			print('\t\t\tLeaving directory ' + UnitID_path[len_rootdir:-1])
+			print('Leaving directory ' + UnitID_path[len_topdir:-1])
 			#print('\n')
 
 		del UnitID_folders_list
-		print('\t\tLeaving directory ' + day_path[len_rootdir:-1])
+		print('Leaving directory ' + day_path[len_topdir:-1])
 		#print('\n')
 
 	del day_folders_list
@@ -472,35 +475,33 @@ def convert_daily(station_path):
 
 
 
-def reftek2sac(current_path):
+def reftek2sac():
 
-	global len_rootdir, sta, sac_suffix
+	global len_topdir, sac_suffix
 
-	rootdir = data_folder + '/'
-	#rootdir = current_path + '/' + data_folder + '/'
-	len_rootdir = len(rootdir)
+	len_topdir = len(input_path) + 1
 
-	stage_folders_list = os.listdir(rootdir)
+	period_folders_list = os.listdir(input_path)
 
 
 	sac_suffix = '.SAC'
 
 	# convert reftek to sac
-	for stage_folder in stage_folders_list:
+	for period_folder in period_folders_list:
 
-		stage_path = rootdir + stage_folder + '/'
-		print('Entering directory ' + stage_path[len_rootdir:-1])
+		period_path = input_path + '/' + period_folder + '/'
+		print('Entering directory ' + period_path[len_topdir:-1])
 		#print('\n')
 
-		if (not os.path.exists(stage_path)):
+		if (not os.path.exists(period_path)):
 			continue
 
-		station_folders_list = os.listdir(stage_path)
+		station_folders_list = os.listdir(period_path)
 
 		for station_folder in station_folders_list:
 
-			station_path = stage_path + station_folder + '/'
-			print('\tEntering directory ' + station_path[len_rootdir:-1])
+			station_path = period_path + station_folder + '/'
+			print('Entering directory ' + station_path[len_topdir:-1])
 			#print('\n')
 
 			if (not os.path.exists(station_path)):
@@ -508,14 +509,14 @@ def reftek2sac(current_path):
 
 			convert_daily(station_path)
 
-			print('\tLeaving directory ' + station_path[len_rootdir:-1])
+			print('Leaving directory ' + station_path[len_topdir:-1])
 			#print('\n')
 
 		del station_folders_list
-		print('Leaving directory ' + stage_path[len_rootdir:-1])
+		print('Leaving directory ' + period_path[len_topdir:-1])
 		#print('\n')
 
-	del stage_folders_list
+	del period_folders_list
 
 	return
 
@@ -523,7 +524,7 @@ def reftek2sac(current_path):
 
 if __name__ == '__main__':
 
-	#print('\n')
+	print('\n')
 	print('reftek2sac: ')
 	print('This program converts files from reftek to sac format using the ObsPy (serial version)')
 	print('Youshan Liu at Institute of Geology and Geophysics, Chinese Academy of Sciences')
@@ -532,25 +533,23 @@ if __name__ == '__main__':
 
 	starttime = UTCDateTime()
 
-	# get current path
 	# absolution path
 	#current_path = os.getcwd()
-	# relative path
-	current_path = '.'
 
 	# read station information
-	sta = read_station_list(current_path + '/' + station_list)
+	sta = read_station_list(station_list)
 
 	# convert reftek file to sac format
-	reftek2sac(current_path)
+	reftek2sac()
 
 	endtime = UTCDateTime()
 
 	elapsed_time = (endtime - starttime)
 
+	print("\n\n")
 	print('Start   time : %s' % starttime)
-	print('End     time : %s' % endtime)
-	print('Elapsed time : %f hours \n' % (elapsed_time / 3600.0))
+	print('End time : %s' % endtime)
+	print('Elapsed time : %f hours' % (elapsed_time / 3600.0))
 
 
 

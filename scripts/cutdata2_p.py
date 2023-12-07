@@ -13,7 +13,7 @@ Affiliation: Institute of Geology and Geophysics, Chinese Academy of Sciences
 
 
 After cutting, the files will be save in the following structures:
-./input_folder/yyyy/mm/yyyymmdd_hh00000/
+./data folder/yyyy/mm/yyyymmdd_hh00000/
 
 for example:
 ./DATA/2007/10/20071003_000000/NCISP.NE00.BHZ.SAC
@@ -30,10 +30,10 @@ import glob
 from math import *
 import numpy as np
 from obspy import read
+from obspy import UTCDateTime
+from obspy.io.sac import SACTrace
 from obspy.core.trace import Trace
 from obspy.core.stream import Stream
-from obspy.core import UTCDateTime
-from obspy.io.sac import SACTrace
 from multiprocessing.dummy import Pool as ThreadPool
 
 
@@ -50,15 +50,17 @@ from multiprocessing.dummy import Pool as ThreadPool
 dryrun = False
 
 # direction of the reftek data
-input_folder = './DATA_Raw'
-output_folder = './DATA_cut'
+#input_path = './NCISP09-SDZX-JD201710-201908'
+input_path = './DATA_Raw'
+output_path = './DATA_cut'
+#output_path = '/home/ysliu/Compute_XCC_JD_Broadband/DATA_cut'
 
 # whether save input data
 save_input_data = True
 
 
 # segment length
-segment_length = 6*3600
+segment_length = 24*3600
 
 # component list to be cut
 # three-components
@@ -126,6 +128,8 @@ def date2str(starttime):
 
 def merge_data(hour_files_list):
 
+	#print(hour_files_list)
+
 	st = Stream()
 	data_len = 0.0
 	for hour_file in hour_files_list:
@@ -141,7 +145,7 @@ def merge_data(hour_files_list):
 		data_len += (st_tmp[0].stats.npts-1)*st_tmp[0].stats.delta
 
 
-	if (data_len < 0.50*segment_length):
+	if (data_len < 0.5*segment_length):
 		return []
 
 
@@ -208,7 +212,7 @@ def merge_data(hour_files_list):
 def cutdata_daily(day_folder):
 
 	day_path = station_path + day_folder + '/'
-	print('Entering directory ' + day_path[len_rootdir:-1])
+	print('Entering directory ' + day_path[len_topdir:-1])
 	#print('\n')
 
 	if (not os.path.isdir(day_path)):
@@ -243,6 +247,7 @@ def cutdata_daily(day_folder):
 			continue
 
 
+
 		# cut data into segments
 		nsegments = round(seconds_daily / segment_length)
 		#nsegments = int(seconds_daily / segment_length)
@@ -258,7 +263,7 @@ def cutdata_daily(day_folder):
 
 			tr_out = tr.copy()
 			tr_out.data = tr.data[ibeg:iend+1]
-			tr_out.stats.starttime = starttime_daily + starttime
+			tr_out.stats.starttime = starttime_daily + tbeg
 
 
 			# remove invalid data
@@ -272,7 +277,7 @@ def cutdata_daily(day_folder):
 			sac_filename = create_sac_filename(tr_out.stats)
 			sac_path = create_sac_path(tr_out.stats)
 
-			mypath = output_path + sac_path
+			mypath = output_path + '/' + sac_path
 
 			# create the path if it does not exist
 			if (not os.path.exists(mypath)):
@@ -317,47 +322,42 @@ def cutdata_daily(day_folder):
 
 
 		del tr, hour_files_list
-		print('%s is done ... \n' % date2str(starttime_daily))
+		print('%s is done' % date2str(starttime_daily))
 
-	print('Leaving directory ' + day_path[len_rootdir:-1])
+	print('Leaving directory ' + day_path[len_topdir:-1])
 	#print('\n')
 
 	return
 
 
 
-def cutdata(current_path):
+def cutdata():
 
-	global len_rootdir, station_path, output_path, sac_suffix
+	global len_topdir, station_path, sac_suffix
 
-	rootdir = input_folder + '/'
-	#rootdir = current_path + '/' + input_folder + '/'
-	len_rootdir = len(rootdir)
+	len_topdir = len(input_path) + 1
 
-	stage_folders_list = os.listdir(rootdir)
-
-	output_path = output_folder + '/'
-	#output_path = current_path + '/' + output_folder + '/'
+	period_folders_list = os.listdir(input_path)
 
 
 	sac_suffix = '.SAC'
 
 	# convert reftek to sac
-	for stage_folder in stage_folders_list:
+	for period_folder in period_folders_list:
 
-		stage_path = rootdir + stage_folder + '/'
-		print('Entering directory ' + stage_path[len_rootdir:-1])
+		period_path = input_path + '/' + period_folder + '/'
+		print('Entering directory ' + period_path[len_topdir:-1])
 		#print('\n')
 
-		if (not os.path.isdir(stage_path)):
+		if (not os.path.isdir(period_path)):
 			continue
 
-		station_folder_list = os.listdir(stage_path)
+		station_folder_list = os.listdir(period_path)
 
 		for station_folder in station_folder_list:
 
-			station_path = stage_path + station_folder + '/'
-			print('Entering directory ' + station_path[len_rootdir:-1])
+			station_path = period_path + station_folder + '/'
+			print('Entering directory ' + station_path[len_topdir:-1])
 			#print('\n')
 
 			if (not os.path.isdir(station_path)):
@@ -365,20 +365,20 @@ def cutdata(current_path):
 
 			day_folders_list = os.listdir(station_path)
 
-			pool = ThreadPool()
+			pool = ThreadPool(4)
 			pool.map(cutdata_daily, day_folders_list)
 			pool.close()
 			pool.join()
 
 			del day_folders_list
-			print('Leaving directory ' + station_path[len_rootdir:-1])
+			print('Leaving directory ' + station_path[len_topdir:-1])
 			#print('\n')
 
 		del station_folder_list
-		print('Leaving directory ' + stage_path[len_rootdir:-1])
+		print('Leaving directory ' + period_path[len_topdir:-1])
 		#print('\n')
 
-	del stage_folders_list
+	del period_folders_list
 
 	return
 
@@ -386,7 +386,7 @@ def cutdata(current_path):
 
 if __name__ == '__main__':
 
-	#print('\n')
+	print('\n')
 	print('cutdata: ')
 	print('This program cuts daily data into segments using the ObsPy (parallel version)')
 	print('Youshan Liu at Institute of Geology and Geophysics, Chinese Academy of Sciences')
@@ -395,22 +395,20 @@ if __name__ == '__main__':
 
 	starttime = UTCDateTime()
 
-	# get current path
 	# absolution path
 	#current_path = os.getcwd()
-	# relative path
-	current_path = '.'
 
 	# cutdata daily
-	cutdata(current_path)
+	cutdata()
 
 	endtime = UTCDateTime()
 
 	elapsed_time = (endtime - starttime)
 
+	print("\n\n")
 	print('Start   time : %s' % starttime)
-	print('End     time : %s' % endtime)
-	print('Elapsed time : %f hours \n' % (elapsed_time / 3600.0))
+	print('End time : %s' % endtime)
+	print('Elapsed time : %f hours' % (elapsed_time / 3600.0))
 
 
 
