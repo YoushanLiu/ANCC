@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 
+
 '''
 reftek2sac
 
@@ -11,8 +12,8 @@ Author: Youshan Liu
 Affiliation: Institute of Geology and Geophysics, Chinese Academy of Sciences
 
 
-folders structure:
-./data folder/period folder/station folder/Reftek UnitID number/day folder/stream/reftek files
+directory structure:
+./top folder/period folder/station folder/day folder/Reftek UnitID number/stream/reftek files
 
 for example:
 ./DATA_Raw/2007_276_2008_005/NE00/2007276/9F78/1
@@ -25,10 +26,10 @@ Reftek 130 Disk Directory Structure
   |   Day of year
   |   |
   v   v
-  __  _
- |  || |
-\2003032
-\2003033
+   __  _
+  |  || |
+ \2003032
+ \2003033
 
 		Unit ID number
 		|
@@ -36,6 +37,7 @@ Reftek 130 Disk Directory Structure
 		 __
    		|  |
   		\90F0
+
    		Datastream
    		|
    		v
@@ -63,12 +65,12 @@ from obspy.io.sac import SACTrace
 
 
 # dryrun just for debug
-# dryrun = True  => just print some direction information not to write sac files
+# dryrun = True  => just print some directory information not to write sac files
 # dryrun = False => do the actual files conversion
 dryrun = False
 
-# direction of the reftek data
-input_path = './Raw2'
+# directory of the reftek data
+input_path = './DATA_Raw2'
 
 # station information file
 station_list = './NEsta.lst'
@@ -76,13 +78,13 @@ station_list = './NEsta.lst'
 
 # component list to be converted
 # only Z-component
-#component_list = ['Z']
+#components = ['Z']
 # only N-component
-#component_list = ['N']
+#components = ['N']
 # only E-component
-#component_list = ['E']
+#components = ['E']
 # three-components
-component_list = ['Z', 'N', 'E']
+components = ['Z', 'N', 'E']
 
 ##############################################################
 # preprocess options
@@ -102,7 +104,7 @@ fhigh = 5.0
 
 # whether downsampling seismograms
 is_decimate = True
-# the downsampling_rate, downsampling frequency
+# the downsampling frequency
 downsampling_rate = 10.0
 
 ##############################################################
@@ -111,7 +113,7 @@ downsampling_rate = 10.0
 
 
 # channel name, it consists of band code, instrument code, orientation code
-channel_name = ['BHZ', 'BHN', 'BHE']
+channels = ['BHZ', 'BHN', 'BHE']
 
 
 ##############################################################
@@ -122,21 +124,20 @@ def read_station_list(filename):
 
 	class Station:
 		def __init__(self):
-			self.name = []
+			self.stnm = []
 			self.stla = []
 			self.stlo = []
 			self.stel = []
 			self.netwk = []
 
 
-	name = ''
-	stla = ''
-	stlo = ''
-	stel = ''
-	netwk = ''
+	try:
+		with open(filename, 'r') as f:
+			lines = f.readlines()
+	except:
+		raise Exception('Cannot open file %s !' % filename)
 	sta = Station()
-	with open(filename, 'r') as f:
-		lines = f.readlines()
+	netwk, name, stla, stlo, stel = None, None, None, None, None
 	for line in lines[1:]:
 		try:
 			line_splited = line.split()
@@ -145,7 +146,7 @@ def read_station_list(filename):
 			netwk, name, stla, stlo, stel = line_splited
 		except:
 			raise Exception('Format error in %s !' % filename)
-		sta.name.append(name)
+		sta.stnm.append(stnm)
 		sta.netwk.append(netwk)
 		sta.stla.append(float(stla))
 		sta.stlo.append(float(stlo))
@@ -157,7 +158,7 @@ def read_station_list(filename):
 
 
 
-def create_sac_filename(stats, network_name, channel_name, sac_suffix):
+def create_sac_filename(stats):
 
 	time = UTCDateTime(stats.starttime)
 	yyyy = '%4.4d' % time.year
@@ -169,8 +170,8 @@ def create_sac_filename(stats, network_name, channel_name, sac_suffix):
 
 	sac_filename = yyyy + '.' + ddd + '.' + hh + '.' + \
 		   mm + '.' + ss + '.' + fff + '.' + \
-		   network_name + '.' + stats.station + '.' + \
-		   channel_name + sac_suffix
+		   stats.network + '.' + stats.station + '.' + \
+		   stats.channel + sac_suffix
 
 	return sac_filename
 
@@ -240,8 +241,7 @@ def convert_hourly(hour_files_path, day_path):
 			continue
 
 
-		nstream = len(st)
-		if (nstream > 3):
+		if (len(st) > 3):
 			st.sort(['starttime'])
 			if ((st[nstream-1].stats.endtime - st[0].stats.starttime) > 129600):
 				continue
@@ -250,10 +250,7 @@ def convert_hourly(hour_files_path, day_path):
 
 
 
-		for i in range(0,min(len(channel_name),len(st))):
-
-			if (channel_name[i][-1] not in component_list):
-				continue
+		for i in range(len(st)):
 
 			try:
 				tr = st[i]
@@ -262,38 +259,9 @@ def convert_hourly(hour_files_path, day_path):
 			except:
 				continue
 
-
-
-			#starttime = tr.stats.starttime
-			#endtime = tr.stats.endtime
-			##hour = starttime.hour + ceil((starttime.minute + (starttime.second + starttime.microsecond*1.e-6)/60.0)/60.0)
-			##hour = starttime.hour + int((starttime.minute + (starttime.second + starttime.microsecond*1.e-6)/60.0 + 45)/60.0)
-			##hour = starttime.hour + int((starttime.minute + (starttime.second + starttime.microsecond*1.e-6)/60.0 + 40)/60.0)
-			#min2hour = int((starttime.minute + (starttime.second + starttime.microsecond*1.e-6)/60.0 + 40)/60.0)
-			#if (0 == min2hour):
-			#	dtinus = 1e6 / downsampling_rate
-			#	#microsecond = ceil(starttime.microsecond / dtinus) * dtinus
-			#	##starttime_first = starttime
-			#	#starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour, starttime.minute, starttime.second, microsecond, strict=False)
-			#	sec = round(starttime.second*1e6 + starttime.microsecond)
-			#	sec = ceil(sec / dtinus) * dtinus
-			#	second = int(sec * 1.e-6)
-			#	microsecond = int(sec - second*1e6)
-			#	#starttime_first = starttime
-			#	starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour, starttime.minute, second, microsecond, strict=False)
-			#else:
-			#	#starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour + min2hour, 0, 0, 0)
-			#	starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour, 0, 0, 0) + 3600
-			#if ((endtime.minute + (endtime.second + endtime.microsecond*1.e-6)/60.0) > 40):
-			#	endtime_last = endtime
-			#else:
-			#	endtime_last = UTCDateTime(endtime.year, endtime.month, endtime.day, endtime.hour, 0, 0, 0)
-			#if (starttime_first < endtime_last):
-			#	tr = tr.slice(starttime=starttime_first, endtime=endtime_last, nearest_sample=False)
-			#else:
-			#	del tr
-			#	continue
-
+			if (tr.stats.channel[-1] not in components):
+				continue
+			channel = channels[i]
 
 
 			# some preprocesses
@@ -306,6 +274,35 @@ def convert_hourly(hour_files_path, day_path):
 			#	tr.detrend('spline', order=3, dspline=5)
 
 
+
+			#starttime = tr.stats.starttime
+			#endtime = tr.stats.endtime
+			#min2hour = int((starttime.hour + (starttime.second + starttime.microsecond*1.e-6)/60.0 + 40)/60.0)
+			#if (0 == min2hour):
+			#	dtinus = 1e6 / downsampling_rate
+			#	#microsecond = ceil(microsecond / dtinus) * dtinus
+			#	#starttime_first = starttime
+			#	#starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour, starttime.minute, starttime.second, microsecond, strict=False)
+			#	sec = round(starttime.second*1e6 + starttime.microsecond)
+			#	sec = ceil(sec / dtinus) * dtinus
+			#	second = int(sec * 1.e-6)
+			#	microsecond = int(sec - second*1e6)
+			#	starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour, starttime.minute, second, microsecond, strict=False)
+			#else:
+			#	starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour + min2hour, 0, 0, 0)
+			#	starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour, 0, 0, 0) + 3600
+			#if ((starttime.minute + (starttime.second + starttime.microsecond*1.e-6)/60.0) > 40.0):
+			#	endtime_last = endtime
+			#else:
+			#	endtime_last = UTCDateTime(endtime.year, endtime.month, endtime.day, endtime.hour, 0, 0, 0)
+			#if (starttime_first < endtime_last):
+			#	tr = tr.slice(starttime=starttime_first, endtime=endtime_last, nearest_sample=False)
+			#else:
+			#	del tr
+			#	continue
+
+
+
 			# bandpass
 			if (is_bandpass):
 				tr.filter('bandpass', freqmin=flow, freqmax=fhigh, corners=2, zerophase=is_zerophase)
@@ -315,14 +312,14 @@ def convert_hourly(hour_files_path, day_path):
 			if (is_decimate):
 				df = tr.stats.sampling_rate
 				if (downsampling_rate > df):
-					print("Error: downsampling rate cannot large than original sampling rate !")
+					print("Error: downsampling sampling rate cannot large than original sampling rate !")
 					continue
 				decimate_factor = int(df / downsampling_rate)
 				if (abs(df - (decimate_factor*downsampling_rate)) > 0.0):
 					print("Error: decimate factor can only be integer !")
 					continue
 				if (decimate_factor > 1):
-					# Nyquist frequency of the downsampling rate
+					# Nyquist frequency of downsampling rate
 					freq_lowpass = 0.49 * downsampling_rate
 					#freq_lowpass = 0.49 * tr.stats.sampling_rate / decimate_factor
 					if (not(is_bandpass and (fhigh <= freq_lowpass))):
@@ -331,47 +328,48 @@ def convert_hourly(hour_files_path, day_path):
 
 
 			# get the index of station name in station list
-			#station_name = tr.stats.station
-			#res = [sta.name.index(x) for x in sta.name if x.upper() == station_name.upper()]
+			#station_path = tr.stats.station
+			#res = [sta.stnm.index(x) for x in sta.stnm if x.upper() == station_path.upper()]
 			#if ([] != res):
 			#	# first find station name in reftek head.
 			#	# if the field "station" in reftek header is NULL, then try extract station name from folder name
 			#	try:
 			#		ipos = res[0]
 			#	except:
-			#		raise Exception('Error: station %s is not in the station list' % station_name)
+			#		raise Exception('Error: station %s is not in the station list' % station_path)
 			#else:
 			#	#print("Warning: station field in reftek header is NULL")
 			#	# try to extract station name based on folder name
 			#	ipos = -1
-			#	for j in range(len(sta.name)):
-			#		res = findstr(hour_files_path[idx[-5]+1:idx[-4]], sta.name[j])
+			#	for j in range(len(sta.stnm)):
+			#		res = findstr(hour_files_path[idx[-5]+1:idx[-4]], sta.stnm[j])
 			#		if ([] != res):
 			#			ipos = j
 			#			break
 			#	if (-1 == ipos):
-			#		print("Error: station %s is not in the station list or field 'station' in reftek header is NULL" % station_name)
+			#		print("Error: station %s is not in the station list or field 'station' in reftek header is NULL" % station_path)
 			#		return
 
 
 			ipos = -1
-			station_name = hour_files_path[idx[-5]+1:idx[-4]]
-			for j in range(len(sta.name)):
-				res = findstr(station_name, sta.name[j])
-				#res = findstr(hour_files_path[len_topdir:-1], sta.name[j])
+			station_path = hour_files_path[idx[-5]+1:idx[-4]]
+			for j in range(len(sta.stnm)):
+				res = findstr(station_path, sta.stnm[j])
+				#res = findstr(hour_files_path[len_topdir:-1], sta.stnm[j])
 				if ([] != res):
 					ipos = j
 					break
 			if (-1 == ipos):
-				print("Error: station folder %s does not include the name of this station or this station is missing in the stainfo.lst" % station_name)
+				print("Error: station folder %s does not include the name of this station or this station is missing in the stainfo.lst" % station_path)
 				return
 
 
 
-			network_name = sta.netwk[ipos]
-			tr.stats.station = sta.name[ipos]
+			station = sta.stnm[ipos]
+			network = sta.netwk[ipos]
+			tr.stats.station = sta.stnm[ipos]
 
-			sac_filename = create_sac_filename(tr.stats, network_name, channel_name[i], sac_suffix)
+			sac_filename = create_sac_filename(tr.stats)
 
 			outfile = day_path + sac_filename
 
@@ -382,7 +380,7 @@ def convert_hourly(hour_files_path, day_path):
 			else:
 
 				# set channel name
-				tr.stats.channel = channel_name[i]
+				tr.stats.channel = channels[i]
 
 
 				sac = SACTrace.from_obspy_trace(tr)
@@ -393,9 +391,9 @@ def convert_hourly(hour_files_path, day_path):
 				sac.stlo = sta.stlo[ipos]
 				sac.stel = sta.stel[ipos]
 				# write station name
-				sac.kstnm = sta.name[ipos]
+				sac.kstnm = station
 				# write network name
-				sac.knetwk = network_name
+				sac.knetwk = network
 
 
 				sac.nzyear = tr.stats.starttime.year
@@ -407,7 +405,8 @@ def convert_hourly(hour_files_path, day_path):
 				sac.nzmsec = round(tr.stats.starttime.microsecond*1.e-3)
 				sac.b = 0
 				#sac.reftime += sac.b
-				#sac.reftime = tr.stats.starttime
+				sac.reftime = tr.stats.starttime
+
 
 
 				# write sac
@@ -481,26 +480,26 @@ def reftek2sac():
 
 	len_topdir = len(input_path) + 1
 
-	period_folders_list = os.listdir(input_path)
+	stage_folders_list = os.listdir(input_path)
 
 
 	sac_suffix = '.SAC'
 
 	# convert reftek to sac
-	for period_folder in period_folders_list:
+	for stage_folder in stage_folders_list:
 
-		period_path = input_path + '/' + period_folder + '/'
-		print('Entering directory ' + period_path[len_topdir:-1])
+		stage_path = input_path + '/' + stage_folder + '/'
+		print('Entering directory ' + stage_path[len_topdir:-1])
 		#print('\n')
 
-		if (not os.path.exists(period_path)):
+		if (not os.path.exists(stage_path)):
 			continue
 
-		station_folders_list = os.listdir(period_path)
+		station_folders_list = os.listdir(stage_path)
 
 		for station_folder in station_folders_list:
 
-			station_path = period_path + station_folder + '/'
+			station_path = stage_path + station_folder + '/'
 			print('Entering directory ' + station_path[len_topdir:-1])
 			#print('\n')
 
@@ -513,10 +512,10 @@ def reftek2sac():
 			#print('\n')
 
 		del station_folders_list
-		print('Leaving directory ' + period_path[len_topdir:-1])
+		print('Leaving directory ' + stage_path[len_topdir:-1])
 		#print('\n')
 
-	del period_folders_list
+	del stage_folders_list
 
 	return
 
@@ -524,12 +523,12 @@ def reftek2sac():
 
 if __name__ == '__main__':
 
-	print('\n')
+	#print('\n')
 	print('reftek2sac: ')
 	print('This program converts files from reftek to sac format using the ObsPy (serial version)')
 	print('Youshan Liu at Institute of Geology and Geophysics, Chinese Academy of Sciences')
 	print('Welcome to send any bugs and suggestions to ysliu@mail.iggcas.ac.cn')
-	print('\n\n')
+	print('\n')
 
 	starttime = UTCDateTime()
 
@@ -537,7 +536,7 @@ if __name__ == '__main__':
 	#current_path = os.getcwd()
 
 	# read station information
-	sta = read_station_list(station_list)
+	sta = read_station_list(current_path + '/' + station_list)
 
 	# convert reftek file to sac format
 	reftek2sac()
@@ -546,9 +545,9 @@ if __name__ == '__main__':
 
 	elapsed_time = (endtime - starttime)
 
-	print("\n\n")
+	print('\n')
 	print('Start   time : %s' % starttime)
-	print('End time : %s' % endtime)
+	print('End     time : %s' % endtime)
 	print('Elapsed time : %f hours' % (elapsed_time / 3600.0))
 
 

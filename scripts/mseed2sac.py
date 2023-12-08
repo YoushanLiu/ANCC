@@ -11,37 +11,26 @@ Author: Youshan Liu
 Affiliation: Institute of Geology and Geophysics, Chinese Academy of Sciences
 
 
-folders structure:
-./data folder/stage folder/station folder/mseed UnitID number/day folder/stream/mseed files
+directory structure:
+./top folder/stage folder/station folder/DAS number/MSEED files
 
 for example:
-./DATA_Raw/NE00_2007_276_2008_005/NE00/2007276/9F78/1
+./DATA_Raw/DATA_1/5322/509
 
 
 
-mseed 130 Disk Directory Structure
+Directory Structure
 
-  Year
-  |   Day of year
-  |   |
-  v   v
-  __  _
- |  || |
-\2003032
-\2003033
-
-Unit ID number
-|
-v
-__
-   |  |
-  \90F0
-   Datastream
-   |
-   v
-  \0
-  \1
-  \2
+ DAS number
+ |
+ v
+  __
+ |  |
+ \509
+     MSEED files
+     |
+     v
+     \E???????.???
 
 '''
 
@@ -65,14 +54,11 @@ from obspy.io.sac import SACTrace
 
 
 # dryrun just for debug
-# dryrun = True  => just print some direction information not to write sac files
+# dryrun = True  => just print some directory information not to write sac files
 # dryrun = False => do the actual files conversion
 dryrun = False
 
-# direction of the mseed data
-#input_path = './test2'
-#input_path = './JD5'
-#output_path = './Group5_EPS'
+# directory of the mseed data
 input_path = './JD.Group5.EPS.Raw'
 output_path = './SAC.Group5.EPS'
 
@@ -82,13 +68,13 @@ station_list = './stainfo.lst'
 
 # component list to be converted
 # only Z-component
-#component_list = ['Z']
+#components = ['Z']
 # only N-component
-#component_list = ['N']
+#components = ['N']
 # only E-component
-#component_list = ['E']
+#components = ['E']
 # three-components
-component_list = ['Z', 'N', 'E']
+components = ['Z', 'N', 'E']
 
 ##############################################################
 # preprocess options
@@ -111,14 +97,14 @@ is_decimate = True
 # the downsampling_rate, downsampling frequency
 downsampling_rate = 20.0
 
-seconds_segment = 24*3600
+segment_in_seconds = 24*3600
 ##############################################################
 ##############################################################
 ##############################################################
 
 
 # channel name, it consists of band code, instrument code, orientation code
-channel_name = ['BHZ', 'BHN', 'BHE']
+channels = ['BHZ', 'BHN', 'BHE']
 
 
 ##############################################################
@@ -129,21 +115,20 @@ def read_station_list(filename):
 
 	class Station:
 		def __init__(self):
-			self.name = []
+			self.stnm = []
 			self.stla = []
 			self.stlo = []
 			self.stel = []
 			self.netwk = []
 
 
-	name = ''
-	stla = ''
-	stlo = ''
-	stel = ''
-	netwk = ''
+	try:
+		with open(filename, 'r') as f:
+			lines = f.readlines()
+	except:
+		raise Exception('Cannot open file %s !' % filename)
 	sta = Station()
-	with open(filename, 'r') as f:
-		lines = f.readlines()
+	netwk, name, stla, stlo, stel = None, None, None, None, None
 	for line in lines[1:]:
 		try:
 			line_splited = line.split()
@@ -152,7 +137,7 @@ def read_station_list(filename):
 			netwk, name, stla, stlo, stel = line_splited
 		except:
 			raise Exception('Format error in %s !' % filename)
-		sta.name.append(name)
+		sta.stnm.append(stnm)
 		sta.netwk.append(netwk)
 		sta.stla.append(float(stla))
 		sta.stlo.append(float(stlo))
@@ -164,7 +149,7 @@ def read_station_list(filename):
 
 
 
-def create_sac_filename(stats, network_name, channel_name, sac_suffix):
+def create_sac_filename(stats):
 
 	time = UTCDateTime(stats.starttime)
 	yyyy = '%4.4d' % time.year
@@ -176,8 +161,8 @@ def create_sac_filename(stats, network_name, channel_name, sac_suffix):
 
 	sac_filename = yyyy + '.' + ddd + '.' + hh + '.' + \
 		   mm + '.' + ss + '.' + fff + '.' + \
-		   network_name + '.' + stats.station + '.' + \
-		   channel_name + sac_suffix
+		   stats.network + '.' + stats.station + '.' + \
+		   stats.channel + sac_suffix
 
 	day_path = yyyy + ddd
 
@@ -207,24 +192,24 @@ def findstr(str_src, str_target):
 
 
 
-def convert_hourly(hour_files_path):
+def convert_files(segment_files_path):
 
-	hour_files_list = os.listdir(hour_files_path)
-	#hour_files_list = glob.glob(hour_files_path + 'E*.*')
+	segment_files_list = os.listdir(segment_files_path)
+	#segment_files_list = glob.glob(segment_files_path + 'E*.*')
 
-	idx = findstr(hour_files_path, '/')
+	idx = findstr(segment_files_path, '/')
 
-	for hour_file in hour_files_list:
+	for segment_file in segment_files_list:
 
-		if ('.LST' == hour_file[-4:] or '.LOG' == hour_file[-4:]):
+		if ('.LST' == segment_file[-4:] or '.LOG' == segment_file[-4:]):
 			continue
 
-		#if ('EE' != hour_file[-4:-2]):
+		#if ('EE' != segment_file[-4:-2]):
 		#	continue
 
 		# if this file is not a reftek format
 		is_sacfile = False
-		starts = [each.start() for each in re.finditer(sac_suffix, hour_file.upper())]
+		starts = [each.start() for each in re.finditer(sac_suffix, segment_file.upper())]
 		ends = [start+len(sac_suffix) - 1 for start in starts]
 		span = [(start, end) for start,end in zip(starts, ends)]
 		is_sac = is_sacfile and (len(span) >= 1)
@@ -234,14 +219,14 @@ def convert_hourly(hour_files_path):
 
 
 		#try:
-		#	has_dot_in_filename = hour_file.index('.')
+		#	has_dot_in_filename = segment_file.index('.')
 		#except:
 		#	has_dot_in_filename = False
 		#if (has_dot_in_filename):
 		#	continue
 
 
-		infile = hour_files_path + hour_file
+		infile = segment_files_path + segment_file
 		#st = read(infile, format='MSEED', check_compression=False, component_codes=['0', '1', '2'])
 		try:
 			# faster for specific file format
@@ -262,10 +247,7 @@ def convert_hourly(hour_files_path):
 
 
 
-		for i in range(0,min(len(channel_name),len(st))):
-
-			if (channel_name[i][-1] not in component_list):
-				continue
+		for i in range(len(st)):
 
 			try:
 				tr = st[i]
@@ -273,6 +255,10 @@ def convert_hourly(hour_files_path):
 				tr.stats.delta = round(tr.stats.delta*1e6)*1.e-6
 			except:
 				continue
+
+			if (tr.stats.channel[-1] not in components):
+				continue
+			channel = channels[i]
 
 
 			#hours = tr.stats.starttime.hour*60 + tr.stats.starttime.minute
@@ -353,46 +339,47 @@ def convert_hourly(hour_files_path):
 
 
 			# get the index of station name in station list
-			#station_name = tr.stats.station
-			#res = [sta.name.index(x) for x in sta.name if x.upper() == station_name.upper()]
+			#station_path = tr.stats.station
+			#res = [sta.stnm.index(x) for x in sta.stnm if x.upper() == station_path.upper()]
 			#if ([] != res):
 			#	# first find station name in mseed head.
 			#	# if the field "station" in mseed header is NULL, then try extract station name from folder name
 			#	try:
 			#		ipos = res[0]
 			#	except:
-			#		raise Exception('Error: station %s is not in the station list' % station_name)
+			#		raise Exception('Error: station %s is not in the station list' % station_path)
 			#else:
 			#	#print("Warning: station field in mseed header is NULL")
 			#	# try to extract station name based on folder name
 			#	ipos = -1
-			#	for j in range(len(sta.name)):
-			#		res = findstr(hour_files_path[idx[-3]+1:idx[-2]], sta.name[j])
+			#	for j in range(len(sta.stnm)):
+			#		res = findstr(segment_files_path[idx[-3]+1:idx[-2]], sta.stnm[j])
 			#		if ([] != res):
 			#			ipos = j
 			#			break
 			#	if (-1 == ipos):
-			#		print("Error: station %s is not in the station list or field 'station' in mseed header is NULL" % station_name)
+			#		print("Error: station %s is not in the station list or field 'station' in mseed header is NULL" % station_path)
 			#		return
 
 
 			ipos = -1
-			station_name = hour_files_path[idx[-3]+1:idx[-2]]
-			for j in range(len(sta.name)):
-				res = findstr(station_name, sta.name[j])
-				#res = findstr(hour_files_path[len_topdir:-1], sta.name[j])
+			station_path = segment_files_path[idx[-3]+1:idx[-2]]
+			for j in range(len(sta.stnm)):
+				res = findstr(station_path, sta.stnm[j])
+				#res = findstr(segment_files_path[len_topdir:-1], sta.stnm[j])
 				if ([] != res):
 					ipos = j
 					break
 			if (-1 == ipos):
-				print("Error: station folder %s does not include the name of this station or this station is missing in the stainfo.lst" % station_name)
+				print("Error: station folder %s does not include the name of this station or this station is missing in the stainfo.lst" % station_path)
 				return
 
 
-			network_name = sta.netwk[ipos]
-			tr.stats.station = sta.name[ipos]
+			station = sta.stnm[ipos]
+			network = sta.netwk[ipos]
+			tr.stats.station = sta.stnm[ipos]
 			# set channel name
-			#tr.stats.channel = channel_name[i]
+			#tr.stats.channel = channels[i]
 
 
 			npts_org = tr.stats.npts
@@ -414,7 +401,7 @@ def convert_hourly(hour_files_path):
 			for iday in range(iday1,iday2+1):
 
 				#print('\niday = %d' % iday)
-				#midtime = starttime + 0.5*seconds_segment
+				#midtime = starttime + 0.5*segment_in_seconds
 				#endtime = UTCDateTime(midtime.year, midtime.month, midtime.day, 23, 59, 59, 999999)
 				#endtime = UTCDateTime(year=starttime.year, julday=starttime.julday, \
 				# hour=23, minute=59, second=59, microsecond=999999)
@@ -431,11 +418,10 @@ def convert_hourly(hour_files_path):
 				tr_out.stats.starttime = starttime
 
 
-				#sac_filename, day_path = create_sac_filename(tr_out.stats, network_name, channel_name[i], sac_suffix)
-				sac_filename, day_path = create_sac_filename(tr_out.stats, network_name, tr.stats.channel, sac_suffix)
+				sac_filename, day_path = create_sac_filename(tr_out.stats)
 
 
-				sac_path = output_path + '/' + sta.name[ipos] + '/' + day_path + '/'
+				sac_path = output_path + '/' + sta.stnm[ipos] + '/' + day_path + '/'
 				if (not os.path.exists(sac_path)):
 					os.makedirs(sac_path, exist_ok=True)
 
@@ -452,8 +438,8 @@ def convert_hourly(hour_files_path):
 				else:
 
 					# set channel name
-					#tr_out.stats.channel = channel_name[i]
-					#print('channel = %s, %s, %s' %(tr.stats.channel, tr_out.stats.channel, channel_name[i]))
+					#tr_out.stats.channel = channels[i]
+					#print('channel = %s, %s, %s' %(tr.stats.channel, tr_out.stats.channel, channels[i]))
 
 
 					sac = SACTrace.from_obspy_trace(tr_out)
@@ -464,9 +450,9 @@ def convert_hourly(hour_files_path):
 					sac.stlo = sta.stlo[ipos]
 					sac.stel = sta.stel[ipos]
 					# write station name
-					sac.kstnm = sta.name[ipos]
+					sac.kstnm = station
 					# write network name
-					sac.knetwk = network_name
+					sac.knetwk = network
 
 
 					sac.nzyear = tr_out.stats.starttime.year
@@ -493,7 +479,7 @@ def convert_hourly(hour_files_path):
 
 				del tr_out
 				starttime = starttime + (iend-ibeg+1)*dt
-				endtime = starttime + seconds_segment - dt
+				endtime = starttime + segment_in_seconds - dt
 				ibeg = iend + 1
 				#print(tr_out.stats.npts)
 				#print(tr_out.stats.starttime)
@@ -507,32 +493,33 @@ def convert_hourly(hour_files_path):
 			del tr
 
 		del st
-		print('%s is done' % hour_file)
+		print('%s is done' % segment_file)
 
-	del hour_files_list
+	del segment_files_list
+	print('%s is done' % segment_files_path[idx[0]+1:idx[-1]])
 
 	return
 
 
 
-def convert_daily(station_stage_path):
+def convert_station(station_stage_path):
 
-	day_folders_list = os.listdir(station_stage_path)
+	station_folders_list = os.listdir(station_stage_path)
 
-	for day_folder in day_folders_list:
+	for station_folder in station_folders_list:
 
-		day_path = station_stage_path + day_folder + '/'
-		print('Entering directory ' + day_path[len_topdir:-1])
+		station_path = station_stage_path + station_folder + '/'
+		print('Entering directory ' + station_path[len_topdir:-1])
 		#print('\n')
 
-		if (not os.path.exists(day_path)):
+		if (not os.path.exists(station_path)):
 			continue
 
-		UnitID_folders_list = os.listdir(day_path)
+		UnitID_folders_list = os.listdir(station_path)
 
 		for UnitID in UnitID_folders_list:
 
-			UnitID_path = day_path + UnitID + '/'
+			UnitID_path = station_path + UnitID + '/'
 
 			if (not os.path.isdir(UnitID_path)):
 				continue
@@ -540,28 +527,28 @@ def convert_daily(station_stage_path):
 			print('Entering directory ' + UnitID_path[len_topdir:-1])
 			#print('\n')
 
-			#hour_files_path = UnitID_path + '1/'
+			#segment_files_path = UnitID_path + '1/'
 
-			#if (not os.path.exists(hour_files_path)):
+			#if (not os.path.exists(segment_files_path)):
 			#	continue
 
-			#print('Entering directory ' + hour_files_path[len_topdir:-1])
+			#print('Entering directory ' + segment_files_path[len_topdir:-1])
 			#print('\n')
 
-			convert_hourly(UnitID_path)
-			#convert_hourly(hour_files_path, day_path)
+			convert_files(UnitID_path)
+			#convert_hourly(segment_files_path, day_path)
 
-			#print('Leaving directory ' + hour_files_path[len_topdir:-1])
+			#print('Leaving directory ' + segment_files_path[len_topdir:-1])
 			#print('\n')
 
 			print('Leaving directory ' + UnitID_path[len_topdir:-1])
 			#print('\n')
 
 		del UnitID_folders_list
-		print('Leaving directory ' + day_path[len_topdir:-1])
+		print('Leaving directory ' + station_path[len_topdir:-1])
 		#print('\n')
 
-	del day_folders_list
+	del station_folders_list
 
 	return
 
@@ -582,7 +569,7 @@ def mseed2sac():
 
 	sac_suffix = '.SAC'
 
-	# convert mseed to sac
+	# convert mseed to SAC
 	for station_stage_folder in stage_folders_list:
 
 		station_stage_path = input_path + '/' + station_stage_folder + '/'
@@ -610,7 +597,7 @@ if __name__ == '__main__':
 	print('This program converts files from mseed to sac format using the ObsPy (serial version)')
 	print('Youshan Liu at Institute of Geology and Geophysics, Chinese Academy of Sciences')
 	print('Welcome to send any bugs and suggestions to ysliu@mail.iggcas.ac.cn')
-	print('\n\n')
+	print('\n')
 
 	starttime = UTCDateTime()
 
@@ -620,16 +607,16 @@ if __name__ == '__main__':
 	# read station information
 	sta = read_station_list(station_list)
 
-	# convert mseed file to sac format
+	# convert mseed file to SAC format
 	mseed2sac()
 
 	endtime = UTCDateTime()
 
 	elapsed_time = (endtime - starttime)
 
-	print("\n\n")
+	print('\n')
 	print('Start   time : %s' % starttime)
-	print('End time : %s' % endtime)
+	print('End     time : %s' % endtime)
 	print('Elapsed time : %f hours' % (elapsed_time / 3600.0))
 
 

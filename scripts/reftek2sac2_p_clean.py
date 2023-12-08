@@ -12,8 +12,8 @@ Author: Youshan Liu
 Affiliation: Institute of Geology and Geophysics, Chinese Academy of Sciences
 
 
-folders structure:
-./data folder/period folder/station folder/Reftek UnitID number/day folder/stream/reftek files
+directory structure:
+./top folder/period folder/station folder/day folder/Reftek UnitID number/stream/reftek files
 
 for example:
 ./DATA_Raw/2007_276_2008_005/NE00/2007276/9F78/1
@@ -26,10 +26,10 @@ Reftek 130 Disk Directory Structure
   |   Day of year
   |   |
   v   v
-  __  _
- |  || |
-\2003032
-\2003033
+   __  _
+  |  || |
+ \2003032
+ \2003033
 
 		Unit ID number
 		|
@@ -37,6 +37,7 @@ Reftek 130 Disk Directory Structure
 		 __
    		|  |
   		\90F0
+
    		Datastream
    		|
    		v
@@ -64,12 +65,13 @@ from multiprocessing.dummy import Pool as ThreadPool
 
 
 # dryrun just for debug
-# dryrun = True  => just print some direction information not to write sac files
+# dryrun = True  => just print some directory information not to write sac files
 # dryrun = False => do the actual files conversion
 dryrun = False
 
-# direction of the reftek data
+# directory of the reftek data
 input_path = './DATA_Raw'
+#input_path = './Removed_data'
 
 
 ##############################################################
@@ -96,26 +98,26 @@ def reftek2sac():
 
 	len_topdir = len(input_path) + 1
 
-	period_folders_list = os.listdir(input_path)
+	stage_folders_list = os.listdir(input_path)
 
 
 	sac_suffix = '.SAC'
 
 	# convert reftek to sac
-	for period_folder in period_folders_list:
+	for stage_folder in stage_folders_list:
 
-		period_path = input_path + '/' + period_folder + '/'
-		print('Entering directory ' + period_path[len_topdir:-1])
+		stage_path = input_path + '/' + stage_folder + '/'
+		print('Entering directory ' + stage_path[len_topdir:-1])
 		#print('\n')
 
-		if (not os.path.isdir(period_path)):
+		if (not os.path.isdir(stage_path)):
 			continue
 
-		station_folder_list = os.listdir(period_path)
+		station_folder_list = os.listdir(stage_path)
 
 		for station_folder in station_folder_list:
 
-			station_path = period_path + station_folder + '/'
+			station_path = stage_path + station_folder + '/'
 			print('Entering directory ' + station_path[len_topdir:-1])
 			#print('\n')
 
@@ -134,10 +136,10 @@ def reftek2sac():
 			#print('\n')
 
 		del station_folder_list
-		print('Leaving directory ' + period_path[len_topdir:-1])
+		print('Leaving directory ' + stage_path[len_topdir:-1])
 		#print('\n')
 
-	del period_folders_list
+	del stage_folders_list
 
 	return
 
@@ -145,12 +147,12 @@ def reftek2sac():
 
 if __name__ == '__main__':
 
-	#print('\n')
-	print('reftek2sac: ')
+	print('\n')
+	print('reftek2sac_clean: ')
 	print('This program convert files from reftek to sac format using the ObsPy (parallel version)')
 	print('Youshan Liu at Institute of Geology and Geophysics, Chinese Academy of Sciences')
 	print('Welcome to send any bugs and suggestions to ysliu@mail.iggcas.ac.cn')
-	print('\n\n')
+	print('\n')
 
 	starttime = UTCDateTime()
 
@@ -164,9 +166,9 @@ if __name__ == '__main__':
 
 	elapsed_time = (endtime - starttime)
 
-	print("\n\n")
+	print('\n')
 	print('Start   time : %s' % starttime)
-	print('End time : %s' % endtime)
+	print('End     time : %s' % endtime)
 	print('Elapsed time : %f hours' % (elapsed_time / 3600.0))
 
 

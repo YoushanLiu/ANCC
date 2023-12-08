@@ -12,6 +12,10 @@ Author: Youshan Liu
 Affiliation: Institute of Geology and Geophysics, Chinese Academy of Sciences
 
 
+input data directory structure:
+./top folder/stage folder/station folder/day folder/SAC files
+
+
 After cutting, the files will be save in the following structures:
 ./data folder/yyyy/mm/yyyymmdd_hh00000/
 
@@ -44,33 +48,33 @@ from obspy.core.stream import Stream
 
 
 # dryrun just for debug
-# dryrun = True  => just print some direction information not to write sac files
+# dryrun = True  => just print some directory information not to write sac files
 # dryrun = False => do the actual files conversion
 dryrun = False
 
-# direction of the reftek data
+# directory of the reftek data
 input_path = './DATA_Raw'
-output_path = './DATA_cut'
+output_folder = './DATA_cut'
 
 # whether save input data
 save_input_data = True
 
 
 # segment length
-segment_length = 24*3600
+segment_length = 3600*24
 
 # component list to be cut
 # three-components
-#component_list = ['HZ', 'HN', 'HE']
+#channels = ['HZ', 'HN', 'HE']
 # only Z-component
-component_list = ['HZ']
+channels = ['HZ']
 # only N-component
-#component_list = ['HN']
+#channels = ['HN']
 # only E-component
-#component_list = ['HE']
+#channels = ['HE']
 
 
-seconds_daily = 24*3600
+day_in_seconds = 24*3600
 
 ##############################################################
 
@@ -78,12 +82,12 @@ seconds_daily = 24*3600
 
 def create_sac_filename(stats):
 
-	network_name = stats.sac.knetwk
-	station_name = stats.sac.kstnm
-	channel_name = stats.sac.kcmpnm
+	network = stats.sac.knetwk
+	station = stats.sac.kstnm
+	channel = stats.sac.kcmpnm
 
-	filename = network_name + '.' + station_name + \
-		'.' + channel_name + sac_suffix
+	filename = network + '.' + station + \
+		'.' + channel + sac_suffix
 
 	return filename
 
@@ -140,15 +144,16 @@ def merge_data(hour_files_list):
 		data_len += (st_tmp[0].stats.npts-1)*st_tmp[0].stats.delta
 
 
-	if (data_len < 0.5*segment_length):
+	if (data_len < 0.50*segment_length):
 		return []
 
 
 	st.sort(['starttime'])
 
 	# merge data
-	st.merge(method=1, fill_value=0.0)
-	#st.merge(method=1, fill_value='interpolate')
+	if (len(st) > 1):
+		st.merge(method=1, fill_value=0.0)
+		#st.merge(method=1, fill_value='interpolate')
 
 
 	#for i in range(0,len(st[0])):
@@ -162,20 +167,22 @@ def merge_data(hour_files_list):
 
 	try:
 		tr = st[0]
+		# remove round error
+		tr.stats.delta = round(tr.stats.delta*1e6)*1.e-6
 	except:
 		return
 
 
 	dt = tr.stats.delta
 	df = tr.stats.sampling_rate
-	npts_daily = int(seconds_daily*df)
+	npts_daily = int(day_in_seconds*df)
 
 
 	starttime = tr.stats.starttime
 	endtime = tr.stats.endtime
 	midtime = starttime + 0.50*tr.stats.npts*dt
 	starttime_daily = UTCDateTime(midtime.year, midtime.month, midtime.day, 0, 0, 0, 0)
-	endtime_daily = starttime_daily + seconds_daily - dt
+	endtime_daily = starttime_daily + day_in_seconds - dt
 
 
 	# indexes of the starttime and endtime in local temporal axis
@@ -217,7 +224,7 @@ def cutdata_daily(station_path):
 		if (not os.path.isdir(day_path)):
 			return
 
-		for C in component_list:
+		for C in channels:
 
 			hour_files_list = glob.glob(day_path + '*' + C + '*' + sac_suffix)
 
@@ -246,17 +253,16 @@ def cutdata_daily(station_path):
 				continue
 
 
-
 			# cut data into segments
-			nsegments = round(seconds_daily / segment_length)
-			#nsegments = int(seconds_daily / segment_length)
+			nsegments = round(day_in_seconds / segment_length)
+			#nsegments = int(day_in_seconds / segment_length)
 
 
 			ibeg = 0
 			tbeg = 0.0
-			for i in range(0,nsegments):
+			for i in range(nsegments):
 
-				tend = min(tbeg + segment_length - dt, seconds_daily)
+				tend = min(tbeg + segment_length - dt, day_in_seconds)
 				iend = int(tend * df)
 
 
@@ -266,7 +272,7 @@ def cutdata_daily(station_path):
 
 
 				# remove invalid data
-				if ((len(tr_out.data) > 42) and ((max(tr_out.data[21:-22]) - min(tr_out.data[21:-22])) < 1.e-12)):
+				if ((len(tr_out.data > 42)) and ((max(tr_out.data[21:-22]) - min(tr_out.data[21:-22])) < 1.e-12)):
 					del tr_out
 					ibeg = iend + 1
 					tbeg = tend + dt
@@ -316,7 +322,7 @@ def cutdata_daily(station_path):
 				tbeg = tend + dt
 
 
-				if ((seconds_daily - tend) < 0.1*segment_length):
+				if ((day_in_seconds - tend) < 0.4*segment_length):
 					break
 
 
@@ -338,26 +344,26 @@ def cutdata():
 
 	len_topdir = len(input_path) + 1
 
-	period_folders_list = os.listdir(input_path)
+	stage_folders_list = os.listdir(input_path)
 
 
 	sac_suffix = '.SAC'
 
 	# cut daily sac files into segments
-	for period_folder in period_folders_list:
+	for stage_folder in stage_folders_list:
 
-		period_path = input_path + '/' + period_folder + '/'
-		print('Entering directory ' + period_path[len_topdir:-1])
+		stage_path = input_path + '/' + stage_folder + '/'
+		print('Entering directory ' + stage_path[len_topdir:-1])
 		#print('\n')
 
-		if (not os.path.exists(period_path)):
+		if (not os.path.exists(stage_path)):
 			continue
 
-		station_folder_list = os.listdir(period_path)
+		station_folder_list = os.listdir(stage_path)
 
 		for station_folder in station_folder_list:
 
-			station_path = period_path + station_folder + '/'
+			station_path = stage_path + station_folder + '/'
 			print('Entering directory ' + station_path[len_topdir:-1])
 			#print('\n')
 
@@ -370,10 +376,10 @@ def cutdata():
 			#print('\n')
 
 		del station_folder_list
-		print('Leaving directory ' + period_path[len_topdir:-1])
+		print('Leaving directory ' + stage_path[len_topdir:-1])
 		#print('\n')
 
-	del period_folders_list
+	del stage_folders_list
 
 	return
 
@@ -381,12 +387,12 @@ def cutdata():
 
 if __name__ == '__main__':
 
-	print('\n')
+	#print('\n')
 	print('cutdata: ')
 	print('This program cuts daily data into segments using the ObsPy (serial version)')
 	print('Youshan Liu at Institute of Geology and Geophysics, Chinese Academy of Sciences')
 	print('Welcome to send any bugs and suggestions to ysliu@mail.iggcas.ac.cn')
-	print('\n\n')
+	print('\n')
 
 	starttime = UTCDateTime()
 
@@ -400,9 +406,9 @@ if __name__ == '__main__':
 
 	elapsed_time = (endtime - starttime)
 
-	print("\n\n")
+	print('\n')
 	print('Start   time : %s' % starttime)
-	print('End time : %s' % endtime)
+	print('End     time : %s' % endtime)
 	print('Elapsed time : %f hours' % (elapsed_time / 3600.0))
 
 
