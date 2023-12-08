@@ -63,6 +63,7 @@ save_input_data = True
 # segment length
 segment_length = 3600*24
 
+
 # component list to be cut
 # three-components
 #channels = ['HZ', 'HN', 'HE']
@@ -72,6 +73,37 @@ channels = ['HZ']
 #channels = ['HN']
 # only E-component
 #channels = ['HE']
+
+
+# interpolation method: 'lanczos' is highest quality interpolation but expensive, the 'cubic' method may be a good choice
+interpolation_method = 'cubic'
+# You can have the following options
+# 
+# "lanczos": This offers the highest quality interpolation and should be chosen whenever possible. 
+#            It is only due to legacy reasons that this is not the default method. The one downside it has is that it can be fairly expensive.
+#            Essentially a fnite support version of sinc resampling (the ideal reconstruction filter).
+#            For large values of a, it converges towards sinc resampling.
+# if interpolation_method is lanczos, a value of 'a' that is the width of window in samples on either side shold be given.
+# Values of a >= 20 show good results even for data that has energy close to the Nyquist frequency.
+# Please see the https://docs.obspy.org/packages/autogen/obspy.signal.interpolation.lanczos_interpolation.html#obspy.signal.interpolation.lanczos_interpolation for details.
+lanczos_radius = 20 # this parameter is only valid for the 'lanczos' interpolation method
+#
+# "weighted_average_slopes": This is the interpolation method used by SAC. Refer to weighted_average_slopes() for more details.
+#
+# "slinear", "quadratic" and "cubic": spline interpolation of first, second or third order.
+#
+# "linear": Linear interpolation.
+#
+# "nearest": Nearest neighbour interpolation.
+
+
+# nwin: a parameter is used to skip head and tail samples to check whether a segment data is zeros
+if interpolation_method == 'lanczos':
+	nwin = lanczos_radius+1
+else:
+	nwin = 10
+npts_skip = 2*nwin
+
 
 
 day_in_seconds = 24*3600
@@ -192,7 +224,8 @@ def merge_data(hour_files_list):
 
 	# interpolate to local temporal axis
 	#tr.interpolate(df, 'cubic', starttime_daily+ibeg*dt, iend-ibeg+1, 0.0)
-	tr.interpolate(df, 'lanczos', starttime_daily+ibeg*dt, iend-ibeg+1, 0.0, a=21)
+	#tr.interpolate(df, 'lanczos', starttime_daily+ibeg*dt, iend-ibeg+1, 0.0, a=21)
+	tr.interpolate(df, interpolation_method, starttime_daily+ibeg*dt, iend-ibeg+1, 0.0, a=lanczos_radius)
 
 
 	# pad array
@@ -248,7 +281,7 @@ def cutdata_daily(station_stage_path):
 
 
 			# remove invalid data
-			if ((len(tr.data) > 42) and ((max(tr.data[21:-22]) - min(tr.data[21:-22])) < 1.e-12)):
+			if ((len(tr.data) > npts_skip) and ((max(tr.data[nwin:-nwin-1]) - min(tr.data[nwin:-nwin-1])) < 1.e-12)):
 				del tr, hour_files_list
 				continue
 

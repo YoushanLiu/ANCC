@@ -108,9 +108,6 @@ is_decimate = True
 downsampling_rate = 10.0
 
 ##############################################################
-##############################################################
-##############################################################
-
 
 # channel name, it consists of band code, instrument code, orientation code
 channels = ['BHZ', 'BHN', 'BHE']
