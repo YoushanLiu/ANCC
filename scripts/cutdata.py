@@ -52,7 +52,7 @@ from obspy.core.stream import Stream
 # dryrun = False => do the actual files conversion
 dryrun = False
 
-# directory of the reftek data
+# directory of the data
 input_path = './DATA_Raw'
 output_path = './DATA_cut'
 
@@ -99,7 +99,7 @@ lanczos_radius = 20 # this parameter is only valid for the 'lanczos' interpolati
 
 # nwin: a parameter is used to skip head and tail samples to check whether a segment data is zeros
 if interpolation_method == 'lanczos':
-	nwin = lanczos_radius+1
+	nwin = lanczos_radius
 else:
 	nwin = 10
 npts_skip = 2*nwin
@@ -306,7 +306,7 @@ def cutdata_daily(station_stage_path):
 
 
 				# remove invalid data
-				if ((len(tr_out.data > 42)) and ((max(tr_out.data[21:-22]) - min(tr_out.data[21:-22])) < 1.e-12)):
+				if ((len(tr_out.data) > npts_skip) and ((max(tr_out.data[nwin:-nwin-1]) - min(tr_out.data[nwin:-nwin-1])) < 1.e-12)):
 					del tr_out
 					ibeg = iend + 1
 					tbeg = tend + dt

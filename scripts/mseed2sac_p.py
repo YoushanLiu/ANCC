@@ -100,7 +100,8 @@ is_decimate = True
 # the downsampling_rate, downsampling frequency
 downsampling_rate = 20.0
 
-segment_in_seconds = 24*3600
+
+segment_in_seconds = 3600*24
 
 ##############################################################
 
