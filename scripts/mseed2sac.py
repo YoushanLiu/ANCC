@@ -461,9 +461,9 @@ def convert_files(segment_files_path):
 					#sac.nzsec = tr_out.stats.starttime.second
 					##sac.nzmsec = int(tr_out.stats.starttime.microsecond*1.e-3)
 					#sac.nzmsec = round(tr_out.stats.starttime.microsecond*1.e-3)
-					sec = round(tr_out.stats.starttime.second*1e3);
-					sac.nzsec = int(sec*0.001);
-					sac.nzmsec = int(sec - sac.nzsec*1000);
+					sec = round(tr_out.stats.starttime.second*1000)
+					sac.nzsec = int(sec*0.001)
+					sac.nzmsec = int(sec - sac.nzsec*1000)
 					sac.b = 0
 					#sac.reftime += sac.b
 					#sac.reftime = tr_out.stats.starttime

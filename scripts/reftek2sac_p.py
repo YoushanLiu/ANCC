@@ -405,7 +405,7 @@ def convert_files(hour_files_path, day_path):
 				#sac.nzsec = tr.stats.starttime.second
 				##sac.nzmsec = int(tr.stats.starttime.microsecond*1.e-3)
 				#sac.nzmsec = round(tr.stats.starttime.microsecond*1.e-3)
-				sec = round(tr.stats.starttime.second*1e3)
+				sec = round(tr.stats.starttime.second*1000)
 				sac.nzsec = int(sec*0.001)
 				sac.nzmsec = int(sec - sac.nzsec*1000)
 				sac.b = 0
