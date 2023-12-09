@@ -87,7 +87,7 @@ interpolation_method = 'cubic'
 # if interpolation_method is lanczos, a value of 'a' that is the width of window in samples on either side shold be given.
 # Values of a >= 20 show good results even for data that has energy close to the Nyquist frequency.
 # Please see the https://docs.obspy.org/packages/autogen/obspy.signal.interpolation.lanczos_interpolation.html#obspy.signal.interpolation.lanczos_interpolation for details.
-lanczos_radius = 20 # this parameter is only valid for the 'lanczos' interpolation method
+lanczos_winlen = 20 # this parameter is only valid for the 'lanczos' interpolation method
 #
 # "weighted_average_slopes": This is the interpolation method used by SAC. Refer to weighted_average_slopes() for more details.
 #
@@ -98,12 +98,11 @@ lanczos_radius = 20 # this parameter is only valid for the 'lanczos' interpolati
 # "nearest": Nearest neighbour interpolation.
 
 
-# nwin: a parameter is used to skip head and tail samples to check whether a segment data is zeros
+# nskip: a parameter is used to skip head and tail samples to check whether a segment data is zeros
 if interpolation_method == 'lanczos':
-	nwin = lanczos_radius
+	nskip = lanczos_winlen
 else:
-	nwin = 10
-npts_skip = 2*nwin
+	nskip = 0
 
 
 
@@ -226,7 +225,7 @@ def merge_data(hour_files_list):
 	# interpolate to local temporal axis
 	#tr.interpolate(df, 'cubic', starttime_daily+ibeg*dt, iend-ibeg+1, 0.0)
 	#tr.interpolate(df, 'lanczos', starttime_daily+ibeg*dt, iend-ibeg+1, 0.0, a=21)
-	tr.interpolate(df, interpolation_method, starttime_daily+ibeg*dt, iend-ibeg+1, 0.0, a=lanczos_radius)
+	tr.interpolate(df, interpolation_method, starttime_daily+ibeg*dt, iend-ibeg+1, 0.0, a=lanczos_winlen)
 
 
 	# pad array
@@ -278,7 +277,7 @@ def cutdata_daily(day_folder):
 
 
 		# remove invalid data
-		if ((len(tr.data) > npts_skip) and ((max(tr.data[nwin:-nwin-1]) - min(tr.data[nwin:-nwin-1])) < 1.e-12)):
+		if ((max(tr.data[nwin:-nwin-1]) - min(tr.data[nskip:-1-nskip])) < 1.e-12):
 			del tr, hour_files_list
 			continue
 
@@ -302,11 +301,14 @@ def cutdata_daily(day_folder):
 
 
 			# remove invalid data
-			if ((len(tr_out.data) > npts_skip) and ((max(tr_out.data[nwin:-nwin-1]) - min(tr_out.data[nwin:-nwin-1])) < 1.e-12)):
+			if ((max(tr_out.data[nwin:-nwin-1]) - min(tr_out.data[nskip:-1-nskip])) < 1.e-12):
 				del tr_out
 				ibeg = iend + 1
 				tbeg = tend + dt
-				continue
+				if ((day_in_seconds - tend) < 0.4*segment_length):
+					break
+				else:
+					continue
 
 
 			sac_filename = create_sac_filename(tr_out.stats)
@@ -334,9 +336,12 @@ def cutdata_daily(day_folder):
 				sac.nzjday = tr_out.stats.starttime.julday
 				sac.nzhour = tr_out.stats.starttime.hour
 				sac.nzmin = tr_out.stats.starttime.minute
-				sac.nzsec = tr_out.stats.starttime.second
-				#sac.nzmsec = int(tr_out.stats.starttime.microsecond*1.e-3)
-				sac.nzmsec = round(tr_out.stats.starttime.microsecond*1.e-3)
+				#sac.nzsec = tr_out.stats.starttime.second
+				##sac.nzmsec = int(tr_out.stats.starttime.microsecond*1.e-3)
+				#sac.nzmsec = round(tr_out.stats.starttime.microsecond*1.e-3)
+				sec = round(tr_out.stats.starttime.second*1e3)
+				sac.nzsec = int(sec*0.001)
+				sac.nzmsec = int(sec - sac.nzsec*1000)
 				sac.b = 0
 				#sac.reftime += sac.b
 				#sac.reftime = tr_out.stats.starttime

@@ -397,9 +397,12 @@ def convert_hourly(hour_files_path, day_path):
 				sac.nzjday = tr.stats.starttime.julday
 				sac.nzhour = tr.stats.starttime.hour
 				sac.nzmin = tr.stats.starttime.minute
-				sac.nzsec = tr.stats.starttime.second
-				#sac.nzmsec = int(tr.stats.starttime.microsecond*1.e-3)
-				sac.nzmsec = round(tr.stats.starttime.microsecond*1.e-3)
+				#sac.nzsec = tr.stats.starttime.second
+				##sac.nzmsec = int(tr.stats.starttime.microsecond*1.e-3)
+				#sac.nzmsec = round(tr.stats.starttime.microsecond*1.e-3)
+				sec = round(tr.stats.starttime.second*1e3)
+				sac.nzsec = int(sec*0.001)
+				sac.nzmsec = int(sec - sac.nzsec*1000)
 				sac.b = 0
 				#sac.reftime += sac.b
 				sac.reftime = tr.stats.starttime
