@@ -292,9 +292,6 @@ subroutine correct_fractional_time(npts, npow_costaper, f1, f2, f3, f4, dt, frac
 
 implicit none
 
-include 'fftw3.f'
-
-
 integer, intent(in) :: npts, npow_costaper
 
 real(SGL), intent(in) :: f1, f2, f3, f4
@@ -605,10 +602,6 @@ subroutine preprocess(sdb, iev, ist, npow_costaper, nwt, nwf, &
                    f1, f2, f3, f4, fr1, fr2, freqmin, t0, tlen)
 
 implicit none
-
-
-include 'fftw3.f'
-
 
 integer, intent(in) :: iev, ist
 integer, intent(in) :: nwt, nwf
@@ -1201,27 +1194,25 @@ subroutine hilbert(nt, x, y)
 
 implicit none
 
-include 'fftw3.f'
+integer, intent(in) :: nt
 
-integer(4), intent(in) :: nt
+real(SGL), intent(in) :: x(nt)
 
-real(4), intent(in) :: x(1:nt)
-
-real(4), intent(out) :: y(1:nt)
+real(SGL), intent(out) :: y(nt)
 
 
-integer(4) it
-integer(4) n, n2
+integer it
+integer n, nq
 
 integer(8) :: fwd = 0, bwd = 0
 
-real(8) PI, dn
+real(SGL) dn
 
 complex, dimension(:), allocatable :: ctrf, ctrb
 
 
 n = 2**(ceiling(log10(dble(nt))/log10(2.d0)))
-n2 = int(n/2)
+nq = int(n/2)
 dn = dble(n)
 
 
@@ -1237,10 +1228,10 @@ ctrf(1:nt) = cmplx(x(1:nt), 0.0)
 call sfftw_execute_dft(fwd, ctrf, ctrf)
 
 ctrb(1) = ctrf(1)
-do it = 2, n2+1, 1
+do it = 2, nq+1, 1
    ctrb(it) = 2.0*ctrf(it)
 end do
-do it = n2+2, n, 1
+do it = nq+2, n, 1
    ctrb(it) = czero
 end do
 
