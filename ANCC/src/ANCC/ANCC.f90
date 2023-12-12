@@ -19,7 +19,6 @@ program ANCC
 use mpi
 use xcc_m         ! xcc_m: imported module which contains all the functions, subroutines
                   ! and also other imported modules (e.g. my_definition_m, string_m, math_m, date_time_m).
-use db_m, only: myrank, nprocs
 
 
 implicit none
