@@ -28,6 +28,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #define TINYVAL 1.e-308
 
 
+float geodist(float evla, float evlo, float stla, float stlo);
+//void geodist(SACHead *shd);
+
+
 void read_sac(char *fname, float *wf, SACHead *shd, long Nmax)
 {
 
