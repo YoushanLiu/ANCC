@@ -13,7 +13,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 
-#define MAIN
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
