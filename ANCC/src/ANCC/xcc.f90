@@ -792,7 +792,7 @@ if (is_verbose) then
 end if
 
 
-if (maxval(abs(seis_data)) < TINYVAL) then
+if (abs(maxval(seis_data) - minval(seis_data)) < TINYVAL) then
    call system('rm -rf '//trim(adjustl(sacfile)))
    return
 end if
