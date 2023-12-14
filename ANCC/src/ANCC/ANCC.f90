@@ -162,7 +162,7 @@ nargin = command_argument_count()
 ! Stop if the number of input argument(s) is wrong.
 if (3 /= nargin) then
    write(*,"(A)") 'ANCC' // trim(version)
-   write(*,"(A)") "Usage: ANCC sacfolder pzfolder tarfolder"
+   write(*,"(A)") "Usage: ANCC SACfolder PZfolder tarfolder"
    call flush(6)
    call MPI_FINALIZE(ier)
    stop
