@@ -495,7 +495,7 @@ def convert_files(segment_files_path):
 
 def convert_station(station_folder):
 
-	station_path = station_stage_path + station_folder + '/'
+	station_path = stage_path + station_folder + '/'
 	print('Entering directory ' + station_path[len_topdir:-1])
 	#print('\n')
 
@@ -541,7 +541,7 @@ def convert_station(station_folder):
 
 def mseed2sac():
 
-	global len_topdir, station_stage_path, sac_suffix
+	global len_topdir, stage_path, sac_suffix
 
 	len_topdir = len(input_path) + 1
 
@@ -555,16 +555,16 @@ def mseed2sac():
 	sac_suffix = '.SAC'
 
 	# convert mseed to sac
-	for station_stage_folder in stage_folders_list:
+	for stage_folder in stage_folders_list:
 
-		station_stage_path = input_path + '/' + station_stage_folder + '/'
-		print('Entering directory ' + station_stage_path[len_topdir:-1])
+		stage_path = input_path + '/' + stage_folder + '/'
+		print('Entering directory ' + stage_path[len_topdir:-1])
 		#print('\n')
 
-		if (not os.path.isdir(station_stage_path)):
+		if (not os.path.isdir(stage_path)):
 			continue
 
-		station_folders_list = os.listdir(station_stage_path)
+		station_folders_list = os.listdir(stage_path)
 
 		pool = ThreadPool()
 		pool.map(convert_station, station_folders_list)
@@ -572,7 +572,7 @@ def mseed2sac():
 		pool.join()
 
 		del station_folders_list
-		print('Leaving directory ' + station_stage_path[len_topdir:-1])
+		print('Leaving directory ' + stage_path[len_topdir:-1])
 		#print('\n')
 
 	del stage_folders_list
