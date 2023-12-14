@@ -364,7 +364,7 @@ def convert_files(segment_files_path):
 
 
 			ipos = -1
-			station_path = segment_files_path[idx[-3]+1:idx[-2]]
+			station_path = segment_files_path[idx[1]+1:idx[-1]]
 			for j in range(len(sta.stnm)):
 				res = findstr(station_path, sta.stnm[j])
 				#res = findstr(segment_files_path[len_topdir:-1], sta.stnm[j])
