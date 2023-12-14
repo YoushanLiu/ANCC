@@ -504,13 +504,13 @@ def convert_files(segment_files_path):
 
 
 
-def convert_station(station_stage_path):
+def convert_station(stage_path):
 
-	station_folders_list = os.listdir(station_stage_path)
+	station_folders_list = os.listdir(stage_path)
 
 	for station_folder in station_folders_list:
 
-		station_path = station_stage_path + station_folder + '/'
+		station_path = stage_path + station_folder + '/'
 		print('Entering directory ' + station_path[len_topdir:-1])
 		#print('\n')
 
@@ -572,18 +572,18 @@ def mseed2sac():
 	sac_suffix = '.SAC'
 
 	# convert mseed to SAC
-	for station_stage_folder in stage_folders_list:
+	for stage_folder in stage_folders_list:
 
-		station_stage_path = input_path + '/' + station_stage_folder + '/'
-		print('Entering directory ' + station_stage_path[len_topdir:-1])
+		stage_path = input_path + '/' + stage_folder + '/'
+		print('Entering directory ' + stage_path[len_topdir:-1])
 		#print('\n')
 
-		if (not os.path.exists(station_stage_path)):
+		if (not os.path.exists(stage_path)):
 			continue
 
-		convert_daily(station_stage_path)
+		convert_daily(stage_path)
 
-		print('Leaving directory ' + station_stage_path[len_topdir:-1])
+		print('Leaving directory ' + stage_path[len_topdir:-1])
 		#print('\n')
 
 	del stage_folders_list
