@@ -349,7 +349,7 @@ def convert_hourly(hour_files_path, day_path):
 
 
 			ipos = -1
-			station_path = hour_files_path[idx[-5]+1:idx[-4]]
+			station_path = hour_files_path[idx[1]+1:idx[-1]]
 			for j in range(len(sta.stnm)):
 				res = findstr(station_path, sta.stnm[j])
 				#res = findstr(hour_files_path[len_topdir:-1], sta.stnm[j])
