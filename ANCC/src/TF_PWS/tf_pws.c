@@ -33,6 +33,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #define USAGE "[-B/-E: minimum or maximum period for group or phase velocity] \
                [-F: input file] [-O: output file] [-W: the exponential term of the weight]\n [-I: 1 or 2 inverse algorithm]"
 
+
 #define  max(x,y)    ((x) > (y) ? (x) : (y))
 #define  min(x,y)    ((x) < (y) ? (x) : (y))
 
