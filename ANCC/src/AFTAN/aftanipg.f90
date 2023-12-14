@@ -144,7 +144,7 @@ integer(4) ki, kk, istrt, ibeg, iend, ima
 integer(4) ipos, ist, ibe, ip, inds, inde
 integer(4) ntapb, ntape, ne, nb, ns, ntime, ntall
 
-integer(8) plan1, plan2, plan3, plan4
+integer(8) planf, planb
 
 real(8) alpha, dom, omb, ome, step
 real(8) lm, rm, om0, tg0, omstart, dw
@@ -244,14 +244,14 @@ enddo
 ! Phase match filtering
 ! make backward FFT for seismogram: s ==> sf
 allocate(sf(1:ns), stat=ier)
-call dfftw_plan_dft_1d(plan1, ns, s, sf, FFTW_FORWARD, FFTW_ESTIMATE)
-call dfftw_execute(plan1)
-call dfftw_destroy_plan(plan1)
+call dfftw_plan_dft_1d(planf, ns, s, sf, FFTW_FORWARD, FFTW_ESTIMATE)
+call dfftw_execute_dft(planf, s, sf)
 
 
 ! filtering and FTAN amplitude diagram construction
 allocate(fils(1:ns), tmp(1:ns), stat=ier)
-call dfftw_plan_dft_1d(plan2, ns, fils, tmp, FFTW_BACKWARD, FFTW_ESTIMATE)
+call dfftw_plan_dft_1d(planb, ns, fils, tmp, FFTW_BACKWARD, FFTW_ESTIMATE)
+
 
 nq = ns/2 + 1
 sf(1) = 0.5d0*sf(1)
@@ -289,9 +289,7 @@ call free_mspline()
 
 !  forward FFT to get signal envelope
 allocate(env(1:ns), stat=ier)
-call dfftw_plan_dft_1d(plan3, ns, sf, env, FFTW_BACKWARD, FFTW_ESTIMATE)
-call dfftw_execute(plan3)
-call dfftw_destroy_plan(plan3)
+call dfftw_execute_dft(planb, sf, env)
 
 
 env(1:ns) = 2.d0*env(1:ns) / real(ns)
@@ -304,9 +302,7 @@ call tgauss(fsnr, tg0, dw, dt, ns, fmatch, env, spref)
 deallocate(env)
 
 ! back to spectra after filtering
-call dfftw_plan_dft_1d(plan4, ns, spref, sf, FFTW_FORWARD, FFTW_ESTIMATE)
-call dfftw_execute(plan4)
-call dfftw_destroy_plan(plan4)
+call dfftw_execute_dft(planf, spref, sf)
 deallocate(spref)
 
 
@@ -329,7 +325,7 @@ do k = 1, nf, 1
    fils(nq) = cmplx(real(fils(nq)), 0.d0)
 
    ! forward FFT: fils ==> tmp
-   call dfftw_execute(plan2)
+   call dfftw_execute_dft(planb, fils, tmp)
 
    tmp(1:ns) = tmp(1:ns) / real(ns)
 
@@ -344,8 +340,13 @@ do k = 1, nf, 1
    enddo
 
 enddo
-call dfftw_destroy_plan(plan2)
 deallocate(s, sf, fils, tmp)
+
+
+call dfftw_destroy_plan(planf)
+call dfftw_destroy_plan(planb)
+
+
 
 ! normalization amp diagram to 100 Db with three decade cutting
 amax = maxval(amp(1:ntall,1:nf))
