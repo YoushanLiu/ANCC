@@ -218,7 +218,7 @@ enddo
 ! make backward FFT for seismogram: s ==> sf
 allocate(sf(1:ns), stat=ier)
 call dfftw_plan_dft_1d(planf, ns, s, sf, FFTW_FORWARD, FFTW_ESTIMATE)
-call dfftw_execute(planf)
+call dfftw_execute_dft(planf, s, sf)
 call dfftw_destroy_plan(planf)
 
 ! filtering and FTAN amplitude diagram construction
@@ -242,7 +242,7 @@ do k = 1, nf, 1
    fils(1) = cmplx(real(0.5d0*fils(1)), 0.d0)
    fils(nq) = cmplx(real(fils(nq)), 0.d0)
    ! forward FFT: fils ==> tmp
-   call dfftw_execute(planb)
+   call dfftw_execute_dft(planb, fils, tmp)
 
    tmp(1:ns) = tmp(1:ns) / real(ns)
 
