@@ -30,12 +30,9 @@ all: config build clean
 
 config:
 	@./config.guess $(MPIFC)
-include ./config.h
-ifeq ($(wildcard $(INST_DIR)),)
-	mkdir $(INST_DIR)
-endif
 
 build:
+	$(call create_bindir)
 	$(call COMPILE,$(SUBDIRS),$@)
 
 clean:
@@ -45,17 +42,15 @@ cleanall: clean
 	$(call COMPILE,$(SUBDIRS),$@)
 
 
+define create_bindir:
+include ./config.h
+ifeq ($(wildcard $(INST_DIR)),)
+	@mkdir -p $(DIST_DIR)
+endif
+endef
 define COMMAND
 $(MAKE) -C $(1) $(2)
 endef
 define COMPILE
 $(foreach dir, $(1), $(call COMMAND,$(dir),$(2));)
 endef
-## or
-#define COMMAND
-#$(MAKE) -C $(1) $(2)
-#
-#endef
-#define COMPILE
-#$(foreach dir, $(1), $(call COMMAND,$(dir),$(2)))
-#endef
