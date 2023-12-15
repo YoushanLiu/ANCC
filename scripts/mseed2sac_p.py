@@ -130,13 +130,13 @@ def read_station_list(filename):
 	except:
 		raise Exception('Cannot open file %s !' % filename)
 	sta = Station()
-	netwk, name, stla, stlo, stel = None, None, None, None, None
+	netwk, stnm, stla, stlo, stel = None, None, None, None, None
 	for line in lines[1:]:
 		try:
 			line_splited = line.split()
 			if ([] == line_splited):
 				continue
-			netwk, name, stla, stlo, stel = line_splited
+			netwk, stnm, stla, stlo, stel = line_splited
 		except:
 			raise Exception('Format error in %s !' % filename)
 		sta.stnm.append(stnm)
