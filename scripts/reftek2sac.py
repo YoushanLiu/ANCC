@@ -133,13 +133,13 @@ def read_station_list(filename):
 	except:
 		raise Exception('Cannot open file %s !' % filename)
 	sta = Station()
-	netwk, name, stla, stlo, stel = None, None, None, None, None
+	netwk, stnm, stla, stlo, stel = None, None, None, None, None
 	for line in lines[1:]:
 		try:
 			line_splited = line.split()
 			if ([] == line_splited):
 				continue
-			netwk, name, stla, stlo, stel = line_splited
+			netwk, stnm, stla, stlo, stel = line_splited
 		except:
 			raise Exception('Format error in %s !' % filename)
 		sta.stnm.append(stnm)
@@ -347,7 +347,7 @@ def convert_hourly(hour_files_path, day_path):
 
 
 			ipos = -1
-			station_path = hour_files_path[idx[1]+1:idx[-1]]
+			station_path = hour_files_path[idx[-5]+1:idx[-4]]
 			for j in range(len(sta.stnm)):
 				res = findstr(station_path, sta.stnm[j])
 				#res = findstr(hour_files_path[len_topdir:-1], sta.stnm[j])
