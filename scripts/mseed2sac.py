@@ -498,7 +498,7 @@ def convert_files(segment_files_path):
 		print('%s is done' % segment_file)
 
 	del segment_files_list
-	print('%s is done' % segment_files_path[idx[0]+1:idx[-1]])
+	#print('%s is done' % segment_files_path[idx[0]+1:idx[-1]])
 
 	return
 
