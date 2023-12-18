@@ -1118,10 +1118,8 @@ implicit none
 
 integer, intent(in) :: nq, npow_costaper
 
-real(SGL), intent(in) :: f1, f2, f3, f4
 real(SGL), intent(in) :: df, freqmin
-
-real(SGL), intent(in) :: df
+real(SGL), intent(in) :: f1, f2, f3, f4
 
 complex(SGL), dimension(:), intent(inout) :: sf ! sf: assumed-shape dummy array
 
