@@ -27,7 +27,7 @@ if [[ "$COMPILER" == "GNU" ]]; then
 	CC=gcc
 	FC=gfortran
 	CFLAGS="-O3 -Ofast -g -funroll-loops -malign-double -ffast-math -mtune=native -I./"
-	FFLAGS="-O3 -Ofast -g -funroll-loops -malign-double -ffast-math -mtune=native"
+	FFLAGS="-O3 -Ofast -cpp -g -funroll-loops -malign-double -ffast-math -mtune=native"
 	#echo "compiler is GNU"
 	echo "# Build ANCC using the $COMPILER compiler" > config.h
 	echo "" >> config.h
