@@ -47,10 +47,10 @@ integer :: Nlen = 0, ntaper = 0
 
 
 ! some logical variables
+logical is_specwhitening
 logical is_stack, is_pws
 logical is_only_cf, is_ac
-logical is_specwhitening
-logical is_verbose, is_bootstrapp
+logical is_verbose, is_bootstrap
 logical is_overwrite_data, is_save_record
 logical is_onebit, is_running_time_average
 logical is_bandpass_earthquake, is_suppress_notch
