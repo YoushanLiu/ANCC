@@ -80,13 +80,13 @@ station_list = './NEsta.lst'
 
 # component list to be converted
 # only Z-component
-#components = ['Z']
+#components = ['0']
 # only N-component
-#components = ['N']
+#components = ['1']
 # only E-component
-#components = ['E']
+#components = ['2']
 # three-components
-components = ['Z', 'N', 'E']
+components = ['0', '1', '2']
 
 ##############################################################
 # preprocess options
@@ -368,7 +368,9 @@ def convert_files(hour_files_path, day_path):
 
 			station = sta.stnm[ipos]
 			network = sta.netwk[ipos]
-			tr.stats.station = sta.stnm[ipos]
+			tr.stats.network = network
+			tr.stats.station = station
+			tr.stats.channel = channel
 
 			sac_filename = create_sac_filename(tr.stats)
 
