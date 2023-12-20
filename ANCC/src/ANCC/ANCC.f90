@@ -697,7 +697,7 @@ end if
 
 call MPI_ALLREDUCE(npts, npts_max, 1, MPI_INTEGER, MPI_MAX, MPI_COMM_WORLD, ier)
 call MPI_ALLREDUCE(npts, npts_min, 1, MPI_INTEGER, MPI_MIN, MPI_COMM_WORLD, ier)
-if (npts_min /= npts_max) then
+if ((npts_min > 0) .and. (npts_min /= npts_max)) then
    write(msg,"(A)") "Error: Inconsistence of sampling points across processes !"
    call MPI_ABORT(MPI_COMM_WORLD, -100, ier)
    call MPI_FINALIZE(ier)
@@ -708,7 +708,7 @@ if (npts_min /= npts_max) then
 end if
 call MPI_ALLREDUCE(dt, dt_max, 1, MPI_DOUBLE_PRECISION, MPI_MAX, MPI_COMM_WORLD, ier)
 call MPI_ALLREDUCE(dt, dt_min, 1, MPI_DOUBLE_PRECISION, MPI_MIN, MPI_COMM_WORLD, ier)
-if (abs(dt_max - dt_min) > 1.e-15) then
+if ((dt_min > 0.0) .and. (abs(dt_max - dt_min) > 1.e-15)) then
    write(msg,"(A)") "Error: Inconsistence of sampling intervals across processes !"
    call MPI_ABORT(MPI_COMM_WORLD, -100, ier)
    call MPI_FINALIZE(ier)
@@ -730,7 +730,7 @@ if (dt < 0.0) then
    stop
 end if
 
-if (f4 > 0.5/dt) then
+if ((dt > 0.0) .and. (f4 > 0.5/dt)) then
    write(*,"(A)") 'Error: 1/f4 < 0.5/dt should be satisfied !'
    call flush(6)
    call MPI_ABORT(MPI_COMM_WORLD, -1, ier)
