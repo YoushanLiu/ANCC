@@ -44,7 +44,7 @@ It can also output prestack cross-correlation functions.
 	The number of processes that can be used by the former (MPICH) is twice the number of physical 
     cores, while the number of processes that can be used by the latter (OpenMPI) is equal to the 
 	number of physical cores.
-    The SAC software is required by the ANCC.
+    The FFTW3, SAC, and MPI (MPICH2/OpenMPI) softwares are required by the ANCC.
     The ObsPy is required by the scripts.
 	The xlrd is required by the makePZs.py and resp2pz.py.
 
