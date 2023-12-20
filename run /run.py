@@ -43,6 +43,7 @@ import glob
 import linecache
 import multiprocessing
 from obspy import UTCDateTime
+from multiprocessing.dummy import Pool as ThreadPool
 
 
 ###########################################################
