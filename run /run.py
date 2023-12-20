@@ -47,7 +47,7 @@ from multiprocessing.dummy import Pool as ThreadPool
 
 
 ###########################################################
-# Please modify the following three PATH varialbes with
+# Please modify the following three PATH varialbles in
 # your own case and set the right core numbers for parallel
 # processing according to your own computing resource.
 ###########################################################
