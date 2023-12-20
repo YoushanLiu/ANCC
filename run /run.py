@@ -94,7 +94,7 @@ is_auto_correlation = check_autocorrelation("input.dat")
 #os.system('find %s -name "*" -type f -size 0c | xargs -n 1 rm -f' % (SACfolder))
 
 ###########################################################
-# Retrive the station and event information.
+# Retrieve the station and event information.
 ###########################################################
 os.system('rm -rf stations.tmp events.lst')
 
@@ -114,7 +114,7 @@ for year in os.listdir(SACfolder):
                 print("skip %s because of single station folder\n"%(segment_folder))
                 continue
             #os.system("saclst knetwk kstnm stla stlo delta f %s | awk '{print $2,$3,$4,$5,$6}' >> stations.tmp"%(sacfiles))
-            os.system("saclst knetwk kstnm stla stlo delta f %s"%(sacfiles) + awkstr)
+            os.system("saclst knetwk kstnm stla stlo delta f %s"%(sacfiles + awkstr))
             os.system("ls %s -d >> events.lst"%(segment_folder))
 os.system("sort stations.tmp | uniq > stations.lst")
 os.system("rm -rf stations.tmp")
