@@ -98,23 +98,49 @@ is_auto_correlation = check_autocorrelation("input.dat")
 os.system('rm -rf stations.tmp events.lst')
 
 
-print("\n")
 #awkstr = " | awk '{printf \"%8s  %8s  %8.4f  %8.4f  %5.3f\",$2,$3,$4,$5,$6}' >> stations.tmp"
 awkstr = " | awk '{printf " + r'"%-8s  %-8s  %7.4f  %8.4f  %5.3f\n",$2,$3,$4,$5,$6}' + "' >> stations.tmp"
+global month_folder
+def scan_segment(segment):
+    segment_folder = month_folder + '/' + segment
+    sacfiles = segment_folder + '/*.SAC'
+    file_list = glob.glob(sacfiles)
+    if (not(is_auto_correlation) and (count_station_num(files_list) <= 1)):
+        print("skip %s because of single station folder\n"%(segment_folder))
+        return
+    #os.system("saclst knetwk kstnm stla stlo delta f %s | awk '{print $2,$3,$4,$5,$6}' >> stations.tmp"%(sacfiles))
+    os.system("saclst knetwk kstnm stla stlo delta f %s"%(sacfiles + awkstr))
+    os.system("ls %s -d >> events.lst"%(segment_folder))
+
+
 for year in os.listdir(SACfolder):
     year_folder = SACfolder + '/' + year
     for month in os.listdir(year_folder):
         month_folder = year_folder + '/' + month
-        for segment in os.listdir(month_folder):
-            segment_folder = month_folder + '/' + day
-            sacfiles = segment_folder + '/*.SAC'
-            files_list = glob.glob(sacfiles)
-            if (not(is_auto_correlation) and (count_station_num(files_list) <= 1)):
-                print("skip %s because of single station folder\n"%(segment_folder))
-                continue
-            #os.system("saclst knetwk kstnm stla stlo delta f %s | awk '{print $2,$3,$4,$5,$6}' >> stations.tmp"%(sacfiles))
-            os.system("saclst knetwk kstnm stla stlo delta f %s" % (sacfiles + awkstr))
-            os.system("ls %s -d >> events.lst"%(segment_folder))
+        pool = ThreadPool()
+        pool.map(scan_segment, os.listdir(month_folder))
+        pool.close()
+        pool.join()
+
+
+##awkstr = " | awk '{printf \"%8s  %8s  %8.4f  %8.4f  %5.3f\",$2,$3,$4,$5,$6}' >> stations.tmp"
+#awkstr = " | awk '{printf " + r'"%-8s  %-8s  %7.4f  %8.4f  %5.3f\n",$2,$3,$4,$5,$6}' + "' >> stations.tmp"
+#for year in os.listdir(SACfolder):
+#    year_folder = SACfolder + '/' + year
+#    for month in os.listdir(year_folder):
+#        month_folder = year_folder + '/' + month
+#        for segment in os.listdir(month_folder):
+#            segment_folder = month_folder + '/' + day
+#            sacfiles = segment_folder + '/*.SAC'
+#            files_list = glob.glob(sacfiles)
+#            if (not(is_auto_correlation) and (count_station_num(files_list) <= 1)):
+#                print("skip %s because of single station folder\n"%(segment_folder))
+#                continue
+#            #os.system("saclst knetwk kstnm stla stlo delta f %s | awk '{print $2,$3,$4,$5,$6}' >> stations.tmp"%(sacfiles))
+#            os.system("saclst knetwk kstnm stla stlo delta f %s" % (sacfiles + awkstr))
+#            os.system("ls %s -d >> events.lst"%(segment_folder))
+
+
 os.system("sort stations.tmp | uniq > stations.lst")
 os.system("rm -rf stations.tmp")
 
