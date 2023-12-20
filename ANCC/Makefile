@@ -18,9 +18,9 @@ MPIFC=mpiifort # MPI Fortran compiler binding with ifort [recommended]
 
 
 SUBDIRS = \
-	AFTAN \
 	ANCC \
 	TF_PWS \
+	AFTAN \
 	$(EMPTY_MACRO)
 
 SUBDIRS := $(addprefix ./src/,$(SUBDIRS))
