@@ -48,7 +48,7 @@ station_logfile = './NCISP6.xls'
 
 
 # channel name, it consists of band code, instrument code, orientation code
-channel_name = ['BHZ']
+channels = ['BHZ']
 
 
 # the decimate rate must be interger so that the sampling_rate is divisible by it
@@ -454,7 +454,7 @@ def weehour_daily(starttime):
 
 
 # read excel
-def find_colname_from_xls(station_logfile, network, station_name, starttime, endtime, \
+def find_colname_from_xls(station_logfile, network, station, starttime, endtime, \
 			              latitude, longitude, elevation, sensor_type, sensor_depth, \
 			              das_type, das_gain, das_sampling_rate):
 
@@ -468,9 +468,9 @@ def find_colname_from_xls(station_logfile, network, station_name, starttime, end
 	except:
 		raise Exception('Cannot found Network in excel title')
 
-	# get position of station_name
+	# get position of station
 	try:
-		station_name_idx = findstr_in_list(xls_title, station_name)[0]
+		station_idx = findstr_in_list(xls_title, station)[0]
 	except:
 		raise Exception('Cannot found Station code in excel title')
 
@@ -536,7 +536,7 @@ def find_colname_from_xls(station_logfile, network, station_name, starttime, end
 
 
 	colnames = {network: xls_title[network_idx], \
-		        station_name: xls_title[station_name_idx], \
+		        station: xls_title[station_idx], \
 		        starttime: xls_title[starttime_idx], \
 		        endtime: xls_title[endtime_idx], \
 		        latitude: xls_title[latitude_idx], \
@@ -658,49 +658,49 @@ def merge_paz(sensor_resp_pool, iresp_sensor, das_resp_pool, iresp_das):
 
 
 
-def write_paz(f, PZ, network, station_name, C, starttime, endtime, \
+def write_paz(f, PZ, network, station, C, starttime, endtime, \
 	                        stla, stlo, stel, stdep, sampling_rate):
 
-	f.write('* ***************************************************************\n')
-	f.write('* NETWORK       : %s \n' % network)
-	f.write('* STATION       : %s \n' % station_name)
-	f.write('* LOCATION      : %s \n' % '')
-	f.write('* CHANNEL       : %s \n' % C)
-	f.write('* CREATED       : %s \n' % time2str(UTCDateTime()))
-	f.write('* START         : %s \n' % reformat_time(starttime))
-	f.write('* END           : %s \n' % reformat_time(endtime))
-	f.write('* DESCRIPTION   : %s \n' % 'YSLIU')
-	f.write('* LATITUDE      : %s \n' % stla)
-	f.write('* LONGITUDE     : %s \n' % stlo)
-	f.write('* ELEVATION     : %s \n' % stel)
-	f.write('* DEPTH         : %f \n' % abs(float(stdep)))
-	if ([] != findstr(C, 'Z')):
-		f.write('* DIP (SEED)    : %f \n' % -90.0)
-		f.write('* AZIMUTH       : %s \n' % 0.0)
-	if ([] != findstr(C, 'N')):
-		f.write('* DIP (SEED)    : %f \n' % 0.0)
-		f.write('* AZIMUTH       : %s \n' % 0.0)
-	if ([] != findstr(C, 'E')):
-		f.write('* DIP (SEED)    : %f \n' % 0.0)
-		f.write('* AZIMUTH       : %s \n' % 90.0)
-	f.write('* SAMPLE RATE   : %f \n' % sampling_rate)
-	f.write('* INPUT UNIT    : %s \n' % 'M')
-	f.write('* OUTPUT UNIT   : %s \n' % 'COUNTS')
-	f.write('* INSTTYPE      : %s \n' % 'None')
+	f.write('* **************************************************\n')
+	f.write('* NETWORK       : %s\n' % network)
+	f.write('* STATION       : %s\n' % station)
+	f.write('* LOCATION      : %s\n' % '')
+	f.write('* CHANNEL       : %s\n' % C)
+	f.write('* CREATED       : %s\n' % time2str(UTCDateTime()))
+	f.write('* START         : %s\n' % reformat_time(starttime))
+	f.write('* END           : %s\n' % reformat_time(endtime))
+	f.write('* DESCRIPTION   : %s.%s \n' % (network, station))
+	f.write('* LATITUDE      : %s\n' % stla)
+	f.write('* LONGITUDE     : %s\n' % stlo)
+	f.write('* ELEVATION     : %s\n' % stel)
+	f.write('* DEPTH         : %f\n' % abs(float(stdep)))
+	if ('Z' == C[-1].upper()):
+		f.write('* DIP (SEED)    : %f\n' % -90.0)
+		f.write('* AZIMUTH       : %s\n' % 0.0)
+	if ('N' == C[-1].upper()):
+		f.write('* DIP (SEED)    : %f\n' % 0.0)
+		f.write('* AZIMUTH       : %s\n' % 0.0)
+	if ('E' == C[-1].upper()):
+		f.write('* DIP (SEED)    : %f\n' % 0.0)
+		f.write('* AZIMUTH       : %s\n' % 90.0)
+	f.write('* SAMPLE RATE   : %f\n' % sampling_rate)
+	f.write('* INPUT UNIT    : %s\n' % 'M')
+	f.write('* OUTPUT UNIT   : %s\n' % 'COUNTS')
+	f.write('* INSTTYPE      : %s\n' % 'None')
 	f.write('* INSTGAIN      : %e (M/S)\n' % PZ.get('gain'))
 	f.write('* SENSITIVITY   : %e (M/S)\n' % PZ.get('sensitivity'))
-	f.write('* A0            : %f \n' % PZ.get('A0'))
-	f.write('* ***************************************************************\n')
+	f.write('* A0            : %f\n' % PZ.get('A0'))
+	f.write('* **************************************************\n')
 	zeros = PZ.get('zeros')
 	nzeros = len(zeros)
 	f.write('ZEROS %d \n' % nzeros)
 	for i in range(0, nzeros):
-		f.write('%f %f \n' % (zeros[i].real, zeros[i].imag))
+		f.write('%+f %+f \n' % (zeros[i].real, zeros[i].imag))
 	poles = PZ.get('poles')
 	npoles = len(poles)
 	f.write('POLES %d \n' % npoles)
 	for i in range(0, npoles):
-		f.write('%f %f \n' % (poles[i].real, poles[i].imag))
+		f.write('%+f %+f \n' % (poles[i].real, poles[i].imag))
 	f.write('CONSTANT %e \n' % PZ.get('CONSTANT'))
 
 	return
@@ -722,7 +722,7 @@ def resp2pz(sensor_resp_pool_path, sensor_resp_listname, \
 
 	# define marks
 	network_key = 'Network'
-	station_name_key = 'Station code'
+	station_key = 'Station code'
 	starttime_key = 'Starttime'
 	endtime_key = 'Endtime'
 	latitude_key = 'Latitude'
@@ -735,7 +735,7 @@ def resp2pz(sensor_resp_pool_path, sensor_resp_listname, \
 	das_gain_key = 'Gain'
 
 
-	colnames = find_colname_from_xls(station_logfile, network_key, station_name_key, \
+	colnames = find_colname_from_xls(station_logfile, network_key, station_key, \
 				starttime_key, endtime_key, latitude_key, longitude_key, \
 				elevation_key, sensor_type_key, sensor_depth_key, das_type_key, \
 				das_gain_key, das_sampling_rate_key)
@@ -743,7 +743,7 @@ def resp2pz(sensor_resp_pool_path, sensor_resp_listname, \
 
 	# get column names for marks
 	colname_of_network = colnames.get(network_key)
-	colname_of_station_name = colnames.get(station_name_key)
+	colname_of_station = colnames.get(station_key)
 	colname_of_starttime = colnames.get(starttime_key)
 	colname_of_endtime = colnames.get(endtime_key)
 	colname_of_latitude = colnames.get(latitude_key)
@@ -770,20 +770,20 @@ def resp2pz(sensor_resp_pool_path, sensor_resp_listname, \
 				os.remove(filename)
 
 
-	station_name_prev = ''
+	station_prev = ''
 	for i in range(nrows):
 
 
 		# get current station name
 		try:
-			station_name = tables[i].get(colname_of_station_name)
+			station = tables[i].get(colname_of_station)
 		except:
 			continue
 
 
 		iresp_sensor = []
 		# find the index of the RESP file in the PZ pool
-		if ((station_name != '') and (station_name != [])):
+		if ((station != '') and (station != [])):
 
 			sensor_type = tables[i].get(colname_of_sensor_type)
 
@@ -804,13 +804,13 @@ def resp2pz(sensor_resp_pool_path, sensor_resp_listname, \
 
 		# whether open a new file
 		open_new_file = False
-		if (station_name != station_name_prev):
-			if (station_name_prev != '' or station_name == ''):
+		if (station != station_prev):
+			if (station_prev != '' or station == ''):
 				f.close()
 			open_new_file = True
 
 
-		if ((station_name != '') and (station_name != [])):
+		if ((station != '') and (station != [])):
 
 			network = tables[i].get(colname_of_network)
 			starttime = weehour_daily(tables[i].get(colname_of_starttime))
@@ -820,22 +820,22 @@ def resp2pz(sensor_resp_pool_path, sensor_resp_listname, \
 			stel = tables[i].get(colname_of_elevation)
 			stdep = tables[i].get(colname_of_sensor_depth)
 
-			for C in channel_name:
+			for C in channels:
 
 				filename = output_path + '/' + \
-					network + '.' + station_name + '.' + \
+					network + '.' + station + '.' + \
 					'' + '.' + C + '.PZ'
 
 				if (open_new_file):
 					f = open(filename, 'w+')
 
-				write_paz(f, PZ, network, station_name, C, starttime, endtime, \
+				write_paz(f, PZ, network, station, C, starttime, endtime, \
 					                 stla, stlo, stel, stdep, downsampling_rate)
 
-		if (station_name != ''):
-			print('station %s is done ... \n' % station_name)
+		if (station != ''):
+			print('station %s is done ...' % station)
 
-		station_name_prev = station_name
+		station_prev = station
 
 
 	# now, close the last opened file object
@@ -847,14 +847,14 @@ def resp2pz(sensor_resp_pool_path, sensor_resp_listname, \
 
 if __name__ == '__main__':
 
-	print('\n')
+	#print('\n')
 	print('makePZs: ')
 	print('This program automatically generates PZ files based on the RESP files.')
 	print('Youshan Liu at Institute of Geology and Geophysics, Chinese Academy of Sciences')
 	print('Wecome to send any bugs and suggestions to ysliu@mail.iggcas.ac.cn')
 	print('Please downloaded the unavailable RESP files in RESP_pool from the following website.')
 	print('http://ds.iris.edu/NRL/sensors/guralp/guralp_sensors.html')
-	print('\n')
+	#print('\n')
 
 	resp2pz(sensor_resp_pool_path, sensor_resp_listname, das_resp_pool_path, das_resp_listname)
 
