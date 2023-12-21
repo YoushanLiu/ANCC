@@ -400,7 +400,7 @@ def weehour_daily(starttime):
 
 
 # read excel
-def find_colname_from_xls(station_logfile, network, station_name, starttime, endtime, \
+def find_colname_from_xls(station_logfile, network, station, starttime, endtime, \
 			latitude, longitude, elevation, sensor_type, sensor_depth, sample_rate):
 
 	# read logfile title
@@ -415,7 +415,7 @@ def find_colname_from_xls(station_logfile, network, station_name, starttime, end
 
 	# get position of station_name
 	try:
-		station_name_idx = findstr_in_list(xls_title, station_name)[0]
+		station_name_idx = findstr_in_list(xls_title, station)[0]
 	except:
 		raise Exception('Cannot found Station code in excel title')
 
@@ -510,7 +510,7 @@ def index_resp_pool(RESP_list, sensor_type):
 
 
 
-def write_paz(f, RESP_pool, iresp, network, station_name, C, \
+def write_paz(f, RESP_pool, iresp, network, station, C, \
 		starttime, endtime, stla, stlo, stel, stdep, sample_rate):
 
 	f.write('* **************************************************\n')
