@@ -454,7 +454,7 @@ def weehour_daily(starttime):
 
 
 # read excel
-def find_colname_from_xls(station_logfile, network, station_name, starttime, endtime, \
+def find_colname_from_xls(station_logfile, network, station, starttime, endtime, \
 			              latitude, longitude, elevation, sensor_type, sensor_depth, \
 			              das_type, das_gain, das_sampling_rate):
 
@@ -468,9 +468,9 @@ def find_colname_from_xls(station_logfile, network, station_name, starttime, end
 	except:
 		raise Exception('Cannot found Network in excel title')
 
-	# get position of station_name
+	# get position of station
 	try:
-		station_name_idx = findstr_in_list(xls_title, station_name)[0]
+		station_name_idx = findstr_in_list(xls_title, station)[0]
 	except:
 		raise Exception('Cannot found Station code in excel title')
 
