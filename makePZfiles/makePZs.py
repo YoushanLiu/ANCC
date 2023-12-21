@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-# -*- coding: UTF-8 -*-
 
 
 '''
 
 This program automatically generate PZ files based on the RESP files.
 
+install xlrd:
+pip3 install xlrd
 
 create PZ files for removing instrument response
 
@@ -32,18 +33,17 @@ from obspy.core import UTCDateTime
 RESP_pool_path = './Sensor_RESP_pool'
 
 # the used PZ files list
-RESP_listname = './sensor_used.lst'
+RESP_listname = 'PZs_used.lst'
 
 # path of the generated PZ files
 output_path = '../PZs_all'
 
 # station log file
-station_logfile = '../LD.xls'
+station_logfile = './NCISP6.xls'
 
 
 # channel name, it consists of band code, instrument code, orientation code
-channel_name = ['BHZ']
-
+channels = ['BHZ']
 
 # the decimate rate must be interger so that the sampling_rate is divisible by it
 decimate_rate = 4
@@ -137,7 +137,6 @@ def read_resp(filename):
 			line_splited = line.split(':')
 			_, sensitivity = line_splited[0:2]
 			sensitivity = float(sensitivity)
-
 
 	# convert to displacement
 	if (veloc2displ):
@@ -234,7 +233,7 @@ def open_xls(filename):
 		fid = xlrd.open_workbook(filename)
 		return fid
 	except:
-		raise Exception('Cannot open %s\n' % filename)
+		raise Exception('Cannot open %s \n' % filename)
 
 
 
@@ -389,16 +388,6 @@ def reformat_time(timestr):
 
 
 
-def weehour_daily(starttime):
-
-	time_tmp = UTCDateTime(starttime)
-	time = UTCDateTime(time_tmp.year, time_tmp.month, time_tmp.day, 0, 0, 0, 000000)
-	starttime = time2str(time)
-
-	return starttime
-
-
-
 # read excel
 def find_colname_from_xls(station_logfile, network, station, starttime, endtime, \
 			latitude, longitude, elevation, sensor_type, sensor_depth, sample_rate):
@@ -413,9 +402,9 @@ def find_colname_from_xls(station_logfile, network, station, starttime, endtime,
 	except:
 		raise Exception('Cannot found Network in excel title')
 
-	# get position of station_name
+	# get position of station
 	try:
-		station_name_idx = findstr_in_list(xls_title, station)[0]
+		station_idx = findstr_in_list(xls_title, station)[0]
 	except:
 		raise Exception('Cannot found Station code in excel title')
 
@@ -469,7 +458,7 @@ def find_colname_from_xls(station_logfile, network, station, starttime, endtime,
 
 
 	colnames = {network: xls_title[network_idx], \
-		station_name: xls_title[station_name_idx], \
+		station: xls_title[station_idx], \
 		starttime: xls_title[starttime_idx], \
 		endtime: xls_title[endtime_idx], \
 		latitude: xls_title[latitude_idx], \
@@ -510,18 +499,27 @@ def index_resp_pool(RESP_list, sensor_type):
 
 
 
+def weehour_daily(starttime):
+	time_tmp = UTCDateTime(starttime)
+	time = UTCDateTime(time_tmp.year, time_tmp.month, time_tmp.day, 0, 0, 0, 000000)
+	starttime = time2str(time)
+
+	return starttime
+
+
+
 def write_paz(f, RESP_pool, iresp, network, station, C, \
 		starttime, endtime, stla, stlo, stel, stdep, sample_rate):
 
 	f.write('* **************************************************\n')
 	f.write('* NETWORK       : %s\n' % network)
 	f.write('* STATION       : %s\n' % station)
-	f.write('* LOCATION      : %s\n' % ' ')
+	f.write('* LOCATION      : %s\n' % '')
 	f.write('* CHANNEL       : %s\n' % C)
 	f.write('* CREATED       : %s\n' % time2str(UTCDateTime()))
 	f.write('* START         : %s\n' % reformat_time(starttime))
 	f.write('* END           : %s\n' % reformat_time(endtime))
-	f.write('* DESCRIPTION   : %s.%s\n' % (network, station))
+	f.write('* DESCRIPTION   : %s.%s \n' % (network, station))
 	f.write('* LATITUDE      : %s\n' % stla)
 	f.write('* LONGITUDE     : %s\n' % stlo)
 	f.write('* ELEVATION     : %s\n' % stel)
@@ -547,12 +545,12 @@ def write_paz(f, RESP_pool, iresp, network, station, C, \
 	nzeros = len(zeros)
 	f.write('ZEROS %d \n' % nzeros)
 	for i in range(0, nzeros):
-		f.write('%+f %+f\n' % (zeros[i].real, zeros[i].imag))
+		f.write('%+f %+f \n' % (zeros[i].real, zeros[i].imag))
 	poles = RESP_pool[iresp].get('poles')
 	npoles = len(poles)
 	f.write('POLES %d \n' % npoles)
 	for i in range(0, npoles):
-		f.write('%+f %+f\n' % (poles[i].real, poles[i].imag))
+		f.write('%+f %+f \n' % (poles[i].real, poles[i].imag))
 	f.write('CONSTANT %e \n' % RESP_pool[iresp].get('CONSTANT'))
 
 	return
@@ -561,7 +559,7 @@ def write_paz(f, RESP_pool, iresp, network, station, C, \
 
 def resp2pz(RESP_pool_path, RESP_listname):
 
-	RESP_list = read_resp_list(RESP_listname)
+	RESP_list = read_resp_list(RESP_pool_path + '/' + RESP_listname)
 
 
 	RESP_pool = read_resp_pool(RESP_list)
@@ -569,7 +567,7 @@ def resp2pz(RESP_pool_path, RESP_listname):
 
 	# define marks
 	network_mark = 'Network'
-	station_name_mark = 'Station code'
+	station_mark = 'Station code'
 	starttime_mark = 'Starttime'
 	endtime_mark = 'Endtime'
 	latitude_mark = 'Latitude'
@@ -580,14 +578,14 @@ def resp2pz(RESP_pool_path, RESP_listname):
 	sample_rate_mark = 'Sample rate'
 
 
-	colnames = find_colname_from_xls(station_logfile, network_mark, station_name_mark, \
+	colnames = find_colname_from_xls(station_logfile, network_mark, station_mark, \
 				starttime_mark, endtime_mark, latitude_mark, longitude_mark, \
 				elevation_mark, sensor_type_mark, sensor_depth_mark, sample_rate_mark)
 
 
 	# get column names for marks
 	colname_of_network = colnames.get(network_mark)
-	colname_of_station_name = colnames.get(station_name_mark)
+	colname_of_station = colnames.get(station_mark)
 	colname_of_starttime = colnames.get(starttime_mark)
 	colname_of_endtime = colnames.get(endtime_mark)
 	colname_of_latitude = colnames.get(latitude_mark)
@@ -613,18 +611,18 @@ def resp2pz(RESP_pool_path, RESP_listname):
 				os.remove(filename)
 
 
-	station_name_prev = ''
+	station_prev = ''
 	for i in range(nrows):
 
 		# get current station name
 		try:
-			station_name = tables[i].get(colname_of_station_name)
+			station = tables[i].get(colname_of_station)
 		except:
 			continue
 
 		iresp = []
 		# find the index of the RESP file in the PZ pool
-		if ((station_name != '') and (station_name != [])):
+		if ((station != '') and (station != [])):
 
 			sensor_type = tables[i].get(colname_of_sensor_type)
 
@@ -633,13 +631,13 @@ def resp2pz(RESP_pool_path, RESP_listname):
 
 		# whether open a new file
 		open_new_file = False
-		if (station_name != station_name_prev):
-			if (station_name_prev != '' or station_name == ''):
+		if (station != station_prev):
+			if (station_prev != '' or station == ''):
 				f.close()
 			open_new_file = True
 
 
-		if ((station_name != '') and (station_name != [])):
+		if ((station != '') and (station != [])):
 
 			network = tables[i].get(colname_of_network)
 			starttime = weehour_daily(tables[i].get(colname_of_starttime))
@@ -648,24 +646,24 @@ def resp2pz(RESP_pool_path, RESP_listname):
 			stlo = tables[i].get(colname_of_longitude)
 			stel = tables[i].get(colname_of_elevation)
 			stdep = tables[i].get(colname_of_sensor_depth)
-			sample_rate = float(tables[i].get(colname_of_sample_rate)) / decimate_rate
+			sample_rate = float(tables[i].get(colname_of_sample_rate))/decimate_rate
 
-			for C in channel_name:
+			for C in channels:
 
 				filename = output_path + '/' + \
-					network + '.' + station_name + '.' + \
+					network + '.' + station + '.' + \
 					'' + '.' + C + '.PZ'
 
 				if (open_new_file):
 					f = open(filename, 'w+')
 
-				write_paz(f, RESP_pool, iresp, network, station_name, C, \
+				write_paz(f, RESP_pool, iresp, network, station, C, \
 					starttime, endtime, stla, stlo, stel, stdep, sample_rate)
 
-		if (station_name != ''):
-			print('station %s is done ... \n' % station_name)
+		if (station != ''):
+			print('station %s is done ...' % station)
 
-		station_name_prev = station_name
+		station_prev = station
 
 
 	# now, close the last opened file object
@@ -677,15 +675,14 @@ def resp2pz(RESP_pool_path, RESP_listname):
 
 if __name__ == '__main__':
 
-	print('\n')
+	#print('\n')
 	print('makePZs: ')
-	print('This program automatically generate PZ files based on the RESP files.')
+	print('This program automatically generates PZ files based on the RESP files.')
 	print('Youshan Liu at Institute of Geology and Geophysics, Chinese Academy of Sciences')
 	print('Wecome to send any bugs and suggestions to ysliu@mail.iggcas.ac.cn')
 	print('Please downloaded the unavailable RESP files in RESP_pool from the following website.')
 	print('http://ds.iris.edu/NRL/sensors/guralp/guralp_sensors.html')
-	print('\n\n')
-
+	#print('\n')
 
 	resp2pz(RESP_pool_path, RESP_listname)
 
