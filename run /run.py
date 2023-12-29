@@ -62,7 +62,7 @@ nprocs = multiprocessing.cpu_count()
 ###########################################################
 def count_station_num(files_list):
 	strs = files_list
-	for i in range(0,len(files_list)):
+	for i in range(len(files_list)):
 		try:
 			strs[i] = files_list[i].split('/')[-1].split('.')[-3]
 		except:
@@ -78,7 +78,7 @@ def check_autocorrelation(filename):
 	regexp = re.compile(r"[^#]+[\t \w{,3}]+[\t #\w\d-]*")
 	ans = regexp.search(line)
 	if (ans is None):
-		return 0
+		return False
 	if (ans.group()[0:3].strip().upper() in "YES"):
 		is_auto_correlation = True
 	else:
@@ -105,7 +105,7 @@ global month_folder
 def scan_segment(segment):
     segment_folder = month_folder + '/' + segment
     sacfiles = segment_folder + '/*.SAC'
-    file_list = glob.glob(sacfiles)
+    files_list = glob.glob(sacfiles)
     if (not(is_auto_correlation) and (count_station_num(files_list) <= 1)):
         print("skip %s because of single station folder\n"%(segment_folder))
         return
