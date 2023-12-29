@@ -75,11 +75,11 @@ def check_autocorrelation(filename):
 		line = linecache.getline(filename, 46)
 	except:
 		return False
-	regexp = re.compile("r[^#]+[ \t\w{,3}]+")
-	ans = regexp.search(line[0:8])
+	regexp = re.compile(r"[^#]+[\t \w{,3}]+[\t #\w\d-]*")
+	ans = regexp.search(line)
 	if (ans is None):
 		return 0
-	if (ans.strip().upper() in "YES"):
+	if (ans.group()[0:3].strip().upper() in "YES"):
 		is_auto_correlation = True
 	else:
 		is_auto_correlation = False
