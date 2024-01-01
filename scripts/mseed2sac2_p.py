@@ -12,7 +12,7 @@ Affiliation: Institute of Geology and Geophysics, Chinese Academy of Sciences
 
 
 directory structure:
-./top folder/stage folder/station folder/DAS number/MSEED files
+./top folder/stage folder/station folder/day folder/DAS number/MSEED files
 
 for example:
 ./DATA_Raw/DATA_1/5322/509
@@ -39,13 +39,11 @@ Directory Structure
 
 import os
 import re
-import glob
 from math import *
 from obspy import read
 from obspy import UTCDateTime
 from obspy.io.sac import SACTrace
 from multiprocessing.dummy import Pool as ThreadPool
-
 
 
 ##############################################################
@@ -59,10 +57,9 @@ from multiprocessing.dummy import Pool as ThreadPool
 # dryrun = False => do the actual files conversion
 dryrun = False
 
-# directory of the mseed data
-#input_path = './JD5'
-#output_path = './Group5_EPS'
-input_path = './JD.Group5.EPS.Raw'
+# directory of the reftek data
+input_path = './DATA_Raw'
+#input_path = './DATA_test2'
 output_path = './Group5_EPS'
 
 # station information file
@@ -209,16 +206,15 @@ def convert_files(segment_files_path):
 		if ('.LST' == segment_file[-4:] or '.LOG' == segment_file[-4:]):
 			continue
 
-		# if this file is not a reftek format
-		is_sacfile = False
-		starts = [each.start() for each in re.finditer(sac_suffix, segment_file.upper())]
-		ends = [start+len(sac_suffix) - 1 for start in starts]
-		span = [(start, end) for start,end in zip(starts, ends)]
-		is_sac = is_sacfile and (len(span) >= 1)
+		## if this file is not a reftek format
+		#is_sacfile = False
+		#starts = [each.start() for each in re.finditer(sac_suffix, segment_file.upper())]
+		#ends = [start+len(sac_suffix) - 1 for start in starts]
+		#span = [(start, end) for start,end in zip(starts, ends)]
+		#is_sacfile = is_sacfile and (len(span) >= 1)
 
-		if (is_sacfile):
-			print('is not a sacfile')
-			continue
+		#if (is_sacfile):
+		#	continue
 
 
 		#try:
@@ -248,7 +244,7 @@ def convert_files(segment_files_path):
 
 
 
-		for i in range(0,min(len(channels),len(st))):
+		for i in range(len(st)):
 
 			try:
 				tr = st[i]
@@ -306,7 +302,7 @@ def convert_files(segment_files_path):
 
 
 
-			# some preprocesses
+			# some preprocess
 			if (is_demean):
 				tr.detrend(type='demean')
 			if (is_detrend):
@@ -343,14 +339,14 @@ def convert_files(segment_files_path):
 			#station_path = tr.stats.station
 			#res = [sta.stnm.index(x) for x in sta.stnm if x.upper() == station_path.upper()]
 			#if ([] != res):
-			#	# first find station name in mseed head.
-			#	# if the field "station" in mseed header is NULL, then try extract station name from folder name
+			#	# first find station name in reftek head.
+			#	# if the field "station" in reftek header is NULL, then try extract station name from folder name
 			#	try:
 			#		ipos = res[0]
 			#	except:
 			#		raise Exception('Error: station %s is not in the station list' % station_path)
 			#else:
-			#	#print("Warning: station field in mseed header is NULL")
+			#	#print("Warning: station field in reftek header is NULL")
 			#	# try to extract station name based on folder name
 			#	ipos = -1
 			#	for j in range(len(sta.stnm)):
@@ -359,7 +355,7 @@ def convert_files(segment_files_path):
 			#			ipos = j
 			#			break
 			#	if (-1 == ipos):
-			#		print("Error: station %s is not in the station list or field 'station' in mseed header is NULL" % station_path)
+			#		print("Error: station %s is not in the station list or field 'station' in reftek header is NULL" % station_path)
 			#		return
 
 
@@ -433,7 +429,6 @@ def convert_files(segment_files_path):
 
 				else:
 
-
 					# set channel name
 					#tr_out.stats.channel = channels[i]
 
@@ -495,20 +490,20 @@ def convert_files(segment_files_path):
 
 
 
-def convert_station(station_folder):
+def convert_daily(day_folder):
 
-	station_path = stage_path + station_folder + '/'
-	print('Entering directory ' + station_path[len_topdir:-1])
+	day_path = station_path + day_folder + '/'
+	print('Entering directory ' + day_path[len_topdir:-1])
 	#print('\n')
 
-	if (not os.path.isdir(station_path)):
+	if (not os.path.isdir(day_path)):
 		return
 
-	UnitID_folders_list = os.listdir(station_path)
+	UnitID_folders_list = os.listdir(day_path)
 
 	for UnitID in UnitID_folders_list:
 
-		UnitID_path = station_path + UnitID + '/'
+		UnitID_path = day_path + UnitID + '/'
 
 		if (not os.path.isdir(UnitID_path)):
 			continue
@@ -534,7 +529,7 @@ def convert_station(station_folder):
 		#print('\n')
 
 	del UnitID_folders_list
-	print('Leaving directory ' + station_path[len_topdir:-1])
+	print('Leaving directory ' + day_path[len_topdir:-1])
 	#print('\n')
 
 	return
@@ -543,7 +538,7 @@ def convert_station(station_folder):
 
 def mseed2sac():
 
-	global len_topdir, stage_path, sac_suffix
+	global len_topdir, station_path, sac_suffix
 
 	len_topdir = len(input_path) + 1
 
@@ -556,7 +551,7 @@ def mseed2sac():
 
 	sac_suffix = '.SAC'
 
-	# convert mseed to sac
+	# convert mseed to SAC
 	for stage_folder in stage_folders_list:
 
 		stage_path = input_path + '/' + stage_folder + '/'
@@ -568,10 +563,25 @@ def mseed2sac():
 
 		station_folders_list = os.listdir(stage_path)
 
-		pool = ThreadPool()
-		pool.map(convert_station, station_folders_list)
-		pool.close()
-		pool.join()
+		for station_folder in station_folders_list:
+
+			station_path = stage_path + station_folder + '/'
+			print('Entering directory ' + station_path[len_topdir:-1])
+			#print('\n')
+
+			if (not os.path.isdir(station_path)):
+				continue
+
+			day_folders_list = os.listdir(station_path)
+
+			pool = ThreadPool()
+			pool.map(convert_daily, day_folders_list)
+			pool.close()
+			pool.join()
+
+			del day_folders_list
+			print('Leaving directory ' + station_path[len_topdir:-1])
+			#print('\n')
 
 		del station_folders_list
 		print('Leaving directory ' + stage_path[len_topdir:-1])
@@ -587,7 +597,7 @@ if __name__ == '__main__':
 
 	print('\n')
 	print('mseed2sac: ')
-	print('This program converts files from mseed to sac format using the ObsPy (parallel version)')
+	print('This program converts files from reftek to sac format using the ObsPy (parallel version)')
 	print('Youshan Liu at Institute of Geology and Geophysics, Chinese Academy of Sciences')
 	print('Welcome to send any bugs and suggestions to ysliu@mail.iggcas.ac.cn')
 	print('\n')
@@ -600,7 +610,7 @@ if __name__ == '__main__':
 	# read station information
 	sta = read_station_list(station_list)
 
-	# convert mseed file to SAC format
+	# convert reftek file to SAC format
 	mseed2sac()
 
 	endtime = UTCDateTime()

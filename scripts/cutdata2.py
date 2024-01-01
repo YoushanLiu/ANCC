@@ -205,14 +205,15 @@ def merge_data(hour_files_list):
 		return
 
 
-	dt = tr.stats.delta
-	df = tr.stats.sampling_rate
+	stats = tr.stats
+	dt = stats.delta
+	df = stats.sampling_rate
 	npts_daily = int(day_in_seconds*df)
 
 
-	starttime = tr.stats.starttime
-	endtime = tr.stats.endtime
-	midtime = starttime + 0.50*tr.stats.npts*dt
+	starttime = stats.starttime
+	endtime = stats.endtime
+	midtime = starttime + 0.50*stats.npts*dt
 	starttime_daily = UTCDateTime(midtime.year, midtime.month, midtime.day, 0, 0, 0, 0)
 	endtime_daily = starttime_daily + day_in_seconds - dt
 
@@ -222,10 +223,13 @@ def merge_data(hour_files_list):
 	iend = int((min(endtime, endtime_daily) - starttime_daily)*df)
 
 
-	# interpolate to local temporal axis
-	#tr.interpolate(df, 'cubic', starttime_daily+ibeg*dt, iend-ibeg+1, 0.0)
-	#tr.interpolate(df, 'lanczos', starttime_daily+ibeg*dt, iend-ibeg+1, 0.0, a=21)
-	tr.interpolate(df, interpolation_method, starttime_daily+ibeg*dt, iend-ibeg+1, 0.0, a=lanczos_winlen)
+	if (0 != starttime.microsecond % round(dt*1e6)):
+		# interpolate to local temporal axis
+		#tr.interpolate(df, 'cubic', starttime_daily+ibeg*dt, iend-ibeg+1, 0.0)
+		#tr.interpolate(df, 'lanczos', starttime_daily+ibeg*dt, iend-ibeg+1, 0.0, a=21)
+		tr.interpolate(df, interpolation_method, starttime_daily+ibeg*dt, iend-ibeg+1, 0.0, a=lanczos_winlen)
+	else:
+		tr = tr.slice(starttime_daily+ibeg*dt, starttime_daily+iend*dt)
 
 
 	# pad array
@@ -301,7 +305,8 @@ def cutdata_daily(station_path):
 
 				tr_out = tr.copy()
 				tr_out.data = tr.data[ibeg:iend+1]
-				tr_out.stats.starttime = starttime_daily + tbeg
+				starttime = starttime_daily + tbeg
+				tr_out.stats.starttime = starttime
 
 
 				# remove invalid data
@@ -330,20 +335,23 @@ def cutdata_daily(station_path):
 
 				# write sac
 				if (dryrun):
+
 					if (os.path.exists(outfile) and os.path.isfile(outfile)):
 						os.remove(outfile)
+
 				else:
+
 					sac = SACTrace.from_obspy_trace(tr_out)
 
 
-					sac.nzyear = tr_out.stats.starttime.year
-					sac.nzjday = tr_out.stats.starttime.julday
-					sac.nzhour = tr_out.stats.starttime.hour
-					sac.nzmin = tr_out.stats.starttime.minute
-					#sac.nzsec = tr_out.stats.starttime.second
-					##sac.nzmsec = int(tr_out.stats.starttime.microsecond*1.e-3)
-					#sac.nzmsec = round(tr_out.stats.starttime.microsecond*1.e-3)
-					sec = round(tr_out.stats.starttime.second*1000)
+					sac.nzyear = starttime.year
+					sac.nzjday = starttime.julday
+					sac.nzhour = starttime.hour
+					sac.nzmin = starttime.minute
+					#sac.nzsec = starttime.second
+					##sac.nzmsec = int(starttime.microsecond*1.e-3)
+					#sac.nzmsec = round(starttime.microsecond*1.e-3)
+					sec = round((starttime.second + starttime.microsecond*1.e-6)*1000)
 					sac.nzsec = int(sec*0.001)
 					sac.nzmsec = int(sec - sac.nzsec*1000)
 					sac.b = 0

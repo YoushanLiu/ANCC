@@ -294,7 +294,7 @@ def convert_hourly(hour_files_path, day_path):
 			if (is_detrend):
 				tr.detrend(type='linear')
 			#if (is_denonlinear):
-			#	#tr.detrend('polynomial', order=50)
+			#	#tr.detrend('polynomial', order=3)
 			#	tr.detrend('spline', order=3, dspline=5)
 
 
@@ -365,6 +365,7 @@ def convert_hourly(hour_files_path, day_path):
 			tr.stats.network = network
 			tr.stats.station = station
 			tr.stats.channel = channel
+			starttime = tr.stats.starttime
 
 			sac_filename = create_sac_filename(tr.stats)
 
@@ -372,13 +373,11 @@ def convert_hourly(hour_files_path, day_path):
 
 
 			if (dryrun):
+
 				if (os.path.exists(outfile) and os.path.isfile(outfile)):
 					os.remove(outfile)
+
 			else:
-
-				# set channel name
-				tr.stats.channel = channels[i]
-
 
 				sac = SACTrace.from_obspy_trace(tr)
 
@@ -393,14 +392,14 @@ def convert_hourly(hour_files_path, day_path):
 				sac.knetwk = network
 
 
-				sac.nzyear = tr.stats.starttime.year
-				sac.nzjday = tr.stats.starttime.julday
-				sac.nzhour = tr.stats.starttime.hour
-				sac.nzmin = tr.stats.starttime.minute
-				#sac.nzsec = tr.stats.starttime.second
-				##sac.nzmsec = int(tr.stats.starttime.microsecond*1.e-3)
-				#sac.nzmsec = round(tr.stats.starttime.microsecond*1.e-3)
-				sec = round(tr.stats.starttime.second*1000)
+				sac.nzyear = starttime.year
+				sac.nzjday = starttime.julday
+				sac.nzhour = starttime.hour
+				sac.nzmin = starttime.minute
+				#sac.nzsec = starttime.second
+				##sac.nzmsec = int(starttime.microsecond*1.e-3)
+				#sac.nzmsec = round(starttime.microsecond*1.e-3)
+				sec = round((starttime.second + starttime.microsecond*1.e-6)*1000)
 				sac.nzsec = int(sec*0.001)
 				sac.nzmsec = int(sec - sac.nzsec*1000)
 				sac.b = 0
