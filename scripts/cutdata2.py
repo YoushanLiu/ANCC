@@ -125,15 +125,14 @@ def create_sac_filename(stats):
 
 
 
-def create_sac_path(stats):
+def create_sac_path(starttime):
 
-	time  = UTCDateTime(stats.starttime)
-	year  = '%4.4d' % time.year
-	month = '%2.2d' % time.month
-	day   = '%2.2d' % time.day
-	hh    = '%2.2d' % time.hour
-	mm    = '%2.2d' % time.minute
-	ss    = '%2.2d' % time.second
+	year  = '%4.4d' % starttime.year
+	month = '%2.2d' % starttime.month
+	day   = '%2.2d' % starttime.day
+	hh    = '%2.2d' % starttime.hour
+	mm    = '%2.2d' % starttime.minute
+	ss    = '%2.2d' % starttime.second
 
 	mydate = year + month + day
 
@@ -148,10 +147,9 @@ def create_sac_path(stats):
 
 def date2str(starttime):
 
-	time  = UTCDateTime(starttime)
-	year  = '%4.4d' % time.year
-	month = '%2.2d' % time.month
-	day   = '%2.2d' % time.day
+	year  = '%4.4d' % starttime.year
+	month = '%2.2d' % starttime.month
+	day   = '%2.2d' % starttime.day
 
 	mydate = year + month + day
 
@@ -320,8 +318,8 @@ def cutdata_daily(station_path):
 						continue
 
 
+				sac_path = create_sac_path(starttime)
 				sac_filename = create_sac_filename(tr_out.stats)
-				sac_path = create_sac_path(tr_out.stats)
 
 				mypath = output_path + '/' + sac_path
 
@@ -356,7 +354,7 @@ def cutdata_daily(station_path):
 					sac.nzmsec = int(sec - sac.nzsec*1000)
 					sac.b = 0
 					#sac.reftime += sac.b
-					#sac.reftime = tr_out.stats.starttime
+					#sac.reftime = starttime
 
 
 					sac.write(outfile)
