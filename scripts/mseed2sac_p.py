@@ -153,13 +153,13 @@ def read_station_list(filename):
 
 def create_sac_filename(stats):
 
-	time = UTCDateTime(stats.starttime)
-	yyyy = '%4.4d' % time.year
-	ddd  = '%3.3d' % time.julday
-	hh   = '%2.2d' % time.hour
-	mm   = '%2.2d' % time.minute
-	ss   = '%2.2d' % time.second
-	fff  = '%3.3d' % (0.001*time.microsecond)
+	starttime = stats.starttime
+	yyyy = '%4.4d' % starttime.year
+	ddd  = '%3.3d' % starttime.julday
+	hh   = '%2.2d' % starttime.hour
+	mm   = '%2.2d' % starttime.minute
+	ss   = '%2.2d' % starttime.second
+	fff  = '%3.3d' % (0.001*starttime.microsecond)
 
 	sac_filename = yyyy + '.' + ddd + '.' + hh + '.' + \
 		   mm + '.' + ss + '.' + fff + '.' + \
@@ -282,12 +282,12 @@ def convert_files(segment_files_path):
 				#dtinus = decimate_factor * dt * 1e6
 				#else:
 				#dtinus = dt * 1e6
-				dtinus = 1e6 / downsampling_rate
+				#dtinus = 1e6 / downsampling_rate
 				#microsecond = ceil(starttime.microsecond / dtinus) * dtinus
 				##starttime_first = starttime
 				#starttime_first = UTCDateTime(starttime.year, starttime.month, starttime.day, starttime.hour, starttime.minute, starttime.second, microsecond, strict=False)
 				sec = round(starttime.second*1e6 + starttime.microsecond)
-				sec = ceil(sec / dtinus) * dtinus
+				#sec = ceil(sec / dtinus) * dtinus
 				second = int(sec * 1.e-6)
 				microsecond = int(sec - second*1e6)
 				#starttime_first = starttime
@@ -378,7 +378,7 @@ def convert_files(segment_files_path):
 
 			station = sta.stnm[ipos]
 			network = sta.netwk[ipos]
-			tr.stats.station = sta.stnm[ipos]
+			tr.stats.station = station
 			# set channel name
 			#tr.stats.channel = channels[i]
 
@@ -418,7 +418,7 @@ def convert_files(segment_files_path):
 				sac_filename, day_path = create_sac_filename(tr_out.stats)
 
 
-				sac_path = output_path + '/' + sta.stnm[ipos] + '/' + day_path + '/'
+				sac_path = output_path + '/' + station + '/' + day_path + '/'
 				if (not os.path.exists(sac_path)):
 					os.makedirs(sac_path, exist_ok=True)
 
@@ -463,7 +463,7 @@ def convert_files(segment_files_path):
 					sac.nzmsec = int(sec - sac.nzsec*1000)
 					sac.b = 0
 					#sac.reftime += sac.b
-					#sac.reftime = tr_out.stats.starttime
+					#sac.reftime = starttime
 
 
 					# write sac
