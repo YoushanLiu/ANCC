@@ -304,7 +304,7 @@ def convert_hourly(hour_files_path, day_path):
 
 			# bandpass
 			if (is_bandpass):
-				tr.filter('bandpass', freqmin=flow, freqmax=fhigh, corners=2, zerophase=is_zerophase)
+				tr.filter('bandpass', freqmin=flow, freqmax=fhigh, corners=3, zerophase=is_zerophase)
 
 
 			# downsampling
@@ -319,10 +319,10 @@ def convert_hourly(hour_files_path, day_path):
 					continue
 				if (decimate_factor > 1):
 					# Nyquist frequency of downsampling rate
-					freq_lowpass = 0.49 * downsampling_rate
-					#freq_lowpass = 0.49 * tr.stats.sampling_rate / decimate_factor
+					freq_lowpass = 0.5 * downsampling_rate
+					#freq_lowpass = 0.5 * tr.stats.sampling_rate / decimate_factor
 					if (not(is_bandpass and (fhigh <= freq_lowpass))):
-						tr.filter('lowpass', freq=freq_lowpass, corners=2, zerophase=True)
+						tr.filter('lowpass', freq=freq_lowpass, corners=3, zerophase=True)
 					tr.decimate(factor=decimate_factor, strict_length=False, no_filter=True)
 
 
