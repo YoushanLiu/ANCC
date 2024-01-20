@@ -76,15 +76,15 @@ input_path = './DATA_Raw2'
 station_list = './NEsta.lst'
 
 
-# component list to be converted
-# only Z-component
-#components = ['0']
-# only N-component
-#components = ['1']
-# only E-component
-#components = ['2']
-# three-components
-components = ['0', '1', '2']
+# orientation list to be converted
+# only Z-orientation
+#orientations = ['0']
+# only N-orientation
+#orientations = ['1']
+# only E-orientation
+#orientations = ['2']
+# three-orientations
+orientations = ['0', '1', '2']
 
 ##############################################################
 # preprocess options
@@ -109,8 +109,8 @@ downsampling_rate = 10.0
 
 ##############################################################
 
-# channel name, it consists of band code, instrument code, orientation code
-channels = ['BHZ', 'BHN', 'BHE']
+# component codes, it consists of band code, instrument code, orientation code
+component_codes = ['BHZ', 'BHN', 'BHE']
 
 
 ##############################################################
@@ -229,7 +229,8 @@ def convert_hourly(hour_files_path, day_path):
 		infile = hour_files_path + hour_file
 		try:
 			# faster for specific file format
-			st = read(infile, format='REFTEK130', check_compression=False, component_codes=['0', '1', '2'])
+			st = read(infile, format='REFTEK130', check_compression=False, component_codes=component_codes)
+			#st = read(infile, format='REFTEK130', check_compression=False, component_codes=['0', '1', '2'])
 			#st = read(infile, component_codes=['0', '1', '2'])
 			#st = read(infile, component_codes=['Z', 'N', 'E'])
 			# cancel out the sort in obspy
@@ -256,9 +257,9 @@ def convert_hourly(hour_files_path, day_path):
 			except:
 				continue
 
-			if (tr.stats.channel[-1] not in components):
+			if (tr.stats.channel[-1] not in orientations):
 				continue
-			channel = channels[i]
+
 
 
 			# some preprocesses
@@ -366,7 +367,6 @@ def convert_hourly(hour_files_path, day_path):
 			network = sta.netwk[ipos]
 			tr.stats.network = network
 			tr.stats.station = station
-			tr.stats.channel = channel
 			starttime = tr.stats.starttime
 
 			sac_filename = create_sac_filename(tr.stats)
