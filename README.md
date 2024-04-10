@@ -35,7 +35,7 @@ It can also output prestack cross-correlation functions.
 
     In the makePZfiles folder, you can generate instrument response polezero files automatically using resp2pz.py or makePZs.py, 
     once fill an Excel sheet based on your project log. The former can take responses of sensor and DAS into consideration, 
-    it then merges them into one PZ file. While the latter only takes the response of the sensor into consideration, then generte
+    it then merges them into one PZ file. While the latter only takes the response of the sensor into consideration, then genertes
     corresponding PZ files automatically.
 
 
