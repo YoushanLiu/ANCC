@@ -120,7 +120,7 @@ end if
 ! ***************************************************************
 ! Correct the fraction time and set the reference time to be the beginning time (b=0)).
 ! ***************************************************************
-call correct_sac_file(sacinfile, sacoutfile, sacname, npow_costaper, f1, f2, f3, f4, npts, dt, t0, ier)
+call correct_sacfile(sacinfile, sacoutfile, sacname, npow_costaper, f1, f2, f3, f4, npts, dt, t0, ier)
 if (0 /= ier) then
    write(*,"(A)") 'Error: Failed to correct fractional time for '//trim(adjustl(sacname))
    call flush(6)
@@ -154,7 +154,7 @@ end subroutine mk_one_rec
 ! t: beginning time of the first data point [output]
 ! ier: status indicator [output]
 ! =======================================================================================
-subroutine correct_sac_file(finname, foutname, sacname, npow_costaper, f1, f2, f3, f4, npts, dt, t, ier)
+subroutine correct_sacfile(finname, foutname, sacname, npow_costaper, f1, f2, f3, f4, npts, dt, t, ier)
 
 implicit none
 
@@ -274,7 +274,7 @@ end if
 deallocate(seis_data)
 
 
-end subroutine correct_sac_file
+end subroutine correct_sacfile
 
 
 ! =======================================================================================
@@ -362,7 +362,7 @@ sf(nq+1:nfft) = czero
 
 ! Correct the ends
 sf(1) = 0.50*sf(1)
-!sf(nq) = cmplx(real(sf(nq)), 0.0)
+sf(nq) = 0.5*sf(nq)
 
 
 ! ***************************************************************
@@ -848,7 +848,7 @@ sf(nq+1:nfft) = czero
 
 ! Correct the ends
 sf(1) = 0.50*sf(1)
-!sf(nq) = cmplx(real(sf(nq)), 0.0)
+sf(nq) = 0.50*sf(nq)
 
 
 
@@ -1226,12 +1226,8 @@ ctrf(1:nt) = cmplx(x(1:nt), 0.0)
 call sfftw_execute_dft(fwd, ctrf, ctrf)
 
 ctrb(1) = ctrf(1)
-do it = 2, nq+1, 1
-   ctrb(it) = 2.0*ctrf(it)
-end do
-do it = nq+2, n, 1
-   ctrb(it) = czero
-end do
+ctrb(2:nq) = 2.0*ctrf(2:nq)
+ctrb(nq+2:n) = czero
 
 call sfftw_execute(bwd, ctrb, ctrb)
 
