@@ -255,7 +255,7 @@ call dfftw_plan_dft_1d(planb, ns, fils, tmp, FFTW_BACKWARD, FFTW_ESTIMATE)
 
 nq = ns/2 + 1
 sf(1) = 0.5d0*sf(1)
-sf(nq) = cmplx(real(sf(nq)), 0.d0)
+sf(nq) = 0.5*sf(nq)
 
 
 ! spectra tapering
@@ -322,7 +322,7 @@ do k = 1, nf, 1
    fils(nq+1:ns) = czero
 
    fils(1) = cmplx(0.5d0*real(fils(1)), 0.d0)
-   fils(nq) = cmplx(real(fils(nq)), 0.d0)
+   fils(nq) = 0.50*fils(nq)
 
    ! forward FFT: fils ==> tmp
    call dfftw_execute_dft(planb, fils, tmp)
