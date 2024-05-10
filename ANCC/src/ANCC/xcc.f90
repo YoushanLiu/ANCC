@@ -362,7 +362,7 @@ sf(nq+1:nfft) = czero
 
 ! Correct the ends
 sf(1) = 0.50*sf(1)
-if(0 == mod(nfft,2)) sf(nq) = 0.5*sf(nq)
+sf(nq) = 0.5*sf(nq)
 
 
 ! ***************************************************************
@@ -848,7 +848,7 @@ sf(nq+1:nfft) = czero
 
 ! Correct the ends
 sf(1) = 0.50*sf(1)
-if(0 == mod(nfft,2)) sf(nq) = 0.5*sf(nq)
+sf(nq) = 0.5*sf(nq)
 
 
 
