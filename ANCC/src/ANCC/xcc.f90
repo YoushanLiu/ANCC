@@ -362,7 +362,7 @@ sf(nq+1:nfft) = czero
 
 ! Correct the ends
 sf(1) = 0.50*sf(1)
-sf(nq) = 0.5*sf(nq)
+if(0 == mod(nfft,2)) sf(nq) = 0.5*sf(nq)
 
 
 ! ***************************************************************
@@ -848,7 +848,7 @@ sf(nq+1:nfft) = czero
 
 ! Correct the ends
 sf(1) = 0.50*sf(1)
-sf(nq) = 0.50*sf(nq)
+if(0 == mod(nfft,2)) sf(nq) = 0.5*sf(nq)
 
 
 
@@ -1231,10 +1231,7 @@ ctrb(nq+2:n) = czero
 
 call sfftw_execute(bwd, ctrb, ctrb)
 
-ctrb(1:n) = ctrb(1:n) / dn
-
-y(1:nt) = abs(ctrb(1:nt))
-
+y(1:nt) = abs(ctrb(1:nt)) / dn
 
 call sfftw_destroy_plan(bwd)
 call sfftw_destroy_plan(fwd)
