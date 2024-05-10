@@ -240,7 +240,7 @@ do k = 1, nf, 1
    fils(nq+1:ns) = czero
 
    fils(1) = cmplx(real(0.5d0*fils(1)), 0.d0)
-   fils(nq) = cmplx(real(fils(nq)), 0.d0)
+   fils(nq) = 0.50*fils(nq)
    ! forward FFT: fils ==> tmp
    call dfftw_execute_dft(planb, fils, tmp)
 
