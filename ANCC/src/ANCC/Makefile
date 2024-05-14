@@ -8,15 +8,6 @@ LIBS = -lfftw3f
 OBJS = db_m.o string.o sac_io.o date_time.o bindata_io.o math.o xcc.o ANCC.o butter.o
 
 
-# dependencies
-ANCC.O: db_m.o xcc.o
-math.o: db_m.o
-sac_io.o: db_m.o
-date_time.o: db_m.o
-bindata_io.o: db_m.o sac_io.o
-xcc.o: db_m.o math.o sac_io.o string.o date_time.o bindata_io.o
-
-
 build: $(BIN)
 $(BIN): $(OBJS)
 	-rm -rf $(INST_DIR)/$(BIN)
@@ -35,3 +26,12 @@ cleanall: clean
 	$(MPIFC) $(FFLAGS) -c $< -o $@
 %.o: %.f
 	$(MPIFC) $(FFLAGS) -c $< -o $@
+
+
+# dependencies
+ANCC.o: db_m.o xcc.o
+math.o: db_m.o
+sac_io.o: db_m.o
+date_time.o: db_m.o
+bindata_io.o: db_m.o sac_io.o
+xcc.o: db_m.o math.o sac_io.o string.o date_time.o bindata_io.o
