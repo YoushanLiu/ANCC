@@ -13,10 +13,6 @@ BIN = TF_PWS
 OBJS = sacrw.o st.o tf_pws.o
 
 
-# dependencies
-tf_pws.o: sacrw.o st.o
-
-
 build: $(BIN)
 $(BIN): $(OBJS)
 	-rm -rf $(INST_DIR)/$(BIN)
@@ -32,3 +28,7 @@ cleanall: clean
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
+
+
+# dependencies
+tf_pws.o: sacrw.o st.o
