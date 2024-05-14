@@ -7,11 +7,6 @@ LIBS = -lfftw3
 OBJS = misc.o swapn.o taper.o dispio.o ftfilt.o fmax.o trigger.o tapers.o tgauss.o mspline.o pred_cur.o phtovel.o aftanpg.o aftanipg.o AFTAN.o
 
 
-# dependencies
-misc.o: swapn.o
-dispio.o: misc.o
-
-
 build: $(BIN)
 $(BIN): $(OBJS)
 	-rm -rf $(INST_DIR)/$(BIN)
@@ -36,3 +31,8 @@ cleanall:
 	$(FC) $(FFLAGS) -c $< -o $@
 %.o: %.f
 	$(FC) $(FFLAGS) -c $< -o $@
+
+
+# dependencies
+misc.o: swapn.o
+dispio.o: misc.o
