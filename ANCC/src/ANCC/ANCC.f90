@@ -615,6 +615,7 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
          if (dt_read > 0.0) then
          	if (abs(dt) < 1.e-15) then
          	   dt = dt_read
+			   ntaper = max(ceiling(max(t0, taper_min) / dt), ntaper_min)
          	else if ((abs(dt - dt_read) > 1.e-15) .or. (dt_read < 0.0)) then
          	   errcode = -2
                write(msg, "(A,I0,A)") 'Error: Inconsistence of sampling interval (dt_read=', dt_read, ') in '//trim(sacfile)
@@ -875,8 +876,10 @@ call MPI_BARRIER(MPI_COMM_WORLD, ier)
 
 
 ! length of taper
-ntaper = max(ceiling(max(t0, taper_min) / dt), ntaper_min)
-!ntaper = max(ceiling(sngl(max(0.50*(npts*dt-tlen), taper_min) / dt)), ntaper_min)
+if (0 == ntaper) then
+   ntaper = max(ceiling(max(t0, taper_min) / dt), ntaper_min)
+   !ntaper = max(ceiling(sngl(max(0.50*(npts*dt-tlen), taper_min) / dt)), ntaper_min)
+end if
 
 
 
