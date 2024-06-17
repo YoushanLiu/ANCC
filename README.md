@@ -1,3 +1,4 @@
+![Lanuguage](https://img.shields.io/badge/-Fortran-734f96?logo=Fortran)
 # ANCC
 Some scripts and programs for ambient noise tomography, such as computing cross-correlation, auto-correlation (with parallel computing), and extracting dispersion curves.
 It can also output prestack cross-correlation functions.
