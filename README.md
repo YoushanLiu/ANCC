@@ -1,4 +1,4 @@
-![Lanuguage](https://img.shields.io/badge/-Fortran-734f96?logo=Fortran)
+![Lanuguage](https://img.shields.io/badge/-Fortran-734f96?logo=fortran)
 ![Python](https://img.shields.io/badge/-Python-3776AB?logo=python)
 ![Version](https://img.shields.io/static/v1?label=version&message=6.5.1&color=blue)
 # ANCC
