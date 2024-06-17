@@ -2,6 +2,9 @@
 ![Python](https://img.shields.io/badge/Python3-3776AB?style=social&logo=python&logoColor=blue)
 ![Version](https://img.shields.io/static/v1?label=version&message=6.6&color=blue)
 ![Downloads](https://img.shields.io/github/downloads/YoushanLiu/ANCC/total)
+![Commits](https://img.shields.io/github/commit-activity/m/YoushanLiu/ANCC)
+![Size](https://img.shields.io/github/languages/code-size/YoushanLiu/ANCC)
+![License](https://img.shields.io/github/license/YoushanLiu/ANCC)
 # ANCC
 Some scripts and programs for ambient noise tomography, such as computing cross-correlation, auto-correlation (with parallel computing), and extracting dispersion curves.
 It can also output prestack cross-correlation functions.
