@@ -1,5 +1,5 @@
 ![Lanuguage](https://img.shields.io/badge/-Fortran-734f96?logo=fortran)
-![Python](https://img.shields.io/badge/Python3-3776AB?style=social&logo=python&logoColor=blue)
+![Python](https://img.shields.io/badge/-Python3-3776AB?style=flat&logo=python&logoColor=white)
 ![Version](https://img.shields.io/static/v1?label=version&message=6.6&color=blue)
 ![Downloads](https://img.shields.io/github/downloads/YoushanLiu/ANCC/total)
 ![Commits](https://img.shields.io/github/commit-activity/m/YoushanLiu/ANCC)
