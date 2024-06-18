@@ -239,10 +239,10 @@ open(unit=iunit, file='input.dat', status='old', action='read', iostat=ier)
    do i = 1, 20, 1
       read(iunit,*)
    end do
-   read(iunit,*) str_verbose
-   read(iunit,*) str_overwrite_data
    read(iunit,*) str_save_record
+   read(iunit,*) str_verbose
    read(iunit,*) str_only_cf
+   read(iunit,*) str_overwrite_data
    read(iunit,*) str_stack
    read(iunit,*) str_ac
 
