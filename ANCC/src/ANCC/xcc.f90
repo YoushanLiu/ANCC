@@ -99,7 +99,13 @@ end if
 
 ! Return if it doesn't exist.
 inquire(file=sacinfile, exist=is_existing)
-if (.not.(is_existing)) return
+if (.not.(is_existing)) then
+   npts = 0
+   dt = 0.d0
+   sdb_loc%rec(ist,iev)%t0 = -1.d0
+   sdb_loc%rec(ist,iev)%sacfile = ''
+   return
+end if
 
 
 
