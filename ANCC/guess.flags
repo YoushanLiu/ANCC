@@ -7,22 +7,19 @@ if [[ `type $MPIFC 2>/dev/null` == "" ]]; then
 	echo "Cannot found $MPIFC in your system !"
 	return 0
 fi
-if [[ `$MPIFC --version | grep ifort` != "" ]]; then
-	CC=icc
-	FC=ifort
-	COMPILER=INTEL
-fi
 if [[ `$MPIFC --version | grep ifx` != "" ]]; then
 	CC=icx
 	FC=ifx
 	COMPILER=INTEL
-fi
-if [[ `$MPIFC --version | grep GNU` != "" ]]; then
+elif [[ `$MPIFC --version | grep ifort` != "" ]]; then
+	CC=icc
+	FC=ifort
+	COMPILER=INTEL
+elif [[ `$MPIFC --version | grep GNU` != "" ]]; then
 	CC=gcc
 	FC=gfortran
 	COMPILER=GNU
-fi
-if [[ `$MPIFC --version | grep pgf` != "" ]]; then
+elif [[ `$MPIFC --version | grep pgf` != "" ]]; then
 	CC=pgcc
 	FC=pgf90
 	COMPILER=PGI
