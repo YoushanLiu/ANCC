@@ -71,8 +71,8 @@ elif [[ "$COMPILER" == "INTEL" ]]; then
 	echo "FFLAGS = $FFLAGS" >> config.h
 elif [[ "$COMPILER" == "PGI" ]]; then
 	echo "Build ANCC using the PGI compilers"
-	CFLAGS="-O3 -fast -m64 -Mpreprocess -Mnobounds -Mautoinline -Mcache_align -Mfma -Mprefetch -Munroll -Mdaz -mcmodel=medium -flushz -Mmavx -I./"
-	FFLAGS="-O3 -fast -m64 -Mpreprocess -Mnobounds -Mautoinline -Mcache_align -Mfma -Mprefetch -Munroll -Mdaz -mcmodel=medium -Mmpi=mpich2 -flushz -Mmavx"
+	CFLAGS="-O3 -fast -m64 -Mpreprocess -Mnobounds -Mautoinline -Mcache_align -Mfma -Mprefetch -Munroll -Mdaz -mcmodel=medium -Mflushz -Mavx -I./"
+	FFLAGS="-O3 -fast -m64 -Mpreprocess -Mnobounds -Mautoinline -Mcache_align -Mfma -Mprefetch -Munroll -Mdaz -mcmodel=medium -Mmpi=mpich2 -Mflushz -Mavx"
 	echo "# Build ANCC using the $COMPILER compiler" > config.h
 	echo "" >> config.h
 	echo "# Install directory " >> config.h
