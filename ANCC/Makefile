@@ -6,6 +6,7 @@
 ############################################################################################################
 # Select your compiler
 MPIFC=mpiifort # MPI Fortran compiler binding with ifort [recommended]
+#MPIFC=mpiifx   # MPI Fortran compiler binding with ifx
 #MPIFC=mpifort  # It may bound to the Intel compiler or to the GNU compiler. Don't fooled by its name.
                 # You should check it using mpifort --version
 #MPIFC=mpif90   # MPI Fortran compiler bound to gfortran or intel
