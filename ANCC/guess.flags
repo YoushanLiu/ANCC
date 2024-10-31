@@ -8,12 +8,23 @@ if [[ `type $MPIFC 2>/dev/null` == "" ]]; then
 	return 0
 fi
 if [[ `$MPIFC --version | grep ifort` != "" ]]; then
+	CC=icc
+	FC=ifort
+	COMPILER=INTEL
+fi
+if [[ `$MPIFC --version | grep ifx` != "" ]]; then
+	CC=icx
+	FC=ifx
 	COMPILER=INTEL
 fi
 if [[ `$MPIFC --version | grep GNU` != "" ]]; then
+	CC=gcc
+	FC=gfortran
 	COMPILER=GNU
 fi
 if [[ `$MPIFC --version | grep pgf` != "" ]]; then
+	CC=pgcc
+	FC=pgf90
 	COMPILER=PGI
 fi
 if [[ $COMPILER == "" ]]; then
@@ -24,11 +35,8 @@ fi
 
 if [[ "$COMPILER" == "GNU" ]]; then
 	echo "Build ANCC using the GNU compilers"
-	CC=gcc
-	FC=gfortran
 	CFLAGS="-O3 -Ofast -g -funroll-loops -malign-double -ffast-math -mtune=native -I./"
 	FFLAGS="-O3 -Ofast -cpp -g -ffree-line-length-200 -funroll-loops -malign-double -ffast-math -mtune=native"
-	#echo "compiler is GNU"
 	echo "# Build ANCC using the $COMPILER compiler" > config.h
 	echo "" >> config.h
 	echo "# Install directory " >> config.h
@@ -45,11 +53,8 @@ if [[ "$COMPILER" == "GNU" ]]; then
 	echo "FFLAGS = $FFLAGS" >> config.h
 elif [[ "$COMPILER" == "INTEL" ]]; then
 	echo "Build ANCC using the Intel compilers"
-	CC=icc
-	FC=ifort
 	CFLAGS="-O3 -xHost -unroll -ftz -fma -axAVX -I./"
 	FFLAGS="-O3 -xHost -unroll -ftz -fma -fpp -fpe0 -assume buffered_io -assume byterecl -align sequence -diag-disable 6477 -implicitnone -gen-interfaces -mcmodel=large -shared-intel -arch AVX"
-	#echo "compiler is GNU"
 	echo "# Build ANCC using the $COMPILER compiler" > config.h
 	echo "" >> config.h
 	echo "# Install directory " >> config.h
@@ -66,11 +71,8 @@ elif [[ "$COMPILER" == "INTEL" ]]; then
 	echo "FFLAGS = $FFLAGS" >> config.h
 elif [[ "$COMPILER" == "PGI" ]]; then
 	echo "Build ANCC using the PGI compilers"
-	CC=pgcc
-	FC=pgf90
 	CFLAGS="-O3 -fast -m64 -Mpreprocess -Mnobounds -Mautoinline -Mcache_align -Mfma -Mprefetch -Munroll -Mdaz -mcmodel=medium -flushz -Mmavx -I./"
 	FFLAGS="-O3 -fast -m64 -Mpreprocess -Mnobounds -Mautoinline -Mcache_align -Mfma -Mprefetch -Munroll -Mdaz -mcmodel=medium -Mmpi=mpich2 -flushz -Mmavx"
-	#echo "compiler is GNU"
 	echo "# Build ANCC using the $COMPILER compiler" > config.h
 	echo "" >> config.h
 	echo "# Install directory " >> config.h
