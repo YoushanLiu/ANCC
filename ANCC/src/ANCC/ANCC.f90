@@ -521,7 +521,7 @@ ntaper = max(ceiling(max(t0, taper_min) / dt), ntaper_min)
 ! ***********************************************************************
 errcode = 0
 
-npts = 0
+npts = -1
 dt = 0.d0
 iunit = 4*nprocs + myrank + 11
 open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
@@ -530,7 +530,7 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
 
    do j = myrank, nev-1, nprocs
 
-      ! Skip head myrank lines, because they are processed by other processesors
+      ! Skip head myrank lines, because they are processed by other processes
       do k = 1, myrank, 1
          read(iunit,*, iostat=ier)
          if (0 /= ier) exit
@@ -597,8 +597,8 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
 
          sacfile = trim(adjustl(sdb_loc%rec(ist,iev)%sacfile))
          ! Check consistence in sampling points
-         if (0 /= npts_read) then
-         	if (0 == npts) then
+         if (npts_read > 0) then
+         	if (-1 == npts) then
          	   npts = npts_read
          	else if (npts /= npts_read) then
          	   errcode = -1
@@ -628,7 +628,7 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
          end if
 
          ! Check the correctness of tlen
-         if ((0 /= npts_read) .and. ((t0 + tlen) > npts_read*dt_read)) then
+         if ((npts_read > 0) .and. ((t0 + tlen) > npts_read*dt_read)) then
             write(*,"(A)") "Error: t0 + tlen > npts*dt !"
             write(*,"(A, F12.6)") "t0 + tlen = ", t0 + tlen
             write(*,"(A, F12.6)") "npts*dt   = ", npts_read*dt_read
@@ -640,7 +640,7 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
          end if
 
          ! Check the correctness of tlen
-         if ((0 /= npts_read) .and. (tlen < 0.80*npts_read*dt_read)) then
+         if ((npts_read > 0) .and. (tlen < 0.80*npts_read*dt_read)) then
             write(*,"(A)") "Error: tlen < 0.80*(npts-1)*dt !"
             write(*,"(A, F12.6)") "tlen         = ", tlen
             write(*,"(A, F12.6)") "0.80*npts*dt = ", npts_read*dt_read
@@ -653,7 +653,7 @@ open(unit=iunit, file='events.lst', status='old', action='read', iostat=ier)
 
       end do ! end of do ist = 1, nst, 1
 
-      ! Skip tail nprocs-(myrank+1) lines, because they are processed by other processesors
+      ! Skip tail nprocs-(myrank+1) lines, because they are processed by other processes
       do k = myrank+2, nprocs, 1
          read(iunit,*, iostat=ier)
          if (0 /= ier) exit
