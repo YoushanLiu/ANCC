@@ -38,9 +38,12 @@ void aftanpg_(double *PIover4, int *n, double *seis, double *t0, double *dt,
     int *nfout1, double **arr1, int *nfout2, double *arr2,
     double *tamp, int *nrow, int *ncol, double **ampo, int *ierr);
 
-void printres_(double *dt, double *delta, int *nfout1, double **arr1,
-     int *nfout2, double **arr2, double *tamp, int *nrow, int *ncol,
-     double **ampo, int *ierr, char *name, char *pref);
+/*void printres_(double *dt, double *delta, int *nfout1, double **arr1,
+ *     int *nfout2, double **arr2, double *tamp, int *nrow, int *ncol,
+ *     double **ampo, int *ierr, char *name, char *pref);*/
+void printres_(double *dt, double *delta, int *nfout1, double *arr1,
+     int *nfout2, double *arr2, double *tamp, int *nrow, int *ncol,
+     double *ampo, int *ierr, char *name, char *pref);
 
 
 void readhead_(int *sac, char *name, int *n, int *ierr);

@@ -193,12 +193,15 @@ void readdata_(int *sac, char *name, double *dt, double *delta,
 /*
  * print completion result
  */
-void printres_(double *xdt, double *delta, int *xnfout1, double **arr1,
-               int *xnfout2, double **arr2, double *xtamp, int *xnrow,
-               int *xncol, double **ampo, int *xierr, char *xname, char *xpref)
+/*void printres_(double *xdt, double *delta, int *xnfout1, double **arr1,
+ *               int *xnfout2, double **arr2, double *xtamp, int *xnrow,
+ *               int *xncol, double **ampo, int *xierr, char *xname, char *xpref)*/
+void printres_(double *xdt, double *delta, int *xnfout1, double *arr1,
+               int *xnfout2, double *arr2, double *xtamp, int *xnrow, int *xncol, 
+               double *ampo, int *xierr, char *xname, char *xpref)
 {
 
-    int i, j, ierr;
+    int i, j, k, ip, ierr;
     int nfout1, nfout2, nrow, ncol;
 
     FILE *out;
@@ -246,9 +249,12 @@ void printres_(double *xdt, double *delta, int *xnfout1, double **arr1,
     }
     for (i = 0; i < nfout1; i++)
     {
+        //fprintf(out, "%4d %10.4lf %10.4lf %12.4lf %12.4lf %12.4lf %12.4lf %8.3lf\n",
+        //    i, arr1[i][0], arr1[i][1], arr1[i][2], arr1[i][3],
+        //    arr1[i][4], arr1[i][5], arr1[i][6]);
+        k = i*8;
         fprintf(out, "%4d %10.4lf %10.4lf %12.4lf %12.4lf %12.4lf %12.4lf %8.3lf\n",
-            i, arr1[i][0], arr1[i][1], arr1[i][2], arr1[i][3],
-            arr1[i][4], arr1[i][5], arr1[i][6]);
+            i, arr1[k], arr1[k+1], arr1[k+2], arr1[k+3], arr1[k+4], arr1[k+5], arr1[k+6]);
     }
     fclose(out);
 
@@ -266,9 +272,12 @@ void printres_(double *xdt, double *delta, int *xnfout1, double **arr1,
         }
         for (i = 0; i < nfout2; i++)
         {
+            //fprintf(out, "%4d %10.4lf %10.4lf %12.4lf %12.4lf %12.4lf %8.3lf\n",
+            //    i, arr2[i][0], arr2[i][1], arr2[i][2], arr2[i][3],
+            //    arr2[i][4], arr2[i][5]);
+            k = i*7;
             fprintf(out, "%4d %10.4lf %10.4lf %12.4lf %12.4lf %12.4lf %8.3lf\n",
-                i, arr2[i][0], arr2[i][1], arr2[i][2], arr2[i][3],
-                arr2[i][4], arr2[i][5]);
+                i, arr2[k], arr2[k+1], arr2[k+2], arr2[k+3], arr2[k+4], arr2[k+5]);
         }
         fclose(out);
     }
@@ -285,8 +294,15 @@ void printres_(double *xdt, double *delta, int *xnfout1, double **arr1,
 
     fprintf(out, "%5d %5d %10.4lf %12.5lf\n", nrow, ncol, dt, *delta);
     for (i = 0; i < nrow; ++i)
+    {
+        ip =i*8;
+        k = i*ncol;
         for (j = 0; j < ncol; ++j)
-            fprintf(out, "%5d %8.3lf %15.6e\n", arr2[i][0], *delta / (tamp + j * dt), ampo[i][j]);
+        	{
+            	//fprintf(out, "%5d %8.3lf %15.6e\n", arr2[i][0], *delta / (tamp + j * dt), ampo[i][j]);
+            	fprintf(out, "%10.4lf %8.3lf %15.6e\n", arr1[ip], *delta / (tamp + j * dt), ampo[k+j]);
+        	}
+    }
     fclose(out);
 
 }
