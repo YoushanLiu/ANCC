@@ -295,7 +295,7 @@ void printres_(double *xdt, double *delta, int *xnfout1, double *arr1,
     fprintf(out, "%5d %5d %10.4lf %12.5lf\n", nrow, ncol, dt, *delta);
     for (i = 0; i < nrow; ++i)
     {
-        ip =i*8;
+        ip =i*8 + 1;
         k = i*ncol;
         for (j = 0; j < ncol; ++j)
         	{
