@@ -1445,6 +1445,7 @@ do iev = 1, nev, 1
          tmpcorr(nlag+2-k) = dataout(nout+2-k)
          tmpcorr(nlag+k) = dataout(k)
       end do
+	  dealloate(dataout)
 
       ! **************************************************************
       ! Count the cross-correlation times.
@@ -1515,6 +1516,9 @@ end if
 
 
 if ((0 == nstack) .or. (.not.(is_stack))) then
+   if (allocated(dataout)) then
+      deallocate(dataout)
+   end if
    if (allocated(fftdata1)) then
       deallocate(fftdata1)
    end if
@@ -1731,8 +1735,7 @@ if ((nstack > 0) .and. is_stack) then
                sacname = trim(adjustl(tarfolder))//'/'//trim(adjustl(str_myrank))//'/'// &
                           trim(adjustl(stapair_name))//'_'//trim(adjustl(sacname))//'.SAC'
 
-               call sacio_readsac(sacname, shd, dataout, ier)
-               tmpcorr = dataout
+               call sacio_readsac(sacname, shd, tmpcorr, ier)
                xcorr_bootstrap = xcorr_bootstrap + tmpcorr
 
             end do
@@ -1933,7 +1936,7 @@ if (allocated(dataout)) then
    deallocate(dataout)
 end if
 if (allocated(rand_tmp)) then
-   deallocate(dataout)
+   deallocate(rand_tmp)
 end if
 if (allocated(rand_array)) then
    deallocate(rand_array)
