@@ -1735,8 +1735,9 @@ if ((nstack > 0) .and. is_stack) then
                sacname = trim(adjustl(tarfolder))//'/'//trim(adjustl(str_myrank))//'/'// &
                           trim(adjustl(stapair_name))//'_'//trim(adjustl(sacname))//'.SAC'
 
-               call sacio_readsac(sacname, shd, tmpcorr, ier)
-               xcorr_bootstrap = xcorr_bootstrap + tmpcorr
+               call sacio_readsac(sacname, shd, dataout, ier)
+               xcorr_bootstrap = xcorr_bootstrap + dataout
+	           dealloate(dataout)
 
             end do
 
