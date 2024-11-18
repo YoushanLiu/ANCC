@@ -1445,7 +1445,7 @@ do iev = 1, nev, 1
          tmpcorr(nlag+2-k) = dataout(nout+2-k)
          tmpcorr(nlag+k) = dataout(k)
       end do
-	  dealloate(dataout)
+      deallocate(dataout)
 
       ! **************************************************************
       ! Count the cross-correlation times.
@@ -1523,7 +1523,7 @@ if ((0 == nstack) .or. (.not.(is_stack))) then
       deallocate(fftdata1)
    end if
    if (allocated(fftdata2)) then
-     deallocate(fftdata2)
+      deallocate(fftdata2)
    end if
    if (allocated(tmpcorr)) then
       deallocate(tmpcorr)
@@ -1737,7 +1737,7 @@ if ((nstack > 0) .and. is_stack) then
 
                call sacio_readsac(sacname, shd, dataout, ier)
                xcorr_bootstrap = xcorr_bootstrap + dataout
-	           dealloate(dataout)
+               deallocate(dataout)
 
             end do
 
@@ -1835,7 +1835,7 @@ if ((nstack > 0) .and. is_stack) then
             end do
 
             if (allocated(matrix1)) then
-              deallocate(matrix1)
+               deallocate(matrix1)
             end if
             allocate(matrix1(4,nperiod1))
 
@@ -1858,7 +1858,7 @@ if ((nstack > 0) .and. is_stack) then
             end do
 
             if (allocated(matrix2)) then
-              deallocate(matrix2)
+               deallocate(matrix2)
             end if
             allocate(matrix2(5,nperiod2))
 
