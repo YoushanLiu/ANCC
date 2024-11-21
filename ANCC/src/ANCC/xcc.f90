@@ -1705,7 +1705,7 @@ if ((nstack > 0) .and. is_stack) then
 
          ! Allocate memory.
          allocate(xcorr_bootstrap(1:2*nlag+1))
-         allocate(rand_tmp(nstack), rand_array(nstack))
+         allocate(rand_tmp(nstack), rand_num(nstack))
          allocate(grv_2darr(200,num_bootstrap), phv_2darr(200,num_bootstrap))
 
          ! Initialize the BOOTSTRAP matrix with zero
