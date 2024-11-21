@@ -925,11 +925,11 @@ end if
 if (allocated(sf)) then
    deallocate(sf)
 end if
-if (allocated(seis_data)) then
-   deallocate(seis_data)
-end if
 if (allocated(strs)) then
    deallocate(strs)
+end if
+if (allocated(seis_data)) then
+   deallocate(seis_data)
 end if
 
 
@@ -1309,11 +1309,11 @@ character(len=512) stapair_path, stapair_name
 character(len=512) sacname, listname, filename
 character(len=512) sacfile_prefix, path_bootstrap
 
-integer, allocatable, dimension(:) :: rand_array
+integer, allocatable, dimension(:) :: rand_num
 
 real(SGL), allocatable, dimension(:) :: dataout
 
-real(SGL), allocatable, dimension(:) :: tmpcorr, xcorr_bootstrap
+real(SGL), allocatable, dimension(:) :: xcorr_tmp, xcorr_bootstrap
 
 real(SGL), allocatable, dimension(:) :: grv_mean, grv_std, phv_mean, phv_std
 
@@ -1408,7 +1408,7 @@ shd%dist = geodist(shd%evla, shd%evlo, shd%stla, shd%stlo)
 
 
 
-allocate(tmpcorr(1:2*nlag+1))
+allocate(xcorr_tmp(1:2*nlag+1))
 
 nstack = 0
 ! Loop on the events.
@@ -1440,10 +1440,10 @@ do iev = 1, nev, 1
       ! Assign the cross-correlation resulted from frequency domain
       ! computation to the time domain cross-correlation series.
       ! ***************************************************************
-      tmpcorr(nlag+1) = dataout(1)
+      xcorr_tmp(nlag+1) = dataout(1)
       do k = 2, nlag+1, 1
-         tmpcorr(nlag+2-k) = dataout(nout+2-k)
-         tmpcorr(nlag+k) = dataout(k)
+         xcorr_tmp(nlag+2-k) = dataout(nout+2-k)
+         xcorr_tmp(nlag+k) = dataout(k)
       end do
       deallocate(dataout)
 
@@ -1495,7 +1495,7 @@ do iev = 1, nev, 1
 
 
       ! Write the single cross-correlation function.
-      call sacio_writesac(sacname, shd, tmpcorr, ier)
+      call sacio_writesac(sacname, shd, xcorr_tmp, ier)
 
    end if
 
@@ -1525,8 +1525,8 @@ if ((0 == nstack) .or. (.not.(is_stack))) then
    if (allocated(fftdata2)) then
       deallocate(fftdata2)
    end if
-   if (allocated(tmpcorr)) then
-      deallocate(tmpcorr)
+   if (allocated(xcorr_tmp)) then
+      deallocate(xcorr_tmp)
    end if
    !call system('rm -rf '//trim(adjustl(tarfolder))//'/'//trim(adjustl(str_myrank)))
    if (is_verbose .and. (nstack > 0)) then
@@ -1725,19 +1725,19 @@ if ((nstack > 0) .and. is_stack) then
             call init_random_seed()
             call random_number(rand_tmp)
             rand_tmp = rand_tmp*(nstack-1)+1
-            rand_array = nint(rand_tmp)
+            rand_num = nint(rand_tmp)
 
 
             ! Stack selected daily cross-collelations
             do k = 1, nstack, 1
 
-               write(sacname,"(I5)") rand_array(k)
+               write(sacname,"(I5)") rand_num(k)
                sacname = trim(adjustl(tarfolder))//'/'//trim(adjustl(str_myrank))//'/'// &
                           trim(adjustl(stapair_name))//'_'//trim(adjustl(sacname))//'.SAC'
 
-               call sacio_readsac(sacname, shd, dataout, ier)
-               xcorr_bootstrap = xcorr_bootstrap + dataout
-               deallocate(dataout)
+               call sacio_readsac(sacname, shd, xcorr_tmp, ier)
+               xcorr_bootstrap = xcorr_bootstrap + xcorr_tmp
+               deallocate(xcorr_tmp)
 
             end do
 
@@ -1801,7 +1801,7 @@ if ((nstack > 0) .and. is_stack) then
          open(unit=26, file=bootstrap_name, status='replace', action='write', iostat=ier)
 
             do iperiod = 1, nperiod, 1
-               if ((grv_mean(iperiod) > 0.0) .or. (grv_std(iperiod) > 0.0) .or. (phv_mean(iperiod) > 0.0) .or. (phv_std(iperiod) > 0.0)) then
+               if ((grv_mean(iperiod) > 0.0) .or. (phv_mean(iperiod) > 0.0)) then
                   write(26, "(I4,4F12.6)") iperiod, grv_mean(iperiod), grv_std(iperiod), phv_mean(iperiod), phv_std(iperiod)
                end if
             end do
@@ -1813,7 +1813,7 @@ if ((nstack > 0) .and. is_stack) then
          deallocate(xcorr_bootstrap)
          deallocate(grv_mean, grv_std)
          deallocate(phv_mean, phv_std)
-         deallocate(rand_tmp, rand_array)
+         deallocate(rand_tmp, rand_num)
          deallocate(grv_2darr, phv_2darr)
 
 
@@ -1924,8 +1924,14 @@ call system('rm -rf ./tmp/'//trim(adjustl(str_myrank)))
 
 
 
-if (allocated(tmpcorr)) then
-   deallocate(tmpcorr)
+if (allocated(dataout)) then
+   deallocate(dataout)
+end if
+if (allocated(matrix1)) then
+   deallocate(matrix1)
+end if
+if (allocated(matrix2)) then
+   deallocate(matrix2)
 end if
 if (allocated(fftdata1)) then
    deallocate(fftdata1)
@@ -1933,14 +1939,11 @@ end if
 if (allocated(fftdata2)) then
    deallocate(fftdata2)
 end if
-if (allocated(dataout)) then
-   deallocate(dataout)
-end if
 if (allocated(rand_tmp)) then
    deallocate(rand_tmp)
 end if
-if (allocated(rand_array)) then
-   deallocate(rand_array)
+if (allocated(rand_num)) then
+   deallocate(rand_num)
 end if
 if (allocated(grv_2darr)) then
    deallocate(grv_2darr)
@@ -1948,11 +1951,8 @@ end if
 if (allocated(phv_2darr)) then
    deallocate(phv_2darr)
 end if
-if (allocated(matrix1)) then
-   deallocate(matrix1)
-end if
-if (allocated(matrix2)) then
-   deallocate(matrix2)
+if (allocated(xcorr_tmp)) then
+   deallocate(xcorr_tmp)
 end if
 
 
