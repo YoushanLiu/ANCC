@@ -36,7 +36,7 @@ Now the computation for multiple components (such as ZZ, ZN, ZE, NZ, NN, NE, EZ,
 
 
 # Change Log
-· 21th Mar. 2021: Calculaton of auto-correlation functions is supported.
+· 21th Mar. 2021: Calculation of auto-correlation functions is supported.
 
 · 13th Jul. 2022: Outputing prestack cross-correlation functions is supported.
 
