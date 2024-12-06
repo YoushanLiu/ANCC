@@ -28,10 +28,10 @@ Although master/slave mode has been removed in v5.0, however, database-construct
 After 6.0, the database-constructing part is also parallelized. The database struct is redesigned. As a result, the access order of the array is the same as the storage order 
 in computer memory. Further performance is obtained.
 
+Now the computation for multiple components (such as ZZ, ZN, ZE, NZ, NN, NE, EZ, EN, EE) is ready.
+
 
 In version 7.0, data overlap is allowed.
-
-Now the computation for multiple components (such as ZZ, ZN, ZE, NZ, NN, NE, EZ, EN, EE) is ready.
 
 
 
