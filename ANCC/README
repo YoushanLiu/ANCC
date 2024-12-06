@@ -1,5 +1,5 @@
-In default, the intel compiler (such as ifort and mpiifort) is recommended. If you use a gnu compiler, you can comment flags for the intel compiler 
-and uncomments those for the gnu compiler.
+In default, the intel compiler (such as ifort/mpiifort or ifx/mpiifx) is recommended. If you use a gnu compiler, you can comment flags for the intel compiler 
+and uncomments those for the gnu compiler in the Makefile.
 
 This program includes three parts, i.e. AFTAN (original author, University of Colorado Boulder), ANCC (original author [v2.0], Xingli Fan), TF_PWS (original author, Guoliang Li).
 The first part implements time-frequency analysis to extract dispersion curves for ambient noise tomography.
@@ -28,6 +28,7 @@ Although master/slave mode has been removed in v5.0, however, database-construct
 After 6.0, the database-constructing part is also parallelized. The database struct is redesigned. As a result, the access order of the array is the same as the storage order 
 in computer memory. Further performance is obtained.
 
+
 In version 7.0, data overlap is allowed.
 
 Now the computation for multiple components (such as ZZ, ZN, ZE, NZ, NN, NE, EZ, EN, EE) is ready.
@@ -35,8 +36,14 @@ Now the computation for multiple components (such as ZZ, ZN, ZE, NZ, NN, NE, EZ,
 
 
 # Change Log
+· 21th Mar. 2021: Calculaton of auto-correlation functions is supported.
+
+· 13th Jul. 2022: Outputing prestack cross-correlation functions is supported.
+
 · 31th Aug. 2023: Redesigned Makefile. The config.h used in the old versions can be automake by two bash scripts, you just need to select the MPIFC in the Makefile.
 				  Now, it supports Intel, GNU, and PGI Compilers. If you want to modify the guess.flags or anything else to adapt it to other compilers or systems, let me know so that we can make your modifications available to others.
                   Fix some errors in ./src/TF_PWS/st.c
 
 · 12th Nov. 2023: Redesigned database structs to save memory and improve MPI communications.
+
+· 7th Nov. 2024: Fix many errors in AFTAN.
