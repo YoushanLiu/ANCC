@@ -179,7 +179,7 @@ def findstr(str_src, str_target):
 	'''
 	findstr(str_src, str_target)
 	find the index of a substring in a string
-	str_src-> source string
+	str_src -> source string
 	str_target -> substring
 	'''
 
