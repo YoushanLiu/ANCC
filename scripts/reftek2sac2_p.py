@@ -180,7 +180,7 @@ def findstr(str_src, str_target):
 	'''
 	findstr(str_src, str_target)
 	find the index of a substring in a string
-	str_src-> source string
+	str_src -> source string
 	str_target -> substring
 	'''
 
@@ -202,6 +202,20 @@ def convert_hourly(hour_files_path, day_path):
 	hour_files_list = os.listdir(hour_files_path)
 
 	idx = findstr(hour_files_path, '/')
+
+
+	ipos = -1
+	station_name = hour_files_path[idx[-5]+1:idx[-4]]
+	for j in range(len(sta.stnm)):
+		res = findstr(station_name, sta.stnm[j])
+		#res = findstr(hour_files_path[len_topdir:-1], sta.stnm[j])
+		if ([] != res):
+			ipos = j
+			break
+	if (-1 == ipos):
+		print("Error: station folder %s does not include the name of this station or this station is missing in the stainfo.lst" % station_name)
+		return
+
 
 	for hour_file in hour_files_list:
 
@@ -348,20 +362,6 @@ def convert_hourly(hour_files_path, day_path):
 			#	if (-1 == ipos):
 			#		print("Error: station %s is not in the station list or field 'station' in reftek header is NULL" % station_name)
 			#		return
-
-
-			ipos = -1
-			station_name = hour_files_path[idx[-5]+1:idx[-4]]
-			for j in range(len(sta.stnm)):
-				res = findstr(station_name, sta.stnm[j])
-				#res = findstr(hour_files_path[len_topdir:-1], sta.stnm[j])
-				if ([] != res):
-					ipos = j
-					break
-			if (-1 == ipos):
-				print("Error: station folder %s does not include the name of this station or this station is missing in the stainfo.lst" % station_name)
-				return
-
 
 
 			station = sta.stnm[ipos]
