@@ -550,8 +550,8 @@ if ((f1 > 0.0) .and. (f2 > f1) .and. (f3 > f2) .and. (f4 > f3)) then
          write(18, "(A,F10.4,F10.4,F10.4,F10.4)") 'transfer from polezero subtype '// &
                                  trim(adjustl(pzfile))//' to vel freq ', f1, f2, f3, f4
          !write(18, "(A)") 'mul 1.e9'
-         write(18, "(A)") 'rmean'
          write(18, "(A)") 'rtrend'
+         write(18, "(A)") 'rmean'
          write(18, "(A)") 'w over'
          write(18, "(A)") 'quit'
          write(18, "(A)") 'EOF'
