@@ -38,7 +38,7 @@ from obspy import UTCDateTime
 from obspy.io.sac import SACTrace
 from obspy.core.trace import Trace
 from obspy.core.stream import Stream
-from multiprocessing.dummy import Pool as ThreadPool
+from multiprocessing.pool import ThreadPool
 
 
 
