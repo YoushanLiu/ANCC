@@ -44,7 +44,7 @@ from math import *
 from obspy import read
 from obspy import UTCDateTime
 from obspy.io.sac import SACTrace
-from multiprocessing.dummy import Pool as ThreadPool
+from multiprocessing.pool import ThreadPool
 
 
 
