@@ -858,7 +858,8 @@ if __name__ == '__main__':
 	print('http://ds.iris.edu/NRL/sensors/guralp/guralp_sensors.html')
 	#print('\n')
 
-	shutil.rmtree(output_path)
+	if os.path.exists(output_path):
+		shutil.rmtree(output_path)
 
 	resp2pz(sensor_resp_pool_path, sensor_resp_listname, das_resp_pool_path, das_resp_listname)
 
