@@ -24,6 +24,7 @@ http://ds.iris.edu/NRL/sensors/guralp/guralp_sensors.html
 import os
 import re
 import xlrd
+import shutil
 import xdrlib, sys
 from obspy.core import UTCDateTime
 
@@ -630,11 +631,11 @@ def resp2pz(RESP_pool_path, RESP_listname):
 			iresp = index_resp_pool(RESP_list, sensor_type)
 
 		# whether open a new file
-		open_new_file = False
-		if (station != station_prev):
-			if (station_prev != '' or station == ''):
-				f.close()
-			open_new_file = True
+		#open_new_file = False
+		#if (station != station_prev):
+		#	if (station_prev != '' or station == ''):
+		#		f.close()
+		#	open_new_file = True
 
 
 		if ((station != '') and (station != [])):
@@ -654,8 +655,9 @@ def resp2pz(RESP_pool_path, RESP_listname):
 					network + '.' + station + '.' + \
 					'' + '.' + C + '.PZ'
 
-				if (open_new_file):
-					f = open(filename, 'w+')
+				#if (open_new_file):
+				#	f = open(filename, 'w+')
+				f = open(filename, 'a')
 
 				write_paz(f, RESP_pool, iresp, network, station, C, \
 					starttime, endtime, stla, stlo, stel, stdep, sample_rate)
@@ -683,6 +685,8 @@ if __name__ == '__main__':
 	print('Please downloaded the unavailable RESP files in RESP_pool from the following website.')
 	print('http://ds.iris.edu/NRL/sensors/guralp/guralp_sensors.html')
 	#print('\n')
+
+	shutil.rmtree(output_path)
 
 	resp2pz(RESP_pool_path, RESP_listname)
 
