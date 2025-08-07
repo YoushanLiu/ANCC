@@ -34,7 +34,7 @@ implicit none
 integer(4), intent(in) :: nb, ne, n
 integer(4), intent(in) :: ntapb, ntape
 
-real(8), intent(in) :: seis(n)
+real(4), intent(in) :: seis(n)
 
 
 integer(4), intent(out) :: ns
@@ -60,7 +60,7 @@ ncorr = ne + ntape
 ! make copy seis to s
 allocate(s(1:ncorr), stat=ier)
 s = 0.d0
-s(1:min(n,ncorr)) = seis(1:min(n,ncorr))
+s(1:min(n,ncorr)) = dble(seis(1:min(n,ncorr)))
 if ((nb-ntapb-1) > 0) then
    s(1:nb-ntapb-1) = 0.d0
 endif
