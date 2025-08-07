@@ -49,7 +49,7 @@ void printres_(double *dt, double *delta, int *nfout1, double *arr1,
 void readhead_(int *sac, char *name, int *n, int *ierr);
 
 void readdata_(int *sac, char *name, double *dt, double *delta,
-     double *t0, double *seis, int *ierr);
+     double *t0, float *seis, int *ierr);
 
 void swapn(unsigned char *b, int N, int nn);
 
