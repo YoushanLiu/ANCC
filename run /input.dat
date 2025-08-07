@@ -23,7 +23,7 @@ N  100                                               # whether doing the bootstr
 ##############################################################################
 # INPUT PARAMETERS FOR AUTOMATIC FREQUENCY-TIME ANALYSIS
 ##############################################################################
--1.0                                                 # piover4 (phase_shift = PI/4*piover4)
+-1.0                                                 # PIover4 (phase_shift = PI/4*piover4)
 1.5 5.0                                              # vmin, vmax - minimum and maximum group velocity (for tapering the signal window)
 3.0 45.0                                             # tmin, tmax - minimum and maximum period for the phase velocity measurement
 Y  1                                                 # whether limiting the maximum period (nLambda*period*ref_velocity < delta), nLambda
