@@ -39,7 +39,7 @@ real(8) PIover4
 
 real(8) x(1), y(1)
 
-real(8), dimension(:), allocatable :: seis
+real(4), dimension(:), allocatable :: seis
 
 real(8), dimension(:), allocatable :: prpvper, prpvvel
 real(8), dimension(:,:), allocatable :: ampo, arr1, arr2, pred
@@ -245,3 +245,4 @@ deallocate(prpvper, prpvvel)
 
 
 end program AFTAN
+
