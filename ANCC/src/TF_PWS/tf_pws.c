@@ -75,9 +75,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 
-int getopt();
 extern char *optarg;
 extern int   optind;
+int getopt(int argc, char *const *argv, const char *opts);
 void Strans(int len, int lo, int hi, double df, float *data, float *result);
 void iStrans(int len, int lo, int hi, float *data, float *result);
 void iStrans2(int len, int lo, int hi, double df, float *data, float *result);
