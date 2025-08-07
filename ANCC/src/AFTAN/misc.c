@@ -93,7 +93,7 @@ void readhead_(int *sac, char *name, int *n, int *ierr)
 
 
 void readdata_(int *sac, char *name, double *dt, double *delta,
-               double *t0, double *seis, int *ierr)
+               double *t0, float *seis, int *ierr)
 {
 
     int i, n, nn, iswap, *nsam;
