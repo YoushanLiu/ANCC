@@ -40,7 +40,7 @@ subroutine aftanpg(PIover4, n, seis, t0, dt, delta, vmin, vmax, tmin, tmax, &
 ! PIover4   - phase shift = PI/4*PIover4, for cross-correlation
 !             PIover4 should be -1.0 (real(8))
 ! n         - number of input samples, (integer(4))
-! seis      - input waveform length of n, (real(8))
+! seis      - input waveform length of n, (real(4))
 ! t0        - time shift of SAC file in seconds, (real(8))
 ! dt        - sampling step, in seconds, (real(8))
 ! delta     - distance, km (real(8))
@@ -110,7 +110,7 @@ real(8), intent(in) :: vmin, vmax, tmin, tmax
 
 real(8), intent(in) :: PIover4
 
-real(8), intent(in) :: seis(n)
+real(4), intent(in) :: seis(n)
 
 real(8), intent(in) :: phprper(nphpr), phprvel(nphpr)
 
@@ -676,3 +676,4 @@ end subroutine aftanpg
 
 
 end module aftanpg_m
+
