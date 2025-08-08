@@ -81,7 +81,7 @@ subroutine aftanpg(PIover4, n, seis, t0, dt, delta, vmin, vmax, tmin, tmax, &
 !             If nfout2 == 0, no final result.
 ! arr2(1,:) - central periods, s
 ! arr2(2,:) - observed periods, s
-! arr2(3,:) - group velocities, km/sor phase if nphpr=0, rad
+! arr2(3,:) - group velocities, km/s or phase if nphpr=0, rad
 ! arr2(4,:) - phase velocities, km/s
 ! arr2(5,:) - amplitudes, dB
 ! arr2(6,:) - signal/noise ratio, dB
@@ -676,6 +676,7 @@ end subroutine aftanpg
 
 
 end module aftanpg_m
+
 
 
 
