@@ -43,7 +43,7 @@ subroutine aftanipg(PIover4, n, seis, t0, dt, delta, vmin, vmax, &
 ! PIover4   - phase shift = PI/4*PIover4, for cross -correlation
 !             PIover4 should be -1.0 (real(8))
 ! n         - number of input samples, (integer(4))
-! seis      - input array length of n, (real(4))
+! seis      - input waveform with length of n, (real(4))
 ! t0        - time shift of SAC file in seconds, (real(8))
 ! dt        - sampling rate in seconds, (real(8))
 ! delta     - distance, km (real(8))
@@ -51,10 +51,10 @@ subroutine aftanipg(PIover4, n, seis, t0, dt, delta, vmin, vmax, &
 ! vmax      - maximal value of the group velocity, km/s (real(8))
 ! tmin      - minimal period, s (real(8))
 ! tmax      - maximal period, s (real(8))
-! tresh     - treshold, usualy = 10, (real(8))
+! tresh     - threshold value, usualy = 10, (real(8))
 ! ffact     - factor to automatic filter parameter, usualy =1, (real(8))
-! perc      - minimal length of of output segment vs freq. range, % (real(8))
-! npoints   - max number points in jump, (integer(4))
+! perc      - minimal length of output segment vs freq. range, % (real(8))
+! npoints   - maximum number of points in jump, (integer(4))
 ! taperl    - factor for the left end seismogram tapering,
 !             taper = taperl*tmax,    (real(8))
 ! nfin      - starting number of frequencies, nfin <= 100,(integer(4))
@@ -81,7 +81,7 @@ subroutine aftanipg(PIover4, n, seis, t0, dt, delta, vmin, vmax, &
 ! arr1(4,:) - phase velocities, km/s (real(8))
 ! arr1(5,:) - amplitudes, Db (real(8))
 ! arr1(6,:) - discrimination function, (real(8))
-! arr1(7,:) - signal/noise ratio, Db (real(8))
+! arr1(7,:) - signal/noise ratio, dB (real(8))
 ! arr1(8,:) - maximum half width, s (real(8))
 ! arr2      - final results
 ! nfout2    - output number of frequencies for arr2, (integer(4))
@@ -91,15 +91,15 @@ subroutine aftanipg(PIover4, n, seis, t0, dt, delta, vmin, vmax, &
 ! arr2(2,:) - apparent periods, s (real(8))
 ! arr2(3,:) - group velocities, km/s (real(8))
 ! arr1(4,:) - phase velocities, km/s (real(8))
-! arr2(5,:) - amplitudes, Db (real(8))
-! arr2(6,:) - signal/noise ratio, Db (real(8))
+! arr2(5,:) - amplitudes, dB (real(8))
+! arr2(6,:) - signal/noise ratio, dB (real(8))
 ! arr2(7,:) - maximum half width, s (real(8))
 ! tamp      - time to the beginning of ampo table, s (real(8))
 ! nrow      - number of rows in array ampo, (integer(4))
 ! ncol      - number of columns in array ampo, (integer(4))
-! amp       - FTAN amplitude array, Db, (real(8))
+! amp       - FTAN amplitude array, dB, (real(8))
 ! ierr      - completion status, =0 - O.K.,           (integer(4))
-!                                =1 - some problems occures
+!                                =1 - some problems occurres
 !                                =2 - no final results
 !=====================================================================
 
@@ -763,4 +763,5 @@ end subroutine aftanipg
 
 
 end module aftanipg_m
+
 
