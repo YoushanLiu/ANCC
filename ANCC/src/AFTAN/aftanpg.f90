@@ -53,8 +53,8 @@ subroutine aftanpg(PIover4, n, seis, t0, dt, delta, vmin, vmax, tmin, tmax, &
 ! perc      - minimal length of output segment vs freq. range, % (real(8))
 ! npoints   - maximum number of points in jump, (integer(4))
 ! taperl    - factor for the left end seismogram tapering,
-!             taper = taperl*tmax,    (real(8))
-! nfin      - starting number of frequencies, nfin <= 100,(integer(4))
+!             taper = taperl*tmax, (real(8))
+! nfin      - starting number of frequencies, nfin <= 100, (integer(4))
 ! nphpr     - length of phprper and phprvel arrays
 ! phprper   - predicted phase velocity periods, s
 ! phprvel   - predicted phase velocity for corresponding periods, s
@@ -90,8 +90,8 @@ subroutine aftanpg(PIover4, n, seis, t0, dt, delta, vmin, vmax, tmin, tmax, &
 ! nrow      - number of rows in array ampo, (integer(4))
 ! ncol      - number of columns in array ampo, (integer(4))
 ! amp       - FTAN amplitude array, dB, (real(8))
-! ierr      - completion status, =0 - O.K.,           (integer(4))
-!                                =1 - some problems occurres
+! ierr      - completion status, =0 - O.K., (integer(4))
+!                                =1 - some problems occurs
 !                                =2 - no final results
 !======================================================================
 
@@ -676,5 +676,6 @@ end subroutine aftanpg
 
 
 end module aftanpg_m
+
 
 
