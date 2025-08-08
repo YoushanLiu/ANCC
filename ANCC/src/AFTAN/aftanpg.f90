@@ -50,7 +50,7 @@ subroutine aftanpg(PIover4, n, seis, t0, dt, delta, vmin, vmax, tmin, tmax, &
 ! tmax      - maximal period, s (real(8))
 ! tresh     - threshold value, usualy = 10, (real(8))
 ! ffact     - factor to automatic filter parameter, usualy =1, (real(8))
-! perc      - minimal length of output segment vs freq. range, % (real(8))
+! perc      - minimal length of output segment vs freq. range, (real(8))
 ! npoints   - maximum number of points in jump, (integer(4))
 ! taperl    - factor for the left end seismogram tapering,
 !             taper = taperl*tmax, (real(8))
@@ -676,6 +676,7 @@ end subroutine aftanpg
 
 
 end module aftanpg_m
+
 
 
 
