@@ -53,16 +53,16 @@ subroutine aftanipg(PIover4, n, seis, t0, dt, delta, vmin, vmax, &
 ! tmax      - maximal period, s (real(8))
 ! tresh     - threshold value, usualy = 10, (real(8))
 ! ffact     - factor to automatic filter parameter, usualy =1, (real(8))
-! perc      - minimal length of output segment vs freq. range, % (real(8))
+! perc      - minimal length of output segment vs freq. range, (real(8))
 ! npoints   - maximum number of points in jump, (integer(4))
 ! taperl    - factor for the left end seismogram tapering,
-!             taper = taperl*tmax,    (real(8))
-! nfin      - starting number of frequencies, nfin <= 100,(integer(4))
+!             taper = taperl*tmax, (real(8))
+! nfin      - starting number of frequencies, nfin <= 100, (integer(4))
 ! fsnr      - phase match filter parameter, spectra ratio to
-!             determine cutting point   (real(8))
-! fmatch    - factor to length of phase matching window (real(8))
+!             determine cutting points, (real(8))
+! fmatch    - factor to length of phase matching window, (real(8))
 ! npred     - length of the group velocity prediction table
-! pred      - group velocity prediction table:    (real(8))
+! pred      - group velocity prediction table, (real(8))
 ! pred(0,:) - periods of group velocity prediction table, s
 ! pred(1,:) - pedicted group velocity, km/s
 ! nphpr     - length of phprper and phprvel arrays
@@ -79,7 +79,7 @@ subroutine aftanipg(PIover4, n, seis, t0, dt, delta, vmin, vmax, &
 ! arr1(2,:) - apparent periods, s (real(8))
 ! arr1(3,:) - group velocities, km/s (real(8))
 ! arr1(4,:) - phase velocities, km/s (real(8))
-! arr1(5,:) - amplitudes, Db (real(8))
+! arr1(5,:) - amplitudes, dB (real(8))
 ! arr1(6,:) - discrimination function, (real(8))
 ! arr1(7,:) - signal/noise ratio, dB (real(8))
 ! arr1(8,:) - maximum half width, s (real(8))
@@ -98,8 +98,8 @@ subroutine aftanipg(PIover4, n, seis, t0, dt, delta, vmin, vmax, &
 ! nrow      - number of rows in array ampo, (integer(4))
 ! ncol      - number of columns in array ampo, (integer(4))
 ! amp       - FTAN amplitude array, dB, (real(8))
-! ierr      - completion status, =0 - O.K.,           (integer(4))
-!                                =1 - some problems occurres
+! ierr      - completion status, =0 - O.K., (integer(4))
+!                                =1 - some problems occurs
 !                                =2 - no final results
 !=====================================================================
 
@@ -763,5 +763,6 @@ end subroutine aftanipg
 
 
 end module aftanipg_m
+
 
 
