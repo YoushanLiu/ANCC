@@ -1302,6 +1302,7 @@ type(sachead) shd
 
 character(len=8) str_myrank, str_stack
 
+character(len=512) str_datetime
 character(len=512) binfile1, binfile2
 character(len=512) path, path_ls, path_pws
 character(len=512) disp_name, bootstrap_name
@@ -1455,12 +1456,6 @@ do iev = 1, nev, 1
       ! ***************************************************************
       ! Save single cross-correlation function into tmpfolder
       ! ***************************************************************
-      str_stack = ''
-      write(str_stack,"(I0)") nstack
-      sacname = trim(adjustl(sacfile_prefix))//trim(adjustl(str_stack))//'.SAC'
-
-
-
       !if (1 == nstack) then
       !   ! Get the time interval.
       !   !dt = nint(sdb%rec(ist1,iev)%dt*1e6)*1.d-6
@@ -1480,8 +1475,11 @@ do iev = 1, nev, 1
       !end if
 
 
-
-      if (.not.(is_stack)) then
+      if (is_stack) then
+         str_stack = ''
+         write(str_stack,"(I0)") nstack
+         sacname = trim(adjustl(sacfile_prefix))//trim(adjustl(str_stack))//'.SAC'
+	  else
          shd%nzyear = sdb%ev(iev)%yy
          shd%nzjday = date2jday(sdb%ev(iev)%yy, sdb%ev(iev)%mm, sdb%ev(iev)%dd)
          shd%nzhour = sdb%ev(iev)%h
@@ -1490,8 +1488,10 @@ do iev = 1, nev, 1
          nzsec = int(sec*0.001)
          shd%nzsec = nzsec
          shd%nzmsec = int(sec-nzsec*1000.0)
+         write(str_datetime, "(I4.4, A, I3.3, A, I2.2, A, I2.2, A, I2.2)") shd%nzyear, '.', &
+                                  shd%nzjday, '.', shd%nzhour, '.', shd%nzmin, '.', shd%nzsec
+         sacname = trim(adjustl(sacfile_prefix))//trim(adjustl(str_datetime))//'.SAC'
       end if
-
 
 
       ! Write the single cross-correlation function.
@@ -2151,3 +2151,4 @@ end function geodist
 
 
 end module xcc_m
+
