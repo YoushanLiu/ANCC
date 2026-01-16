@@ -124,7 +124,7 @@ end if
 
 
 ! ***************************************************************
-! Correct the fraction time and set the reference time to be the beginning time (b=0)).
+! Correct the fractional time and set the reference time to be the beginning time (b=0)).
 ! ***************************************************************
 call correct_sacfile(sacinfile, sacoutfile, sacname, npow_costaper, f1, f2, f3, f4, npts, dt, t0, ier)
 if (0 /= ier) then
@@ -220,7 +220,7 @@ t = datetime2timestamp(shd%nzyear, shd%nzjday, shd%nzhour, shd%nzmin, shd%nzsec+
 
 
 ! ***************************************************************
-! Make the time fractional correction
+! Make fractional time
 ! ***************************************************************
 !tf = floor(t)
 !nf = nint((t - tf)/dt)
@@ -285,7 +285,7 @@ end subroutine correct_sacfile
 
 ! =======================================================================================
 ! =======================================================================================
-! Peform time fraction correction and apply the Bandpass filtering
+! Peform fractional time correction and apply the Bandpass filtering
 ! sdb: sac_db struct [input]
 ! iev: event struct [input]
 ! ist: station struct [input]
@@ -680,7 +680,7 @@ dt = nint(shd%delta*1e6)*1.d-6
 ! =================================================================================================
 
 ! ***********************************************************************
-! Perform one-bit normalization if is_onebit == .true.
+! Perform one-bit normalization when is_onebit == .true.
 ! ***********************************************************************
 if (is_onebit) then
 
@@ -700,7 +700,7 @@ if (is_onebit) then
 else
 
    ! ***********************************************************************
-   ! Perform time domain running average if is_running_time_average is TRUE and is_onebit is FALSE.
+   ! Perform time domain running average when is_running_time_average is TRUE and is_onebit is FALSE.
    ! ***********************************************************************
    if (is_running_time_average) then
 
@@ -738,7 +738,7 @@ else
       deallocate(abs_data, wgt_data)
 
       if (is_verbose) then
-         write(*,"(A)") trim(adjustl(sacname))//' time-domain running absolute average is done ... '
+         write(*,"(A)") trim(adjustl(sacname))//' time-domain running-absolute-mean is done ... '
          call flush(6)
       end if
 
@@ -1683,25 +1683,7 @@ if ((nstack > 0) .and. is_stack) then
 
 
 
-      if (.not.(is_bootstrap)) then
-
-         call system('mkdir -p '//trim(adjustl(tarfolder))//'/FINAL/LINEAR/'//trim(adjustl(sdb%st(ist1)%ns_name)))
-
-         listname = trim(adjustl(path_ls))//'.dat'
-
-         open(unit=30, file=listname, status='replace', action='write', iostat=ier)
-
-            write(30, "(A,2X,A)") trim(adjustl(sdb%st(ist1)%ns_name)), trim(adjustl(sdb%st(ist2)%ns_name))
-            write(30, "(4F10.4,F14.4)") sdb%st(ist1)%lon, sdb%st(ist1)%lat, &
-                                        sdb%st(ist2)%lon, sdb%st(ist2)%lat, dist
-            write(30, "(A)") " Period  GroupV    PhaseV       SNR"
-            call flush(30)
-
-         close(unit=30)
-
-         call system('cat '//trim(adjustl(disp_name))//' >> '//trim(adjustl(listname)))
-
-      else
+      if (is_bootstrap) then
 
          ! Allocate memory.
          allocate(xcorr_bootstrap(1:2*nlag+1))
@@ -1911,6 +1893,24 @@ if ((nstack > 0) .and. is_stack) then
          close(unit=29)
 
          deallocate(matrix1, matrix2)
+
+      else
+
+         call system('mkdir -p '//trim(adjustl(tarfolder))//'/FINAL/LINEAR/'//trim(adjustl(sdb%st(ist1)%ns_name)))
+
+         listname = trim(adjustl(path_ls))//'.dat'
+
+         open(unit=30, file=listname, status='replace', action='write', iostat=ier)
+
+            write(30, "(A,2X,A)") trim(adjustl(sdb%st(ist1)%ns_name)), trim(adjustl(sdb%st(ist2)%ns_name))
+            write(30, "(4F10.4,F14.4)") sdb%st(ist1)%lon, sdb%st(ist1)%lat, &
+                                        sdb%st(ist2)%lon, sdb%st(ist2)%lat, dist
+            write(30, "(A)") " Period  GroupV    PhaseV       SNR"
+            call flush(30)
+
+         close(unit=30)
+
+         call system('cat '//trim(adjustl(disp_name))//' >> '//trim(adjustl(listname)))
 
       end if ! if (.not.(is_bootstrap)) then
 
@@ -2151,4 +2151,5 @@ end function geodist
 
 
 end module xcc_m
+
 
