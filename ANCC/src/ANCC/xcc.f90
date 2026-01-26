@@ -285,7 +285,7 @@ end subroutine correct_sacfile
 
 ! =======================================================================================
 ! =======================================================================================
-! Peform fractional time correction and apply the Bandpass filtering
+! Perform fractional time correction and apply the Bandpass filtering
 ! sdb: sac_db struct [input]
 ! iev: event struct [input]
 ! ist: station struct [input]
@@ -2150,6 +2150,7 @@ end function geodist
 
 
 end module xcc_m
+
 
 
 
