@@ -353,7 +353,7 @@ s(1:npts) = cmplx(seis_data(1:npts), 0.0)
 call sfftw_execute_dft(fwd, s, sf)
 
 
-! Make time fraction correction
+! Apply fractional time correction
 do k = 1, nq, 1
    !         tau > 0, left-shifted
    !         tau < 0, right-shifted
@@ -1690,10 +1690,10 @@ if ((nstack > 0) .and. is_stack) then
          allocate(rand_tmp(nstack), rand_num(nstack))
          allocate(grv_2darr(200,num_bootstrap), phv_2darr(200,num_bootstrap))
 
+
          ! Initialize the BOOTSTRAP matrix with zero
          grv_2darr = 0.0
          phv_2darr = 0.0
-
 
 
          ! ***************************************************************
@@ -1723,7 +1723,6 @@ if ((nstack > 0) .and. is_stack) then
 
             end do
 
-
             ! Fill in the SAC header.
             !call sacio_newhead(shd, dt, 2*nlag+1, -nlag*dt)
             !shd%evla = sdb%st(ist1)%lat
@@ -1734,7 +1733,7 @@ if ((nstack > 0) .and. is_stack) then
             !shd%kstnm = trim(adjustl(sdb%st(ist2)%staname))
             !shd%kuser1 = trim(adjustl(sdb%st(ist1)%ns_name))
             !shd%kuser2 = trim(adjustl(sdb%st(ist2)%ns_name))
-            shd%user0 = nstack
+            shd%unused15 = nstack
 
             sacname = trim(adjustl(tarfolder))//'/'//trim(adjustl(str_myrank))//'/'// &
                                                     trim(adjustl(stapair_name))//'.SAC'
@@ -1916,7 +1915,7 @@ if ((nstack > 0) .and. is_stack) then
 
    end if ! if (.not.(is_only_cf)) then
 
-end if ! if (nstack > 0) then
+end if ! if ((nstack > 0) .and. is_stack) then
 
 
 ! Remove tmp directory.
@@ -2151,5 +2150,6 @@ end function geodist
 
 
 end module xcc_m
+
 
 
