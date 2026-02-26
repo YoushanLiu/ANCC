@@ -541,7 +541,7 @@ def convert_station(stage_path):
 			#print('Entering directory ' + segment_files_path[len_topdir:-1])
 			#print('\n')
 
-			convert_files(UnitID_path)
+			convert_station(UnitID_path)
 			#convert_hourly(segment_files_path, day_path)
 
 			#print('Leaving directory ' + segment_files_path[len_topdir:-1])
