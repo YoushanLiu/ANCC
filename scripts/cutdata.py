@@ -172,6 +172,8 @@ def merge_data(hour_files_list):
 		st += st_tmp
 		data_len += (st_tmp[0].stats.npts-1)*st_tmp[0].stats.delta
 
+	del st_tmp
+
 
 	if (data_len < 0.50*segment_length):
 		return []
