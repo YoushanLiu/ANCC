@@ -2094,9 +2094,9 @@ stlo = stlof * deg2rad
 
 c = sin(stla)*sin(evla) + cos(stla)*cos(evla)*cos(stlo - evlo)
 
-if (abs(c - 1.0) < TINYVAL) then
+if (abs(c - 1.d0) < EPSSGNL) then
    theta = 0.0
-else if (abs(c + 1.0) < TINYVAL) then
+else if (abs(c + 1.d0) < EPSSGNL) then
    theta = PI
 else
    theta = acos(c)
