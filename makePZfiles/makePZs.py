@@ -147,7 +147,7 @@ def read_resp(filename):
 		zeros.append(0.0+0.0j)
 
 
-	CONSTANT = float(A0_factor) * gain_all
+	CONSTANT = float(A0_factor) * sensitivity
 	resp = { \
 		'poles': poles, \
 		'zeros': zeros, \
@@ -486,15 +486,13 @@ def index_resp_pool(RESP_list, sensor_type):
 		res1 = findstr(sensor_type, keyword1)
 		if (res1 != []):
 
-			for ipos1 in res1:
-
-				if ((keyword2 == '') or (keyword2 == [])):
+			if ((keyword2 == '') or (keyword2 == [])):
+				iresp = i
+				break
+			else:
+				res2 = findstr(sensor_type, keyword2)
+				if (res2 != []):
 					iresp = i
-					break
-				else:
-					res2 = findstr(sensor_type, keyword2)
-					if (res2 != []):
-						iresp = i
 
 	return iresp
 
