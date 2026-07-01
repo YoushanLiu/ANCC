@@ -628,6 +628,7 @@ def merge_paz(sensor_resp_pool, iresp_sensor, das_resp_pool, iresp_das):
 	else:
 
 		das_PZ = das_resp_pool[iresp_das]
+
 		poles = sensor_PZ.get('poles')
 		das_poles = das_PZ.get('poles')
 		if ([] != das_poles):
