@@ -155,7 +155,7 @@ def read_resp(filename):
 		zeros.append(0.0+0.0j)
 
 
-	CONSTANT = float(A0_factor) * gain_all
+	CONSTANT = float(A0_factor) * sensitivity
 	pz = { \
 		'poles': poles, \
 		'zeros': zeros, \
@@ -566,15 +566,13 @@ def index_sensor_resp_pool(resp_list, sensor_type_in):
 		res1 = findstr(sensor_type_in, sensor_type)
 		if (res1 != []):
 
-			for ipos1 in res1:
-
-				if ((sensor_period == '') or (sensor_period == [])):
+			if ((sensor_period == '') or (sensor_period == [])):
+				iresp = i
+				break
+			else:
+				res2 = findstr(sensor_type_in, sensor_period)
+				if (res2 != []):
 					iresp = i
-					break
-				else:
-					res2 = findstr(sensor_type_in, sensor_period)
-					if (res2 != []):
-						iresp = i
 
 	return iresp
 
@@ -592,25 +590,23 @@ def index_das_resp_pool(resp_list, das_type_in, das_gain_in, das_sampling_rate_i
 		das_sampling_rate = resp_list.das_sampling_rate[i]
 
 		res1 = findstr(str(das_type_in), str(das_type))
-		if (res1 != []):
+		if (res != []):
 
-			for i in range(len(res1)):
+			if ((abs(float(das_gain_in) - float(das_gain)) < 1.e-9) and (abs(float(das_sampling_rate_in) - float(das_sampling_rate)) < 1.e-9)):
 
-				if (abs(float(das_gain_in) - float(das_gain)) < 1.e-9):
-
-					if (abs(float(das_sampling_rate_in) - float(das_sampling_rate)) < 1.e-9):
-						iresp = i
-						break
-					else:
-						ier = -1
+				iresp = i
+				ier = 0
+				break
+			else:
+				ier = -1
 
 		else:
 			ier = -1
 
-		if (-1 == ier):
-			print("Warning: Cannot find DAS of %s with gain %s and sampling rate %s " \
-						     % das_type_in, das_gain_in, das_sampling_rate_in)
-			print("Warning: DAS's instrument response will be ignored !")
+	if (-1 == ier):
+		print("Warning: Cannot find DAS of %s with gain %s and sampling rate %s " \
+						    % das_type_in, das_gain_in, das_sampling_rate_in)
+		print("Warning: DAS's instrument response will be ignored !")
 
 	return iresp
 
@@ -621,7 +617,7 @@ def merge_paz(sensor_resp_pool, iresp_sensor, das_resp_pool, iresp_das):
 	try:
 		sensor_PZ = sensor_resp_pool[iresp_sensor]
 	except:
-		print("Error: Sensor's instrument response is mandatory ")
+		raise IndexError("Error: Sensor's instrument response is mandatory ")
 		return
 
 
@@ -800,7 +796,10 @@ def resp2pz(sensor_resp_pool_path, sensor_resp_listname, \
 			iresp_das = index_das_resp_pool(das_resp_list, das_type, das_gain, das_sampling_rate)
 
 
-			PZ = merge_paz(sensor_resp_pool, iresp_sensor, das_resp_pool, iresp_das)
+			try:
+				PZ = merge_paz(sensor_resp_pool, iresp_sensor, das_resp_pool, iresp_das)
+			except:
+				continue
 
 
 		# whether open a new file
