@@ -560,7 +560,6 @@ def resp2pz(RESP_pool_path, RESP_listname):
 
 	RESP_list = read_resp_list(RESP_pool_path + '/' + RESP_listname)
 
-
 	RESP_pool = read_resp_pool(RESP_list)
 
 
