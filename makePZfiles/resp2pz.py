@@ -627,22 +627,30 @@ def merge_paz(sensor_resp_pool, iresp_sensor, das_resp_pool, iresp_das):
 
 	else:
 
-		das_PZ = das_resp_pool[iresp_das]
+		poles = sensor_PZ.get('poles').copy()
+		zeros = sensor_PZ.get('zeros').copy()
 
-		poles = sensor_PZ.get('poles')
-		das_poles = das_PZ.get('poles')
-		if ([] != das_poles):
-			poles += das_poles
+		A0_factor = sensor_PZ.get('A0')
+		sensitivity = sensor_PZ.get('sensitivity')
+		gain_all = sensor_PZ.get('gain')
+		CONSTANT = sensor_PZ.get('CONSTANT')
 
-		zeros = sensor_PZ.get('zeros')
-		das_zeros = das_PZ.get('zeros')
-		if ([] != das_zeros):
-			zeros += das_zeros
+		if iresp_das >= 0:
 
-		A0_factor = sensor_PZ.get('A0') * das_PZ.get('A0')
-		sensitivity = sensor_PZ.get('sensitivity') * das_PZ.get('sensitivity')
-		gain_all = sensor_PZ.get('gain') * das_PZ.get('gain')
-		CONSTANT = sensor_PZ.get('CONSTANT') * das_PZ.get('CONSTANT')
+			das_PZ = das_resp_pool[iresp_das]
+	
+			das_poles = das_PZ.get('poles').copy()
+			if ([] != das_poles):
+				poles += das_poles
+	
+			das_zeros = das_PZ.get('zeros').copy()
+			if ([] != das_zeros):
+				zeros += das_zeros
+	
+			A0_factor = A0_factor * das_PZ.get('A0')
+			sensitivity = sensitivity * das_PZ.get('sensitivity')
+			gain_all = gain_all * das_PZ.get('gain')
+			CONSTANT = CONSTANT * das_PZ.get('CONSTANT')
 
 		PZ = { \
 			'poles': poles, \
