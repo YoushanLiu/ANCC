@@ -50,8 +50,8 @@ if [[ "$COMPILER" == "GNU" ]]; then
 	echo "FFLAGS = $FFLAGS" >> config.h
 elif [[ "$COMPILER" == "INTEL" ]]; then
 	echo "Build ANCC using the Intel compilers"
-	CFLAGS="-O3 -xHost -fma -axAVX -I./"
-	FFLAGS="-O3 -xHost -unroll -ftz -fma -fpp -fpe0 -assume buffered_io -assume byterecl -align sequence -diag-disable 6477 -implicitnone -gen-interfaces -mcmodel=large -shared-intel -arch AVX"
+	CFLAGS="-O3 -xHost -fma -axAVX2 -I./"
+	FFLAGS="-O3 -xHost -unroll -ftz -fma -fpp -fpe0 -assume buffered_io -assume byterecl -align sequence -diag-disable 6477 -implicitnone -gen-interfaces -mcmodel=large -shared-intel -arch AVX2"
 	echo "# Build ANCC using the $COMPILER compiler" > config.h
 	echo "" >> config.h
 	echo "# Install directory " >> config.h
@@ -68,8 +68,8 @@ elif [[ "$COMPILER" == "INTEL" ]]; then
 	echo "FFLAGS = $FFLAGS" >> config.h
 elif [[ "$COMPILER" == "PGI" ]]; then
 	echo "Build ANCC using the PGI compilers"
-	CFLAGS="-O3 -fast -m64 -Mpreprocess -Mnobounds -Mautoinline -Mcache_align -Mfma -Mprefetch -Munroll -Mdaz -mcmodel=medium -Mflushz -Mavx -I./"
-	FFLAGS="-O3 -fast -m64 -Mpreprocess -Mnobounds -Mautoinline -Mcache_align -Mfma -Mprefetch -Munroll -Mdaz -mcmodel=medium -Mmpi=mpich2 -Mflushz -Mavx"
+	CFLAGS="-O3 -fast -m64 -Mpreprocess -Mnobounds -Mautoinline -Mcache_align -Mfma -Mprefetch -Munroll -Mdaz -mcmodel=medium -Mflushz -Mavx2 -I./"
+	FFLAGS="-O3 -fast -m64 -Mpreprocess -Mnobounds -Mautoinline -Mcache_align -Mfma -Mprefetch -Munroll -Mdaz -mcmodel=medium -Mmpi=mpich2 -Mflushz -Mavx2"
 	echo "# Build ANCC using the $COMPILER compiler" > config.h
 	echo "" >> config.h
 	echo "# Install directory " >> config.h
