@@ -1,4 +1,4 @@
-In default, the intel compiler (such as ifort/mpiifort or ifx/mpiifx) is recommended. If you use a gnu compiler, you can comment flags for the intel compiler 
+By default, the intel compiler (such as ifort/mpiifort or ifx/mpiifx) is recommended. If you use a gnu compiler, you can comment flags for the intel compiler 
 and uncomments those for the gnu compiler in the Makefile.
 
 This program includes three parts, i.e. AFTAN (original author, University of Colorado Boulder), ANCC (original author [v2.0], Xingli Fan), TF_PWS (original author, Guoliang Li).
