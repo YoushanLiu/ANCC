@@ -24,7 +24,7 @@ import os
 import re
 import xlrd
 import shutil
-import xdrlib, sys
+import sys
 from obspy.core import UTCDateTime
 
 
