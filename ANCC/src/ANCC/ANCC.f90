@@ -47,10 +47,11 @@ integer(8) ndim, ndim1, ndim2, idim1, iproc
 integer(4) nevxnst, nevxnst_loc, nevxnst_gathered
 
 
-real(SGL) lat, lon, freqmin, tlag
-real(SGL) f1, f2, f3, f4, fr1, fr2
+real(SGL) lat, lon, tlag
+real(SGL) f1, f2, f3, f4, freqmin
 
-real(DBL) dt, dt_read, dt_min, dt_max, t0, tlen
+real(DBL) t0, tlen, fr1, fr2
+real(DBL) dt, dt_read, dt_min, dt_max
 
 
 character(len=3) str_specwhitening
@@ -83,7 +84,7 @@ integer(MPI_ADDRESS_KIND), allocatable, dimension(:) :: base, disp
 
 integer, allocatable, dimension(:) :: recvns, displs
 
-character(len=128), allocatable, dimension(:) :: strs
+character(len=164), allocatable, dimension(:) :: strs
 
 
 
@@ -100,18 +101,16 @@ myroot = nprocs - 1
 ! ***********************************************************************
 ! Construct new event data type for later data sharing.
 ! ***********************************************************************
-n = 4
+n = 3
 allocate(base(n), disp(n), blocklen(n), types(n))
-blocklen = (/ 128, 6, 1, 1 /)
-types =(/ MPI_CHARACTER, MPI_INTEGER, MPI_DOUBLE_PRECISION, MPI_DOUBLE_PRECISION /)
+blocklen = (/ 128, 6, 2 /)
+types =(/ MPI_CHARACTER, MPI_INTEGER, MPI_DOUBLE_PRECISION /)
 call MPI_GET_ADDRESS(evt_node%evtpath, base(1), ier)
 call MPI_GET_ADDRESS(evt_node%yy, base(2), ier)
 call MPI_GET_ADDRESS(evt_node%s, base(3), ier)
-call MPI_GET_ADDRESS(evt_node%t0, base(4), ier)
 disp(1) = 0
 disp(2) = base(2) - base(1)
 disp(3) = base(3) - base(1)
-disp(4) = base(4) - base(1)
 call MPI_TYPE_CREATE_STRUCT(n, blocklen, disp, types, event_type, ier)
 call MPI_TYPE_COMMIT(event_type, ier)
 deallocate(base, disp, blocklen, types)
