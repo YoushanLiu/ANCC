@@ -66,10 +66,9 @@ type station
 end type station
 
 type event
-   character(len=128) :: evtpath = ''                      ! evtpath: event path (e.g. path/20150401_000000)
+   character(len=164) :: evtpath = ''                      ! evtpath: event path (e.g. path/20150401_000000)
    integer :: yy, mm, dd, h, m, jday                       ! yy, mm, dd, h, m, jday: year, month, day, hour, minute, julian day
-   real(DBL) :: s = 0.d0                                   ! ss: second in decimal form
-   real(DBL) :: t0 = -1.d0                                 ! t0: epoch time of the event (e.g. 123456789)
+   real(DBL) :: s = 0.d0, t0 = -1.d0                       ! s: second in decimal form; t0: epoch time of the event (e.g. 123456789)
 end type event
 
 type record
