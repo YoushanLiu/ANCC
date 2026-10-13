@@ -2078,6 +2078,8 @@ end subroutine xcorr
 
 real function geodist(evlaf, evlof, stlaf, stlof)
 
+implicit none
+
 real, intent(in) :: stlaf, stlof, evlaf, evlof
 
 
