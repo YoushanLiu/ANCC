@@ -613,10 +613,9 @@ integer, intent(in) :: iev, ist
 integer, intent(in) :: nwt, nwf
 integer, intent(in) :: npow_costaper
 
-real(SGL), intent(in) :: f1, f2, f3, f4
-real(SGL), intent(in) :: fr1, fr2, freqmin
+real(SGL), intent(in) :: f1, f2, f3, f4, freqmin
 
-real(DBL), intent(in) :: t0, tlen
+real(DBL), intent(in) :: t0, tlen, fr1, fr2
 
 type(sac_db), intent(in) :: sdb
 
