@@ -28,8 +28,11 @@ implicit none
 integer, parameter :: SGL = SELECTED_real_KIND(5,20)
 integer, parameter :: DBL = SELECTED_real_KIND(13,100)
 integer, parameter :: TIMEMAX = 10000000 ! TIMEMAX: maximum time length of the SAC file
+real(SGL), parameter :: LARGEVAL = 1.e36
 real(SGL), parameter :: HUGEVAL = huge(0.0)
 real(SGL), parameter :: TINYVAL = tiny(0.0)
+real(SGL), parameter :: EPSSNGL = epsilon(0.0)
+real(DBL), parameter :: EPSDBLE = epsilon(0.d0)
 complex(SGL), parameter :: ci = cmplx(0.0, 1.0)
 complex(SGL), parameter :: czero = cmplx(0.0, 0.0)
 
@@ -82,7 +85,7 @@ type sac_db
    type(record), allocatable, dimension(:,:) :: rec        ! rec: record struct array
    real(DBL) :: dt = 0.d0                                  ! dt: data sampling interval
    integer :: nev, nst                                     ! nev, nst: number of events and stations
-   integer :: npts = 0                                     ! npts: number of data points (The default value should be 0.)
+   integer :: npts = 0                                     ! npts: number of data points (default value should be 0.)
 end type sac_db
 
 
