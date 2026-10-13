@@ -1282,11 +1282,11 @@ character(len=*), intent(in) :: bootstrap_type, tarfolder
 
 integer i, j, k
 integer iev, ier
-integer nlen, nout
+integer nstack, nzsec
+integer nev, npts, nout
 integer nperiod, iperiod
 integer iperiod1, iperiod2
 integer nperiod1, nperiod2
-integer nev, nstack, nzsec
 
 logical is_existing
 
@@ -1429,13 +1429,13 @@ do iev = 1, nev, 1
       ! Read in the FFT data for the two stations.
       ! ***************************************************************
 
-      call read_bindata(binfile1, nlen, fftdata1, ier)
-      call read_bindata(binfile2, nlen, fftdata2, ier)
+      call read_bindata(binfile1, npts, fftdata1, ier)
+      call read_bindata(binfile2, npts, fftdata2, ier)
 
       ! ***************************************************************
       ! Compute the cross-correlation in the frequency domain.
       ! ***************************************************************
-      call xcorr(fftdata1, fftdata2, nlen, dataout, nout)
+      call xcorr(fftdata1, fftdata2, npts, dataout, nout)
 
       ! ***************************************************************
       ! Assign the cross-correlation resulted from frequency domain
@@ -2004,17 +2004,17 @@ end subroutine cc_and_aftan
 ! Compute the cross-correlation in the frequency domain
 ! sf1: half-length FFT data at station 1 [input]
 ! sf2: half-length FFT data at station 2 [input]
-! nlen: number of data points [input]
+! npts: number of data points [input]
 ! dataout: output time domain cross-correlation data [output]
 ! nout: number of output time domain cross-correlation data [output]
 ! =======================================================================================
-subroutine xcorr(sf1, sf2, nlen, dataout, nout)
+subroutine xcorr(sf1, sf2, npts, dataout, nout)
 
 implicit none
 
 integer, intent(in) :: nlen
 
-complex(SGL), dimension(nlen), intent(in) :: sf1, sf2
+complex(SGL), dimension(npts), intent(in) :: sf1, sf2
 
 
 integer, intent(out) :: nout
@@ -2032,7 +2032,7 @@ complex(SGL), allocatable, dimension(:) :: scorr, sfcorr
 
 
 
-nout = (nlen-1)*2
+nout = (npts-1)*2
 
 
 allocate(dataout(nout), scorr(nout), sfcorr(nout), stat=ier)
@@ -2044,14 +2044,14 @@ if (0 /= ier) then
 end if
 
 
-!wtr = 1.e-6*sum(abs(sf1(1:nlen))*abs(sf2(1:nlen)))/dble(nlen)
-do k = 1, nlen, 1
+!wtr = 1.e-6*sum(abs(sf1(1:npts))*abs(sf2(1:npts)))/dble(npts)
+do k = 1, npts, 1
    sfcorr(k) = conjg(sf1(k))*sf2(k)
    !sfcorr(k) = conjg(sf1(k))*sf2(k) / (abs(sf1(k))*abs(sf2(k)) + wtr)
 end do
 
 
-sfcorr(nlen+1:nout) = czero
+sfcorr(npts+1:nout) = czero
 
 
 ! Make forward FFT for the cross-correlation: sfconj => s
