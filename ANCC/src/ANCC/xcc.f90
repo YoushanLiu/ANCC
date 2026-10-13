@@ -79,7 +79,7 @@ real(DBL) t0
 character(len=512) str_date, sacname
 character(len=512) sacinfile, sacoutfile
 
-character(len=128), allocatable, dimension(:) :: strs
+character(len=164), allocatable, dimension(:) :: strs
 
 
 
@@ -421,7 +421,7 @@ type(sachead) shd
 
 character(len=512) str_date, sacname, sacfile
 
-character(len=128), allocatable, dimension(:) :: strs
+character(len=164), allocatable, dimension(:) :: strs
 
 
 
@@ -645,7 +645,7 @@ real(SGL), allocatable, dimension(:) :: abs_data, wgt_data
 
 real(DBL), allocatable, dimension(:) :: a, b, tr
 
-character(len=128), allocatable, dimension(:) :: strs
+character(len=164), allocatable, dimension(:) :: strs
 
 complex(SGL), allocatable, dimension(:) :: s, sf
 
