@@ -80,9 +80,9 @@ type sac_db
    type(event), allocatable, dimension(:) :: ev            ! ev: EVENT struct array
    type(station), allocatable, dimension(:) :: st          ! st: STATION struct array
    type(record), allocatable, dimension(:,:) :: rec        ! rec: record struct array
-   integer :: nev, nst                                     ! nev, nst: number of events and stations
-   integer :: npts = 0                                     ! npts: number of data points (should be default to 0)
    real(DBL) :: dt = 0.d0                                  ! dt: data sampling interval
+   integer :: nev, nst                                     ! nev, nst: number of events and stations
+   integer :: npts = 0                                     ! npts: number of data points (The default value should be 0.)
 end type sac_db
 
 
