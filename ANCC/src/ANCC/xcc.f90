@@ -775,8 +775,8 @@ tre = trb + (n-1)*dt
 ! ***************************************************************
 if ((trb > t0) .or. (tre < tend)) then
    if (is_verbose) then
-      write(*,"(A,A,A,F10.2,A,F10.2,A)") 'Short length file: ', trim(adjustl(sacname)), &
-                                '  Beginning time:', trb, 's  Bad length:', (N-1)*dt, 's'
+      write(*,"(A,A,A,ES17.6,A,F13.6,A)") 'Short length file: ', trim(adjustl(sacname)), &
+                               '  Beginning time: ', trb, ' s  Bad length:', (N-1)*dt, 's'
       call flush(6)
    end if
    call system('rm -rf '//trim(adjustl(sacfile)))
