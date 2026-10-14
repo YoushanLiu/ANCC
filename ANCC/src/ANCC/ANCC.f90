@@ -103,7 +103,7 @@ myroot = nprocs - 1
 ! ***********************************************************************
 n = 3
 allocate(base(n), disp(n), blocklen(n), types(n))
-blocklen = (/ 128, 6, 2 /)
+blocklen = (/ 164, 6, 2 /)
 types =(/ MPI_CHARACTER, MPI_INTEGER, MPI_DOUBLE_PRECISION /)
 call MPI_GET_ADDRESS(evt_node%evtpath, base(1), ier)
 call MPI_GET_ADDRESS(evt_node%yy, base(2), ier)
