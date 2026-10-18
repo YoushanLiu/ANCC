@@ -59,7 +59,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  *        Examples:
  * 	        (1) ls * | ./tf-PWS
- * 	       	        to perform the line and tf-PWS of all the input files, and all other paramenter
+ * 	       	        to perform the line and tf-PWS of all the input files, and all other parameters
  * 	                are set as default values;
  * 	        (2) ls * > input.dat
  * 	                ./tf-PWS -Finput.dat -B10  -E100  -N1 -S10 -I1 -W1
