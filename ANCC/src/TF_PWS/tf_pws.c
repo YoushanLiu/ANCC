@@ -52,7 +52,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *          C.   The default inverse algorithm is defined by Stockwell et al. 1996, and if you want to use the
  *               inverse algorithm proposed by Schimmel and Gallart 2005, you can appendix -I2 in the tail of
  *               tf-PWS.
- *          D.   The default frequency band is set from 0-Nyquist Hz, if you want to sepcify in some frequency
+ *          D.   The default frequency band is set from 0-Nyquist Hz, if you want to specify in some frequency
  *               band (for example from 10 s to 100 s), you can appendix -B10 -E100s in the tail.
  *          E.   This code supports parallel computing, and the default CPU number is set to 4, you can change
  *               that value too.
