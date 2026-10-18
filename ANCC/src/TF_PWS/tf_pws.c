@@ -49,7 +49,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *               you can appendix -N1 and -S10 in the tail tf-PWS;
  *          B.   The default weight is set to 1, if you want to use other values (for example n), you can appendix
  *               -Wn in the tail of tf-PWS;
- *          C.   The default inverse algorithm is defined by stockwell et al. 1996, and if you want to use the
+ *          C.   The default inverse algorithm is defined by Stockwell et al. 1996, and if you want to use the
  *               inverse algorithm proposed by Schimmel and Gallart 2005, you can appendix -I2 in the tail of
  *               tf-PWS.
  *          D.   The default frequency band is set from 0-Nyquist Hz, if you want to sepcify in some frequency
@@ -64,12 +64,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * 	        (2) ls * > input.dat
  * 	                ./tf-PWS -Finput.dat -B10  -E100  -N1 -S10 -I1 -W1
  *	                 In this case, the interested band is 10~100s but not 0-Nyquist. By this mean, you can reduce the
- *	                 calcaulation time, and filter the data in band 10~100s.
+ *	                 calculation time, and filter the data in band 10~100 s.
  *
  * 	Written by Guoliang Li, guoleonlee@gmail.com, Modified by Youshan Liu, at Institute of Geology and Geophysics,
  *           Chinese Academy of Sciences.
  * 	Finish data: 2016.01.10
- * 	 recitified 2016.08.09  Adding parallel computing part, and the number of parallel CPU is 4.
+ * 	 recitified 2016.08.09  Adding parallel computing part, and the number of parallel CPUs is 4.
  * 	 recitified 2016.09.09  Fix the bug of storage overflowing.
  * 	 modified on 2016.09.20 Adding the second inverse algorithm proposed by Schimmel and Gallart 2005;
  */
