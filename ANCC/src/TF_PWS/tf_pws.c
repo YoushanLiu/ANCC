@@ -44,17 +44,17 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 /*
  * 	This code is written for tf-PWS based on Stockwell et al. 1996
  * 	USAGE:
- * 	    default paramenters:
- * 	        A.   Normalization and smooth of the weight funciton is turned off, if you want to turn on them,
+ * 	    default parameters:
+ * 	        A.   Normalization and smoothing of the weight function is turned off, if you want to turn on them,
  *               you can appendix -N1 and -S10 in the tail tf-PWS;
- *          B.   The default weight is set to 1, if you want use other value(for example n), you can appendix
+ *          B.   The default weight is set to 1, if you want to use other values (for example n), you can appendix
  *               -Wn in the tail of tf-PWS;
  *          C.   The default inverse algorithm is defined by stockwell et al. 1996, and if you want to use the
  *               inverse algorithm proposed by Schimmel and Gallart 2005, you can appendix -I2 in the tail of
  *               tf-PWS.
- *          D.   The default frequent band is set from 0-Nyquist Hz, if you want to sepcifiy in some frequency
- *               band (for example from 10s to 100s), you can appendix -B10 -E100s in the tail.
- *          E.   This code support the parallel computing, and the default CPU number is set to 4, you can change
+ *          D.   The default frequency band is set from 0-Nyquist Hz, if you want to sepcify in some frequency
+ *               band (for example from 10 s to 100 s), you can appendix -B10 -E100s in the tail.
+ *          E.   This code supports parallel computing, and the default CPU number is set to 4, you can change
  *               that value too.
  *
  *        Examples:
@@ -71,7 +71,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * 	Finish data: 2016.01.10
  * 	 recitified 2016.08.09  Adding parallel computing part, and the number of parallel CPU is 4.
  * 	 recitified 2016.09.09  Fix the bug of storage overflowing.
- * 	 modified on 2016.09.20 adding the second inverse algorithm proposed by Schimmel and Gallart 2005;
+ * 	 modified on 2016.09.20 Adding the second inverse algorithm proposed by Schimmel and Gallart 2005;
  */
 
 
@@ -257,6 +257,7 @@ int main(int arg, char *arv[])
         }
 
 
+        // write linear stack result
         shd.unused1 = nstack;
         sprintf(outfn, "%s%s", outfile, "_ls.SAC");
         write_sac(outfn, stack, &shd);
@@ -567,6 +568,8 @@ int main(int arg, char *arv[])
 
     // filter4_(&f1, &f2, &f3, &f4, &npow, &dt, &nfft, stack, stack);
 
+	
+    // write phase-weighted stack result
     shd.unused1 = nstack;
     sprintf(outfn, "%s%s", outfile, "_pws.SAC");
     write_sac(outfn, stack, &shd);
