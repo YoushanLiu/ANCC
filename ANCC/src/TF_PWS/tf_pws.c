@@ -238,7 +238,7 @@ int main(int arg, char *arv[])
                 stack[n] = stack[n] + wf[n];
             }
 
-            nstack = nstack + 1;
+            nstack++;
         }
 
         if (0 == nstack)
@@ -257,8 +257,7 @@ int main(int arg, char *arv[])
         }
 
 
-        shd.user0 = nstack;
-
+        shd.unused1 = nstack;
         sprintf(outfn, "%s%s", outfile, "_ls.SAC");
         write_sac(outfn, stack, &shd);
 
@@ -441,6 +440,7 @@ int main(int arg, char *arv[])
 
 
     // write linear stack result
+    shd.unused1 = nstack;
     sprintf(outfn, "%s%s", outfile, "_ls.SAC");
     write_sac(outfn, stack, &shd);
 
@@ -553,8 +553,6 @@ int main(int arg, char *arv[])
 
     }
 
-    shd.user0 = nstack;
-
 
     /* Perform the inverse tf-PWS: The inverse algorithm of iStrans is based on Stockwell er al. 1996,
        while that of iStrans2 is based on Schimmel et al. 2005, but we recommond the first inverse algorithm */
@@ -569,6 +567,7 @@ int main(int arg, char *arv[])
 
     // filter4_(&f1, &f2, &f3, &f4, &npow, &dt, &nfft, stack, stack);
 
+    shd.unused1 = nstack;
     sprintf(outfn, "%s%s", outfile, "_pws.SAC");
     write_sac(outfn, stack, &shd);
 
