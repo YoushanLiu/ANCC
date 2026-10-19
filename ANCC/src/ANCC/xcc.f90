@@ -2011,7 +2011,7 @@ subroutine xcorr(sf1, sf2, npts, dataout, nout)
 
 implicit none
 
-integer, intent(in) :: nlen
+integer, intent(in) :: npts
 
 complex(SGL), dimension(npts), intent(in) :: sf1, sf2
 
