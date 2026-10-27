@@ -206,7 +206,7 @@ void printres_(double *xdt, double *delta, int *xnfout1, double *arr1,
 
     FILE *out;
 
-    float dt, tamp;
+    float dt, tamp, per;
 
 
     char *p = 0, ch = 0, name2[160], name[160], pref[5];
@@ -293,14 +293,15 @@ void printres_(double *xdt, double *delta, int *xnfout1, double *arr1,
     }
 
     fprintf(out, "%5d %5d %10.4lf %12.5lf\n", nrow, ncol, dt, *delta);
-    for (i = 0; i < nrow; ++i)
+    for (i = 0; i < ncol; ++i)
     {
-        ip =i*8 + 1;
-        k = i*ncol;
-        for (j = 0; j < ncol; ++j)
+        ip =i*8+1;
+        k = i*nrow;
+		per = arr1[ip];
+        for (j = 0; j < nrow; ++j)
         	{
             	//fprintf(out, "%5d %8.3lf %15.6e\n", arr2[i][0], *delta / (tamp + j * dt), ampo[i][j]);
-            	fprintf(out, "%10.4lf %8.3lf %15.6e\n", arr1[ip], *delta / (tamp + j * dt), ampo[k+j]);
+            	fprintf(out, "%10.4lf %8.3lf %15.6e\n", per, *delta / (tamp + j * dt), ampo[k+j]);
         	}
     }
     fclose(out);
