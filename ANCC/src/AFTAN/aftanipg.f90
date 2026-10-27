@@ -211,10 +211,11 @@ call pred_cur(ip, delta, sqrt(omb*ome), npred, pred, om0, tg0)
 nb = max(2, nint((delta/vmax-t0)/dt))
 ne = min(n, nint((delta/vmin-t0)/dt))
 tamp = (nb-1)*dt + t0
+ntime = ne-nb+1
 
 
-nrow = nfin
-ncol = ne-nb+1
+!nrow = nfin
+!ncol = ne-nb+1
 !! times for FTAN map
 !allocate(time(nb:ne), v(nb:ne), stat=ier)
 !do k = nb, ne, 1
@@ -222,7 +223,7 @@ ncol = ne-nb+1
 !   ! velocity for FTAN map
 !   v(k) = delta / (time(k) + t0)
 !enddo
-ntime = ne-nb+1
+!ntime = ne-nb+1
 
 
 ! tapering both ends of seismogram
@@ -311,6 +312,8 @@ sf(1:ns) = sf(1:ns) / pha_cor(1:ns)
 deallocate(pha_cor)
 !==================================================================
 ntall = ntime + 2
+nrow = nf
+ncol = ntall
 allocate(pha(1:ntall,1:nf), amp(1:ntall,1:nf), ampo(1:ntall,1:nf), stat=ier)
 ! main loop by frequency
 do k = 1, nf, 1
@@ -318,7 +321,7 @@ do k = 1, nf, 1
    ! filtering
    call ftfilt(alpha, om(k), dom, ns, sf, fils)
 
-   ! fill with zeros half spectra for Hilbert transformation and spectra ends ajastment
+   ! fill with zeros half spectra for Hilbert transformation and spectra ends ajustment
    fils(nq+1:ns) = czero
 
    fils(1) = cmplx(0.5d0*real(fils(1)), 0.d0)
