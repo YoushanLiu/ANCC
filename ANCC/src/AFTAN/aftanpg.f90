@@ -228,8 +228,8 @@ call dfftw_plan_dft_1d(planb, ns, fils, tmp, FFTW_BACKWARD, FFTW_ESTIMATE)
 
 ! main loop by frequency
 ntall = ntime + 2
-nrow = nf
-ncol = ntall
+ncol = nf
+nrow = ntall
 allocate(pha(1:ntall,1:nf), amp(1:ntall,1:nf), ampo(1:ntall,1:nf), stat=ier)
 nq = ns/2 + 1
 do k = 1, nf, 1
