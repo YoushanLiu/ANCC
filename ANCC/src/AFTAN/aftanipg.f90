@@ -312,8 +312,8 @@ sf(1:ns) = sf(1:ns) / pha_cor(1:ns)
 deallocate(pha_cor)
 !==================================================================
 ntall = ntime + 2
-nrow = nf
-ncol = ntall
+ncol = nf
+nrow = ntall
 allocate(pha(1:ntall,1:nf), amp(1:ntall,1:nf), ampo(1:ntall,1:nf), stat=ier)
 ! main loop by frequency
 do k = 1, nf, 1
