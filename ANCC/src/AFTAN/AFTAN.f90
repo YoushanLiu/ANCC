@@ -51,7 +51,7 @@ character(256) filename, parfile, outfile
 
 
 
-sac = 1
+sac = 11
 
 !---  input command line arguments treatment
 nargc = iargc()
