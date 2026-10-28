@@ -26,10 +26,9 @@ use aftanipg_m
 
 implicit none
 
-integer(4) i, k, sac, nargc, iargc
-integer(4) npts, n, n0, lag_type, ier
-integer(4) npoints, nfin, nfout1, nfout2
-integer(4) nrow, ncol, npred, nprpv, ioer
+integer(4) i, k, is_sac, nargc, iargc
+integer(4) n, npts_jump, nfin, nfout1, nfout2
+integer(4) nrow, ncol, npred, nprpv, ier, ioer
 
 real(8) tmin_read, tmax_read
 real(8) t0, dt, tresh, ffact1, ffact2
@@ -40,7 +39,7 @@ real(8) PIover4
 
 real(8) x(1), y(1)
 
-real(4), dimension(:), allocatable :: seis, tr
+real(4), dimension(:), allocatable :: seis
 
 real(8), dimension(:), allocatable :: prpvper, prpvvel
 real(8), dimension(:,:), allocatable :: ampo, arr1, arr2, pred
@@ -51,7 +50,7 @@ character(256) filename, parfile, outfile
 
 
 
-sac = 11
+is_sac = 1
 
 !---  input command line arguments treatment
 nargc = iargc()
@@ -118,6 +117,9 @@ close(11)
 call getarg(1, parfile)
 open(10, file=trim(adjustl(parfile)), status='old')
 
+   nfin = 64
+   perc = 50.0
+   npts_jump = 5
 
    do
 
@@ -138,46 +140,9 @@ open(10, file=trim(adjustl(parfile)), status='old')
       !
       ! read SAC or ascii data
       !
-      call readhead(sac, filename, npts, ier)
-      allocate(tr(1:npts), stat=ier)
-      call readdata(sac, filename, dt, delta, t0, tr, ier)
-
-      ! select left, right or both lags data for AFTAN analysis
-      if (t0 < 0.0) then
-         if (1 == mod(npts,2)) then
-            n0 = int(npts/2)+1
-            n = n0
-            allocate(seis(1:n), stat=ier)
-            if (-1 == lag_type) then
-               seis(1:n) = tr(n0:1:-1)
-            else if (0 == lag_type) then
-               seis(1:n) = 0.50*(tr(n0:1:-1) + tr(n0:npts))
-            else if (1 == lag_type) then
-               seis(1:n) = tr(n0:npts)
-            else
-               write(*,*) 'Error: Incorrect lag for AFTAN analysis, it must be one of -1, 0, or 1!'
-            end if
-         else
-            n0 = nint((0.d0-t0)/dt)+1
-            n = min(n0,npts-n0+1)
-            allocate(seis(1:n), stat=ier)
-            if (-1 == lag_type) then
-               seis(1:n) = tr(n0:n0-n+1:-1)
-            else if (0 == lag_type) then
-               seis(1:n) = 0.50*(tr(n0:n0-n+1:-1) + tr(n0:n0+n-1))
-            else if (1 == lag_type) then
-               seis(1:n) = tr(n0:n0+n-1)
-            else
-               write(*,*) 'Error: Incorrect lag for AFTAN analysis, it must be one of -1, 0, or 1!'
-            end if
-         end if
-		 t0 = 0.d0
-      else
-         n = npts
-         allocate(seis(1:n), stat=ier)
-         seis(1:n) = tr(1:n)
-      end if
-      deallocate(tr)
+      call readhead(is_sac, filename, npts, ier)
+      allocate(seis(1:npts), stat=ier)
+      call readdata(is_sac, filename, dt, delta, t0, seis, ier)
 
 
       if ((isPerCut == 'Y') .or. (isPerCut == 'y')) then
@@ -197,15 +162,10 @@ open(10, file=trim(adjustl(parfile)), status='old')
       end if
 
 
-      nfin    = 64
-      npoints = 5
-      perc    = 50.0
-
-
       !---  FTAN with phase match filter. First Iteration.
       call aftanpg(PIover4, n, seis, t0, dt, delta, vmin, vmax, tmin, tmax, &
-                tresh, ffact1, perc, npoints, taperl, nfin, nprpv, prpvper, &
-                prpvvel, nfout1, arr1, nfout2, arr2, tamp, nrow, ncol, ampo, ier)
+              tresh, ffact1, perc, npts_jump, taperl, nfin, nprpv, prpvper, &
+              prpvvel, nfout1, arr1, nfout2, arr2, tamp, nrow, ncol, ampo, ier)
 
       if ((isOutput == 'Y') .or. (isOutput == 'y')) then
          call printres(dt, delta, nfout1, arr1, nfout2, arr2, &
@@ -245,8 +205,8 @@ open(10, file=trim(adjustl(parfile)), status='old')
 
       !--- FTAN with phase matching filter. Second Iteration.
       call aftanipg(PIover4, n, seis, t0, dt, delta, vmin, vmax, tmin, tmax, tresh, &
-              ffact2, perc, npoints, taperl, nfin, snr, fmatch, npred, pred, nprpv, &
-              prpvper, prpvvel, nfout1, arr1, nfout2, arr2, tamp, nrow, ncol, ampo, ier)
+            ffact2, perc, npts_jump, taperl, nfin, snr, fmatch, npred, pred, nprpv, &
+            prpvper, prpvvel, nfout1, arr1, nfout2, arr2, tamp, nrow, ncol, ampo, ier)
 
       if ((isOutput == 'Y') .or. (isOutput == 'y')) then
          call printres(dt, delta, nfout1, arr1, nfout2, arr2, &
