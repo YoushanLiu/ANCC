@@ -31,10 +31,9 @@ implicit none
 contains
 
 
-subroutine aftanipg(PIover4, n, seis, t0, dt, delta, vmin, vmax, &
-            tmin, tmax, tresh, ffact, perc, npoints, taperl, nfin, &
-            fsnr, fmatch, npred, pred, nphpr, phprper, phprvel, &
-            nfout1, arr1, nfout2, arr2, tamp, nrow, ncol, amp, ierr)
+subroutine aftanipg(PIover4, n, seis, t0, dt, delta, vmin, vmax, tmin, tmax, tresh, &
+              ffact, perc, npoints, taperl, nfin, fsnr, fmatch, npred, pred, nphpr, &
+              phprper, phprvel, nfout1, arr1, nfout2, arr2, tamp, nrow, ncol, amp, ierr)
 
 
 !======================================================================
