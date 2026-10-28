@@ -27,19 +27,20 @@ use aftanipg_m
 implicit none
 
 integer(4) i, k, sac, nargc, iargc
-integer(4) n, npoints, nfin, nfout1, nfout2
-integer(4) nrow, ncol, npred, nprpv, ier, ioer
+integer(4) npts, n, n0, lag_type, ier
+integer(4) npoints, nfin, nfout1, nfout2
+integer(4) nrow, ncol, npred, nprpv, ioer
 
+real(8) tmin_read, tmax_read
 real(8) t0, dt, tresh, ffact1, ffact2
 real(8) perc, taperl, fmatch, delta, tamp
 real(8) vmin, vmax, tmin, tmax, snr, lambda
-real(8) tmin_read, tmax_read
 
 real(8) PIover4
 
 real(8) x(1), y(1)
 
-real(4), dimension(:), allocatable :: seis
+real(4), dimension(:), allocatable :: seis, tr
 
 real(8), dimension(:), allocatable :: prpvper, prpvvel
 real(8), dimension(:,:), allocatable :: ampo, arr1, arr2, pred
@@ -137,10 +138,47 @@ open(10, file=trim(adjustl(parfile)), status='old')
       !
       ! read SAC or ascii data
       !
+      call readhead(sac, filename, npts, ier)
+      allocate(tr(1:npts), stat=ier)
+      call readdata(sac, filename, dt, delta, t0, tr, ier)
 
-      call readhead(sac, filename, n, ier)
-      allocate(seis(1:n), stat=ier)
-      call readdata(sac, filename, dt, delta, t0, seis, ier)
+      ! select left, right or both lags data for AFTAN analysis
+      if (t0 < 0.0) then
+         if (1 == mod(npts,2)) then
+            n0 = int(npts/2)+1
+            n = n0
+            allocate(seis(1:n), stat=ier)
+            if (-1 == lag_type) then
+               seis(1:n) = tr(n0:1:-1)
+            else if (0 == lag_type) then
+               seis(1:n) = 0.50*(tr(n0:1:-1) + tr(n0:npts))
+            else if (1 == lag_type) then
+               seis(1:n) = tr(n0:npts)
+            else
+               write(*,*) 'Error: Incorrect lag for AFTAN analysis, it must be one of -1, 0, or 1!'
+            end if
+         else
+            n0 = nint((0.d0-t0)/dt)+1
+            n = min(n0,npts-n0+1)
+            allocate(seis(1:n), stat=ier)
+            if (-1 == lag_type) then
+               seis(1:n) = tr(n0:n0-n+1:-1)
+            else if (0 == lag_type) then
+               seis(1:n) = 0.50*(tr(n0:n0-n+1:-1) + tr(n0:n0+n-1))
+            else if (1 == lag_type) then
+               seis(1:n) = tr(n0:n0+n-1)
+            else
+               write(*,*) 'Error: Incorrect lag for AFTAN analysis, it must be one of -1, 0, or 1!'
+            end if
+         end if
+		 t0 = 0.d0
+      else
+         n = npts
+         allocate(seis(1:n), stat=ier)
+         seis(1:n) = tr(1:n)
+      end if
+      deallocate(tr)
+
 
       if ((isPerCut == 'Y') .or. (isPerCut == 'y')) then
 
@@ -178,10 +216,10 @@ open(10, file=trim(adjustl(parfile)), status='old')
          call write_data(arr1, nfout1, arr2, nfout2, trim(adjustl(outfile))//'_1')
       endif
       if (allocated(ampo)) then
-	 deallocate(ampo)
+	     deallocate(ampo)
       end if
       if (allocated(arr1)) then
-	 deallocate(arr1)
+	     deallocate(arr1)
       end if
 
 
@@ -200,7 +238,7 @@ open(10, file=trim(adjustl(parfile)), status='old')
          pred(i,2) = arr2(3,i)
       enddo
       if (allocated(arr2)) then
-	 deallocate(arr2)
+	     deallocate(arr2)
       end if
 
 
