@@ -184,7 +184,7 @@ ome = 2.d0*PI/tmin
 ! seismogram tapering
 nb = max(2  , max(nint((delta/vmax-t0)/dt), ntapb+1))
 ne = min(n-1, min(nint((delta/vmin-t0)/dt), n-ntape))
-tamp = t0 + (nb-1)*dt ! -2 is because ampo's time axis starts from nb-1
+tamp = t0 + (nb-1)*dt ! -2 is because amp's time axis starts from nb-1
 
 
 
