@@ -72,9 +72,9 @@ void readhead_(int *sac, char *name, int *n, int *ierr)
             iswap = 1;
         if (iswap)
             swapn((unsigned char *)&sach, (int)(sizeof(float)), 158);
-        dt = sach.delta;
+        dt = lround(sach.delta*1e6)*1.e-6;
         nsam = &sach.npts;
-        t0 = sach.b;
+        t0 = lround(sach.b)*1.e-6;
         *n = *nsam;
         /* make symmetric cross-correlaton */
         nn = (1.0 - t0 / dt) + 0.5;
@@ -136,10 +136,10 @@ void readdata_(int *sac, char *name, double *dt, double *delta,
             iswap = 1;
         if (iswap)
             swapn((unsigned char *)&sach, (int)(sizeof(float)), 158);
-        *dt = sach.delta;
+        *dt = lround(sach.delta*1e6)*1.e-6;
         *delta = sach.dist;
         nsam = &sach.npts;
-        *t0 = sach.b;
+        *t0 = lround(sach.b)*1.e-6;
         /* The body */
         tr = (float *)malloc(*nsam * sizeof(float));
         fread(tr, sizeof(float), *nsam, fd);
