@@ -184,7 +184,7 @@ ome = 2.d0*PI/tmin
 ! seismgram tapering
 nb = max(1, max(nint((delta/vmax-t0)/dt), ntapb))
 ne = min(n, min(nint((delta/vmin-t0)/dt), n-ntape))
-tamp = (nb-1)*dt + t0
+tamp = t0 + (nb-1)*dt ! -2 is because ampo's time axis starts from nb-1
 
 
 
@@ -227,7 +227,7 @@ call dfftw_plan_dft_1d(planb, ns, fils, tmp, FFTW_BACKWARD, FFTW_ESTIMATE)
 
 
 ! main loop by frequency
-ntall = ntime
+ntall = ntime+2
 ncol = nf
 nrow = ntall
 allocate(pha(1:ntall,1:nf), amp(1:ntall,1:nf), ampo(1:ntall,1:nf), stat=ier)
@@ -250,7 +250,7 @@ do k = 1, nf, 1
 
    ! extraction from FTAN map area of investigation
    j = 1
-   do m = nb, ne, 1
+   do m = nb-1, ne+1, 1
       pha(j,k) = atan2(imag(tmp(m)), real(tmp(m)))
       wor = abs(tmp(m))
       ampo(j,k) = wor
@@ -314,7 +314,7 @@ do k = 1, nf, 1
       call fmax(amp(m-1,k), amp(m,k), amp(m+1,k), pha(m-1,k), pha(m,k), &
                           pha(m+1,k), PIover4, om(k), dt, t, dph, tm, ph)
 
-      ipar(1,j) = (nb+m-3+t)*dt
+      ipar(1,j) = (nb+m-1+t)*dt
       ipar(2,j) = 2*PI*dt/dph
       ipar(3,j) = tm
       ipar(6,j) = ph
