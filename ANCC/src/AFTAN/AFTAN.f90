@@ -30,10 +30,10 @@ integer(4) i, k, isac, nargc, iargc
 integer(4) n, npts_jump, nfin, nfout1, nfout2
 integer(4) nrow, ncol, npred, nprpv, ier, ioer
 
-real(8) tmin_read, tmax_read
+real(8) Tmin_read, Tmax_read, T
 real(8) t0, dt, tresh, ffact1, ffact2
 real(8) perc, taperl, fmatch, delta, tamp
-real(8) vmin, vmax, tmin, tmax, snr, lambda
+real(8) vmin, vmax, Tmin, Tmax, snr, nLambda
 
 real(8) PIover4
 
@@ -68,8 +68,8 @@ open(unit=99, file='input.dat', status='old')
    end do
    read(99,*) PIover4
    read(99,*) vmin, vmax
-   read(99,*) tmin_read, tmax_read
-   read(99,*) isPerCut, lambda
+   read(99,*) Tmin_read, Tmax_read
+   read(99,*) isPerCut, nLambda
    read(99,*) isOutput
    if (tmin_read < 1) then
       isOutput = 'Y'
@@ -147,13 +147,15 @@ open(10, file=trim(adjustl(parfile)), status='old')
 
       if ((isPerCut == 'Y') .or. (isPerCut == 'y')) then
 
-         do k = 1, 100, 1
+         do k = 1, 200, 1
 
-            x(1) = k
+            T = k
+
+            x(1) = T
             call linear_interpo(prpvper(1:nprpv), prpvvel(1:nprpv), x, y, ier)
 
-            if ((lambda*x(1)*y(1) > delta) .and. ((k+3) < tmax)) then
-               tmax = k + 3
+            if ((delta > nLambda*x(1)*y(1)) .and. (tmax > T)) then
+               Tmax = T
                exit
             end if
 
@@ -163,7 +165,7 @@ open(10, file=trim(adjustl(parfile)), status='old')
 
 
       !---  FTAN with phase match filter. First Iteration.
-      call aftanpg(PIover4, n, seis, t0, dt, delta, vmin, vmax, tmin, tmax, &
+      call aftanpg(PIover4, n, seis, t0, dt, delta, vmin, vmax, Tmin, Tmax, &
               tresh, ffact1, perc, npts_jump, taperl, nfin, nprpv, prpvper, &
               prpvvel, nfout1, arr1, nfout2, arr2, tamp, nrow, ncol, ampo, ier)
 
@@ -190,8 +192,8 @@ open(10, file=trim(adjustl(parfile)), status='old')
 
       !--- Make prediction based on the first iteration
       npred = nfout2
-      tmin = arr2(2,1)
-      tmax = arr2(2,nfout2)
+      Tmin = arr2(2,1)
+      Tmax = arr2(2,nfout2)
       allocate(pred(1:nfout2,1:2))
       do i = 1, nfout2, 1
          pred(i,1) = arr2(2,i)
@@ -204,7 +206,7 @@ open(10, file=trim(adjustl(parfile)), status='old')
 
 
       !--- FTAN with phase matching filter. Second Iteration.
-      call aftanipg(PIover4, n, seis, t0, dt, delta, vmin, vmax, tmin, tmax, tresh, &
+      call aftanipg(PIover4, n, seis, t0, dt, delta, vmin, vmax, Tmin, Tmax, tresh, &
             ffact2, perc, npts_jump, taperl, nfin, snr, fmatch, npred, pred, nprpv, &
             prpvper, prpvvel, nfout1, arr1, nfout2, arr2, tamp, nrow, ncol, ampo, ier)
 
