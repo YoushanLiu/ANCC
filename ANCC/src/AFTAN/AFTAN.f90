@@ -26,7 +26,7 @@ use aftanipg_m
 
 implicit none
 
-integer(4) i, k, is_sac, nargc, iargc
+integer(4) i, k, isac, nargc, iargc
 integer(4) n, npts_jump, nfin, nfout1, nfout2
 integer(4) nrow, ncol, npred, nprpv, ier, ioer
 
@@ -50,7 +50,7 @@ character(256) filename, parfile, outfile
 
 
 
-is_sac = 1
+isac = 1
 
 !---  input command line arguments treatment
 nargc = iargc()
@@ -140,9 +140,9 @@ open(10, file=trim(adjustl(parfile)), status='old')
       !
       ! read SAC or ascii data
       !
-      call readhead(is_sac, filename, npts, ier)
+      call readhead(isac, filename, npts, ier)
       allocate(seis(1:npts), stat=ier)
-      call readdata(is_sac, filename, dt, delta, t0, seis, ier)
+      call readdata(isac, filename, dt, delta, t0, seis, ier)
 
 
       if ((isPerCut == 'Y') .or. (isPerCut == 'y')) then
