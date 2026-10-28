@@ -208,9 +208,9 @@ call pred_cur(ip, delta, sqrt(omb*ome), npred, pred, om0, tg0)
 
 
 ! seismgram tapering
-nb = max(1, max(nint((delta/vmax-t0)/dt), ntapb))
+nb = max(1, max(nint((delta/vmax-t0)/dt), ntapb+1))
 ne = min(n, min(nint((delta/vmin-t0)/dt), n-ntape))
-tamp = (nb-1)*dt + t0
+tamp = t0 + (nb-1)*dt ! -2 is because ampo's time axis starts from nb-1
 
 
 !nrow = nfin
@@ -310,7 +310,7 @@ deallocate(spref)
 sf(1:ns) = sf(1:ns) / pha_cor(1:ns)
 deallocate(pha_cor)
 !==================================================================
-ntall = ntime
+ntall = ntime+2
 ncol = nf
 nrow = ntall
 allocate(pha(1:ntall,1:nf), amp(1:ntall,1:nf), ampo(1:ntall,1:nf), stat=ier)
@@ -320,7 +320,7 @@ do k = 1, nf, 1
    ! filtering
    call ftfilt(alpha, om(k), dom, ns, sf, fils)
 
-   ! fill with zeros half spectra for Hilbert transformation and spectra ends ajustment
+   ! fill with zeros half spectra for Hilbert transformation and spectra ends adjustment
    fils(nq+1:ns) = czero
 
    fils(1) = cmplx(0.5d0*real(fils(1)), 0.d0)
@@ -333,7 +333,7 @@ do k = 1, nf, 1
 
    ! extraction from FTAN map area of investigation
    j = 1
-   do m = nb, ne, 1
+   do m = nb-1, ne+1, 1
       pha(j,k) = atan2(imag(tmp(m)), real(tmp(m)))
       wor = abs(tmp(m))
       ampo(j,k) = wor
@@ -402,7 +402,7 @@ do k = 1, nf, 1
       call fmax(amp(m-1,k), amp(m,k), amp(m+1,k), pha(m-1,k), pha(m,k), &
                           pha(m+1,k), PIover4, om(k), dt, t, dph, tm, ph)
 
-      ipar(1,j) = (nb+m-3+t)*dt
+      ipar(1,j) = (nb+m-1+t)*dt
       ipar(2,j) = 2*PI*dt/dph
       ipar(3,j) = tm
       ipar(6,j) = ph
