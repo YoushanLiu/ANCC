@@ -42,7 +42,7 @@ real(8) x(1), y(1)
 real(4), dimension(:), allocatable :: seis
 
 real(8), dimension(:), allocatable :: prpvper, prpvvel
-real(8), dimension(:,:), allocatable :: ampo, arr1, arr2, pred
+real(8), dimension(:,:), allocatable :: amp, arr1, arr2, pred
 
 character(1) isPerCut, isOutput, isVerbose
 
@@ -154,7 +154,7 @@ open(10, file=trim(adjustl(parfile)), status='old')
             x(1) = T
             call linear_interpo(prpvper(1:nprpv), prpvvel(1:nprpv), x, y, ier)
 
-            if ((delta > nLambda*x(1)*y(1)) .and. (tmax > T)) then
+            if ((delta < nLambda*x(1)*y(1)) .and. (Tmax > T)) then
                Tmax = T
                exit
             end if
@@ -167,11 +167,11 @@ open(10, file=trim(adjustl(parfile)), status='old')
       !---  FTAN with phase match filter. First Iteration.
       call aftanpg(PIover4, n, seis, t0, dt, delta, vmin, vmax, Tmin, Tmax, &
               tresh, ffact1, perc, npts_jump, taperl, nfin, nprpv, prpvper, &
-              prpvvel, nfout1, arr1, nfout2, arr2, tamp, nrow, ncol, ampo, ier)
+              prpvvel, nfout1, arr1, nfout2, arr2, tamp, nrow, ncol, amp, ier)
 
       if ((isOutput == 'Y') .or. (isOutput == 'y')) then
          call printres(dt, delta, nfout1, arr1, nfout2, arr2, &
-                    tamp, nrow, ncol, ampo, ier, outfile, "_1")
+                     tamp, nrow, ncol, amp, ier, outfile, "_1")
       end if
 
       if (tmin >= 1) then
@@ -208,11 +208,11 @@ open(10, file=trim(adjustl(parfile)), status='old')
       !--- FTAN with phase matching filter. Second Iteration.
       call aftanipg(PIover4, n, seis, t0, dt, delta, vmin, vmax, Tmin, Tmax, tresh, &
             ffact2, perc, npts_jump, taperl, nfin, snr, fmatch, npred, pred, nprpv, &
-            prpvper, prpvvel, nfout1, arr1, nfout2, arr2, tamp, nrow, ncol, ampo, ier)
+            prpvper, prpvvel, nfout1, arr1, nfout2, arr2, tamp, nrow, ncol, amp, ier)
 
       if ((isOutput == 'Y') .or. (isOutput == 'y')) then
          call printres(dt, delta, nfout1, arr1, nfout2, arr2, &
-                    tamp, nrow, ncol, ampo, ier, outfile, "_2")
+                     tamp, nrow, ncol, amp, ier, outfile, "_2")
       end if
 
 
@@ -222,14 +222,14 @@ open(10, file=trim(adjustl(parfile)), status='old')
 
 
       deallocate(seis)
+      if (allocated(amp)) then
+         deallocate(amp)
+      end if
       if (allocated(arr1)) then
          deallocate(arr1)
       end if
       if (allocated(arr2)) then
          deallocate(arr2)
-      end if
-      if (allocated(ampo)) then
-         deallocate(ampo)
       end if
       if (allocated(pred)) then
          deallocate(pred)
