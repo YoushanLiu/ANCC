@@ -206,7 +206,7 @@ call taper(nb, ne, n, seis, ntapb, ntape, ns, s)
 
 ! prepare FTAN filters
 dom = 2.d0*PI/(ns*dt)
-step =(log(omb) - log(ome))/(nf - 1)
+step = (log(omb) - log(ome))/(nf - 1)
 
 ! log scaling for frequency
 allocate(om(1:nf), per(1:nf), stat=ier)
