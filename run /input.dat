@@ -25,8 +25,8 @@ N  100                                               # whether doing the bootstr
 ##############################################################################
 -1.0                                                 # PIover4 (phase_shift = PI/4*PIover4)
 1.5 5.0                                              # vmin, vmax - minimum and maximum group velocity (for tapering the signal window)
-3.0 45.0                                             # tmin, tmax - minimum and maximum period for the phase velocity measurement
-Y  1                                                 # whether limiting the maximum period (nLambda*period*ref_velocity < delta), nLambda
+3.0 45.0                                             # Tmin, Tmax - minimum and maximum period for the phase velocity measurement
+Y  1                                                 # whether limiting the maximum period to meet condition (delta > nLambda*period*ref_velocity), nLambda
 N                                                    # whether output all the preliminary results
 10.0                                                 # tresh-jump detection factor (used in trigger subroutine, if (abs(r) > tresh)
 1.0 1.0                                              # alpha values in the narrow-band gaussian filters (alpha = 20*ffact*sqrt(delta/1000))
