@@ -314,7 +314,7 @@ do k = 1, nf, 1
       call fmax(amp(m-1,k), amp(m,k), amp(m+1,k), pha(m-1,k), pha(m,k), &
                           pha(m+1,k), PIover4, om(k), dt, t, dph, tm, ph)
 
-      ipar(1,j) = (nb+m-1+t)*dt
+      ipar(1,j) = (nb+m-3+t)*dt
       ipar(2,j) = 2*PI*dt/dph
       ipar(3,j) = tm
       ipar(6,j) = ph
