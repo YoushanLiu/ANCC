@@ -40,14 +40,14 @@ implicit none
 
 integer, intent(in) :: year, month, day
 
-integer :: i, leap_year
+integer i, leap_year
 
 
-if (mod(year, 400) == 0) then
+if (0 == mod(year,400)) then
    leap_year = 1
-else if (mod(year, 100) == 0) then
+else if (0 == mod(year,100)) then
    leap_year = 0
-else if (mod(year, 4) == 0) then
+else if (0 == mod(year,4)) then
    leap_year = 1
 else
    leap_year = 0
