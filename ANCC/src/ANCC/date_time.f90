@@ -123,17 +123,26 @@ integer(8) idate, itime, irest, iysupp, idsupp
 real(DBL) fsec
 
 
-idate = int(t/86400.d0)
+! number of days since Unix Epoch
+idate = floor(t/86400.d0, kind=8)
+! estimate year offset from 1970
 iysupp = idate/365
-idsupp = iysupp*365 + (iysupp+1)/4 + (iysupp+369)/400 - (iysupp+69)/100
-if (idate < idsupp) iysupp = iysupp - 1
-idsupp = iysupp*365 + (iysupp+1)/4 + (iysupp+369)/400 - (iysupp+69)/100
+! correct negative integer division
+if ((idate < 0) .and. (0 /= mod(idate,365_8))) iysupp = iysupp - 1
+! days from Unix Epoch to the beginning of year
+idsupp = iysupp*365_8 + (iysupp+1_8)/4_8 + (iysupp+369_8)/400_8 - (iysupp+69_8)/100_8
+! correct estimated year
+if (idate < idsupp) then
+   iysupp = iysupp - 1
+   idsupp = iysupp*365_8 + (iysupp+1_8)/4_8 + (iysupp+369_8)/400_8 - (iysupp+69_8)/100_8
+end if
+
 
 
 ! extract year
-year = int(1970 + iysupp, kind=4)
+year = 1970 + iysupp
 ! extract jday
-jday = int(idate - idsupp + 1, kind=4)
+jday = idate - idsupp + 1
 ! time part
 fsec = t - idate*86400.d0
 irest = int(fsec)
@@ -141,13 +150,13 @@ fsec = fsec - irest
 itime = irest
 irest = itime/60
 ! extract second
-sec = int(itime - irest*60 + fsec, kind=4)
+sec = itime - irest*60 + fsec
 itime = irest
 irest = itime/60
 ! extract minute
-minute = int(itime - irest*60, kind=4)
+minute = itime - irest*60
 ! extract hour
-hour = int(irest, kind=4)
+hour = irest
 
 
 end subroutine timestamp2datetime
