@@ -84,25 +84,34 @@ end function date2jday
 ! ====================================================================
 real(DBL) function datetime2timestamp(year, jday, hour, minute, sec)
 
+use iso_fortran_env, only: int64
+
 implicit none
 
 integer, intent(in) :: year, jday, hour, minute
 real(DBL), intent(in) :: sec
 
-integer(8) yeardiff, vis
+integer(int64) yeardiff, leap_days, days
 
+yeardiff = int(year, int64) - 1970_int64
 
-yeardiff = year - 1970
-vis = (yeardiff+1)/4 + (yeardiff+369)/400 - (yeardiff+69)/100
-datetime2timestamp = (365*yeardiff + vis + jday - 1)*86400.d0 + (hour*60 + minute)*60.d0 + sec
+! leap days between 1970 and the beginning of year
+leap_days = floor_div(yeardiff + 1_int64, 4_int64)   &
+          + floor_div(yeardiff + 369_int64, 400_int64) &
+          - floor_div(yeardiff + 69_int64, 100_int64)
 
+days = 365_int64 * yeardiff + leap_days + int(jday, int64) - 1_int64
+
+datetime2timestamp = real(days, DBL) * 86400.d0 &
+                   + real(hour * 3600 + minute * 60, DBL) &
+                   + sec
 
 end function datetime2timestamp
 
 
 ! ====================================================================
 ! Convert timestamp to datetime
-! t: timestamp since 1970-01-01T00:00:000000Z in seconds [input]
+! t: timestamp since 1970-01-01T00:00:000.000Z in seconds [input]
 ! year: year [output]
 ! jday: julian day [output]
 ! hour: hour [output]
@@ -111,6 +120,8 @@ end function datetime2timestamp
 ! ====================================================================
 subroutine timestamp2datetime(t, year, jday, hour, minute, sec)
 
+use iso_fortran_env, only: int64
+
 implicit none
 
 real(DBL), intent(in) :: t
@@ -118,48 +129,95 @@ real(DBL), intent(in) :: t
 integer, intent(out) :: year, jday, hour, minute
 real(DBL), intent(out) :: sec
 
-
-integer(8) idate, itime, irest, iysupp, idsupp
+integer(int64) idate, iysupp, idsupp
+integer(int64) irest, itime
 real(DBL) fsec
 
+! extract integer days since 1970-01-01.
+! floor is required for negative timestamps.
+idate = floor(t / 86400.d0, kind=int64)
 
-! number of days since Unix Epoch
-idate = floor(t/86400.d0, kind=8)
-! estimate year offset from 1970
-iysupp = idate/365
-! correct negative integer division
-if ((idate < 0) .and. (0 /= mod(idate,365_8))) iysupp = iysupp - 1
-! days from Unix Epoch to the beginning of year
-idsupp = iysupp*365_8 + (iysupp+1_8)/4_8 + (iysupp+369_8)/400_8 - (iysupp+69_8)/100_8
-! correct estimated year
-if (idate < idsupp) then
-   iysupp = iysupp - 1
-   idsupp = iysupp*365_8 + (iysupp+1_8)/4_8 + (iysupp+369_8)/400_8 - (iysupp+69_8)/100_8
-end if
+! estimate year offset from 1970.
+iysupp = floor_div(idate, 365_int64)
+
+! correct the estimated year.
+idsupp = iysupp * 365_int64                     &
+       + floor_div(iysupp + 1_int64, 4_int64)   &
+       + floor_div(iysupp + 369_int64, 400_int64) &
+       - floor_div(iysupp + 69_int64, 100_int64)
+
+do while (idate < idsupp)
+
+    iysupp = iysupp - 1_int64
+
+    idsupp = iysupp * 365_int64                    &
+           + floor_div(iysupp + 1_int64, 4_int64) &
+           + floor_div(iysupp + 369_int64, 400_int64) &
+           - floor_div(iysupp + 69_int64, 100_int64)
+
+end do
+
+do
+
+    itime = iysupp + 1_int64
+
+    itime = itime * 365_int64                    &
+          + floor_div(itime + 1_int64, 4_int64) &
+          + floor_div(itime + 369_int64, 400_int64) &
+          - floor_div(itime + 69_int64, 100_int64)
+
+    if (idate < itime) exit
+
+    iysupp = iysupp + 1_int64
+    idsupp = itime
+
+end do
+
+! extract year and day of year.
+year = int(1970_int64 + iysupp)
+jday = int(idate - idsupp + 1_int64)
 
 
+! extract time of day.
+fsec = t - real(idate, DBL) * 86400.d0
 
-! extract year
-year = 1970 + iysupp
-! extract jday
-jday = idate - idsupp + 1
-! time part
-fsec = t - idate*86400.d0
-irest = int(fsec)
-fsec = fsec - irest
+irest = int(fsec, int64)
+fsec = fsec - real(irest, DBL)
+
 itime = irest
-irest = itime/60
-! extract second
-sec = itime - irest*60 + fsec
-itime = irest
-irest = itime/60
-! extract minute
-minute = itime - irest*60
-! extract hour
-hour = irest
 
+irest = itime / 60_int64
+sec = real(itime - irest * 60_int64, DBL) + fsec
+
+itime = irest
+
+irest = itime / 60_int64
+minute = int(itime - irest * 60_int64)
+
+hour = int(irest)
 
 end subroutine timestamp2datetime
+
+
+! ====================================================================
+pure function floor_div(a, b) result(q)
+
+use iso_fortran_env, only: int64
+
+implicit none
+
+integer(int64), intent(in) :: a, b
+
+integer(int64) q, r
+
+q = a / b
+r = mod(a, b)
+
+if (r /= 0_int64 .and. ((r < 0_int64) .neqv. (b < 0_int64))) then
+    q = q - 1_int64
+end if
+
+end function floor_div
 
 
 end module date_time_m
